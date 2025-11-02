@@ -78,15 +78,19 @@
     <div class="container text-center">
         <h2>Become an Influencer</h2>
         <p class="lead"> Promote our jerseys, share your unique link, and earn commissions on every sale. Join the Maillot Store family today.</p>
-        <a href="/Account/Register" class="btn btn-lg cta-button-influencer">SignUp Now</a>
+
+        @* ADDED data-no-enhance TO FIX NAVIGATION ISSUE *@
+        <a href="/Account/Register" class="btn btn-lg cta-button-influencer" data-no-enhance>SignUp Now</a>
     </div>
 </section>
+
 
 @code {
     private List<Product>? featuredProducts;
 
     protected override async Task OnInitializedAsync()
     {
+        // ToListAsync now works because of the Microsoft.EntityFrameworkCore using directive
         featuredProducts = await DbContext.Products.Where(p => p.IsFeatured).ToListAsync();
     }
 }

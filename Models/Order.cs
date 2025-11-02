@@ -18,5 +18,7 @@
                                                                 // Inside your Order class
         public decimal CommissionRate { get; set; }
         public decimal CommissionAmount { get; set; }
+
+        public string? OptionalMessage { get; set; }
     }
 }

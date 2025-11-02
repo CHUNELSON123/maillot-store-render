@@ -19,7 +19,9 @@
     <h1>Sign Up</h1>
     <hr />
     <StatusMessage Message="@errorMessage" />
-    <EditForm Model="Input" OnValidSubmit="RegisterUser" FormName="register" class="account-form">
+
+    @* --- THIS IS THE FIXED LINE --- *@
+    <EditForm Model="Input" OnValidSubmit="RegisterUser" FormName="register" Method="post" class="account-form">
         <DataAnnotationsValidator />
         <ValidationSummary class="text-danger" role="alert" />
 

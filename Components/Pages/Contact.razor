@@ -1,7 +1,10 @@
 ﻿@page "/contact"
 @using System.ComponentModel.DataAnnotations
 @using System.Web
+@using MaillotStore.Data
+@using Microsoft.EntityFrameworkCore
 @inject NavigationManager NavigationManager
+@inject ApplicationDbContext DbContext
 @rendermode InteractiveServer
 
 <div class="contact-us-container">
@@ -18,16 +21,19 @@
             <ul class="info-list">
                 <li>
                     <span class="icon"><i class="fa-solid fa-phone"></i></span>
+
                     <p>+237 690 05 91 97</p>
                 </li>
                 <li>
                     <span class="icon"><i class="fa-brands fa-whatsapp"></i></span>
                     <p>+237 90059197</p>
+
                 </li>
                 <li>
                     <span class="icon"><i class="fa-solid fa-envelope"></i></span>
                     <p>maillotstore@gmail.com</p>
                 </li>
+
                 <li>
                     <span class="icon"><i class="fa-solid fa-location-dot"></i></span>
                     <p>Douala, Cameroon</p>
@@ -35,6 +41,7 @@
             </ul>
 
             <h3 class="info-title social-links-title">Social Links</h3>
+
             <div class="social-icons">
                 <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
                 <a href="https://tiktok.com" target="_blank" class="social-icon"><i class="fa-brands fa-tiktok"></i></a>
@@ -42,7 +49,8 @@
             </div>
         </div>
 
-        @* --- "SEND US A MESSAGE" SECTION (SECOND) --- *@
+        @* --- "SEND US A 
+ MESSAGE" SECTION (SECOND) --- *@
         @* --- FIX: Added centering classes --- *@
         <div class="contact-form-section px-0 mx-0 px-md-3">
             <h3 class="form-title">Send Us A Message</h3>
@@ -51,16 +59,19 @@
                 <DataAnnotationsValidator />
                 <ValidationSummary />
 
+
                 <div class="form-group">
                     <InputText @bind-Value="contactForm.Name" class="form-control" placeholder="Name" />
                 </div>
                 <div class="form-group">
                     <InputText @bind-Value="contactForm.ContactInfo" class="form-control" placeholder="E-Mail / Phone Number" />
+
                 </div>
                 <div class="form-group">
                     <InputTextArea @bind-Value="contactForm.Message" class="form-control" rows="8" placeholder="Message" />
                 </div>
                 <button type="submit" class="submit-message-btn">SUBMIT</button>
+
             </EditForm>
         </div>
     </div>
@@ -68,6 +79,20 @@
 
 @code {
     private ContactForm contactForm = new();
+    private string adminWhatsAppNumber = ""; // Will be loaded from DB
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load the admin WhatsApp number from the AdminSettings table
+        var setting = await DbContext.AdminSettings
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Key == "AdminWhatsAppNumber");
+
+        if (setting != null && !string.IsNullOrWhiteSpace(setting.Value))
+        {
+            adminWhatsAppNumber = setting.Value;
+        }
+    }
 
     private void HandleSubmit()
     {
@@ -84,7 +109,12 @@
         {
             // It's a phone number, create a WhatsApp link
             var text = HttpUtility.UrlEncode($"Name: {contactForm.Name}\nMessage: {contactForm.Message}");
-            var whatsappUrl = $"https://wa.me/237671007313?text={text}"; // Using Cameroon's country code + number
+
+            // *** UPDATED LINE ***
+            // Use the loaded admin number. Remove '+' and spaces for the wa.me URL.
+            var whatsAppNumberForUrl = adminWhatsAppNumber.Replace("+", "").Replace(" ", "");
+            var whatsappUrl = $"https://wa.me/{whatsAppNumberForUrl}?text={text}";
+
             NavigationManager.NavigateTo(whatsappUrl, forceLoad: true);
         }
 
@@ -95,12 +125,24 @@
     public class ContactForm
     {
         [Required]
-        public string Name { get; set; }
+        public string Name
+        {
+            get;
+            set;
+        }
 
         [Required(ErrorMessage = "Please enter your email or phone number.")]
-        public string ContactInfo { get; set; }
+        public string ContactInfo
+        {
+            get;
+            set;
+        }
 
         [Required]
-        public string Message { get; set; }
+        public string Message
+        {
+            get;
+            set;
+        }
     }
 }

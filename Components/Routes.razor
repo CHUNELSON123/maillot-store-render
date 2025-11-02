@@ -1,7 +1,8 @@
 ﻿@using MaillotStore.Components.Account.Shared
+
 <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
-        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" @rendermode="rendermode">
             <NotAuthorized>
                 <RedirectToLogin />
             </NotAuthorized>
@@ -9,3 +10,7 @@
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
 </Router>
+
+@code {
+    [Parameter] public IComponentRenderMode? rendermode { get; set; }
+}

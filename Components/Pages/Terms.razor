@@ -1,4 +1,7 @@
 ﻿@page "/terms-and-conditions"
+@using MaillotStore.Data
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext DbContext
 
 <PageTitle>Influencer Program Terms and Conditions</PageTitle>
 
@@ -9,150 +12,240 @@
             <h1 class="text-center">Influencer Program Terms and Conditions</h1>
         </div>
         <div class="card-body" style="background-color: #000 !important; color: #fff !important; line-height: 1.6;">
+
             @* --- END: Applied inline styles --- *@
             <p><strong>Last Updated:</strong> October 25, 2025</p>
 
             <p>
-                Welcome to the Maillot Store Influencer Program! These Terms and Conditions ("Terms") govern your application to and participation in the Maillot Store Influencer Program (the "Program"). By completing the registration form on the `/Account/Register` page and agreeing to these Terms, you are applying to join the Program and agree to be bound by these Terms. If you do not agree, please do not register.
+                Welcome to the Maillot Store Influencer Program!
+                These Terms and Conditions ("Terms") govern your application to and participation in the Maillot Store Influencer Program (the "Program").
+                By completing the registration form on the `/Account/Register` page and agreeing to these Terms, you are applying to join the Program and agree to be bound by these Terms.
+                If you do not agree, please do not register.
             </p>
 
-            <h2 class="mt-4">1. Eligibility and Registration</h2>
+            <h2 class="mt-4">
+                1.
+                Eligibility and Registration
+            </h2>
             <p>
-                1.1. To participate in the Influencer Program, you must register for an account via the specific Influencer registration page (`/Account/Register`).
+                1.1.
+                To participate in the Influencer Program, you must register for an account via the specific Influencer registration page (`/Account/Register`).
             </p>
             <p>
-                1.2. You agree to provide accurate, complete, and current information during registration, including your full name, phone number, and email address. Providing false information may lead to termination from the Program.
+                1.2.
+                You agree to provide accurate, complete, and current information during registration, including your full name, phone number, and email address.
+                Providing false information may lead to termination from the Program.
             </p>
             <p>
-                1.3. You are responsible for maintaining the confidentiality of your account password and for all activities that occur under your account. Notify Maillot Store immediately of any unauthorized use.
+                1.3.
+                You are responsible for maintaining the confidentiality of your account password and for all activities that occur under your account.
+                Notify Maillot Store immediately of any unauthorized use.
             </p>
             <p>
-                1.4. You must explicitly agree to these Terms and Conditions during the registration process by checking the required box.
+                1.4.
+                You must explicitly agree to these Terms and Conditions during the registration process by checking the required box.
             </p>
             <p>
-                1.5. Upon successful registration through this specific page, you will automatically be assigned the "Influencer" role within the Maillot Store system.
+                1.5.
+                Upon successful registration through this specific page, you will automatically be assigned the "Influencer" role within the Maillot Store system.
             </p>
 
             <hr class="my-4 border-light" />
 
-            <h2 class="mt-4">2. Influencer Responsibilities</h2>
+            <h2 class="mt-4">
+                2.
+                Influencer Responsibilities
+            </h2>
             <p>
-                2.1. As an Influencer, you agree to:
+                2.1.
+                As an Influencer, you agree to:
                 <ul>
                     <li>Promote Maillot Store and its products (jerseys) ethically, accurately, and positively.</li>
                     <li>Use the unique Referral Code and Referral Link provided to you upon registration for promotional activities.</li>
+
                     <li>Not engage in spamming, deceptive advertising, misleading claims, or any illegal or unethical practices when promoting Maillot Store or using your Referral Link.</li>
                     <li>Comply with all applicable laws, regulations, and advertising standards in Cameroon.</li>
                     <li>Represent Maillot Store professionally.</li>
                 </ul>
+
             </p>
 
             <hr class="my-4 border-light" />
 
-            <h2 class="mt-4">3. Referral Links and Commissions</h2>
+            <h2 class="mt-4">
+                3.
+                Referral Links and Commissions
+            </h2>
             <p>
-                3.1. **Referral Mechanism:** You will receive a unique Referral Code and Referral Link upon registration. Customers using your link to visit the store may have your referral code associated with their session.
+                3.1.
+                **Referral Mechanism:** You will receive a unique Referral Code and Referral Link upon registration.
+                Customers using your link to visit the store may have your referral code associated with their session.
             </p>
             <p>
-                3.2. **Eligible Sales:** You will earn a commission only on the total amount of eligible sales made where your unique Referral Code is successfully recorded with the customer's order in our system.
+                3.2.
+                **Eligible Sales:** You will earn a commission only on the total amount of eligible sales made where your unique Referral Code is successfully recorded with the customer's order in our system.
             </p>
             <p>
-                3.3. **Commission Rate:**
+                3.3.
+                **Commission Rate:**
                 <ul>
                     <li>The commission amount for each eligible order is calculated based on the global commission rate set by the Maillot Store Admin **at the exact time the referred order is placed**.</li>
-                    <li>This rate is subject to change by the Admin without prior notice to Influencers, but changes will only affect commissions on orders placed *after* the change is made.</li>
+                    <li>
+                        This rate is subject to change by the Admin without prior notice to Influencers,
+                        but changes will only affect commissions on orders placed *after* the change is made.
+                    </li>
                     <li>The calculated commission amount (in FCFA) for each eligible order is stored with the order details and displayed on your Influencer Dashboard.</li>
                 </ul>
             </p>
             <p>
-                3.4. **Tracking:** Commissions earned are tracked and displayed on your Influencer Dashboard, accessible after logging in. The dashboard shows total sales referred, total commission earned, commission paid, and the remaining balance. Order visibility on your dashboard is managed by the Admin.
+
+                3.4.
+                **Tracking:** Commissions earned are tracked and displayed on your Influencer Dashboard, accessible after logging in. The dashboard shows total sales referred, total commission earned, commission paid, and the remaining balance.
+                Order visibility on your dashboard is managed by the Admin.
             </p>
             <p>
-                3.5. **Commission Payout:** The specific terms for commission payouts, including the payment schedule, minimum payout threshold, payment method (e.g., Mobile Money), and conditions (such as requiring referred orders to be marked 'Paid'), will be discussed and agreed upon directly between the Influencer and the Maillot Store Admin. Maillot Store reserves the right to delay or withhold payments for investigation if fraudulent activity is suspected.
+                3.5.
+                **Commission Payout:** The specific terms for commission payouts, including the payment schedule, minimum payout threshold, payment method (e.g., Mobile Money), and conditions (such as requiring referred orders to be marked 'Paid'), will be discussed and agreed upon directly between the Influencer and the Maillot Store Admin.
+                Maillot Store reserves the right to delay or withhold payments for investigation if fraudulent activity is suspected.
             </p>
             <p>
-                3.6. **Disputes:** Any questions or disputes regarding commission calculations must be submitted in writing to <mark>[Your Contact Email]</mark> within [e.g., 30 days] of the statement or dashboard update.
+                3.6.
+                **Disputes:** Any questions or disputes regarding commission calculations must be submitted in writing to <mark>@adminContactNumber</mark> within [e.g., 30 days] of the statement or dashboard update.
             </p>
 
             <hr class="my-4 border-light" />
 
 
-            <h2 class="mt-4">4. Term and Termination</h2>
+            <h2 class="mt-4">
+                4.
+                Term and Termination
+            </h2>
             <p>
-                4.1. Your participation in the Program begins upon successful registration and continues until terminated by either party.
+                4.1.
+                Your participation in the Program begins upon successful registration and continues until terminated by either party.
             </p>
             <p>
-                4.2. You may terminate your participation at any time by notifying Maillot Store in writing at <mark>[Your Contact Email]</mark>.
+                4.2.
+                You may terminate your participation at any time by notifying Maillot Store in writing at <mark>@adminContactNumber</mark>.
             </p>
             <p>
-                4.3. Maillot Store reserves the right to terminate your participation in the Influencer Program immediately and without notice if you breach any of these Terms, engage in fraudulent activity, misrepresent Maillot Store, or engage in any conduct deemed harmful to Maillot Store's reputation.
+                4.3.
+                Maillot Store reserves the right to terminate your participation in the Influencer Program immediately and without notice if you breach any of these Terms, engage in fraudulent activity, misrepresent Maillot Store, or engage in any conduct deemed harmful to Maillot Store's reputation.
             </p>
             <p>
-                4.4. Maillot Store also reserves the right to terminate the Program entirely or modify its terms at any time.
+                4.4.
+                Maillot Store also reserves the right to terminate the Program entirely or modify its terms at any time.
             </p>
             <p>
-                4.5. Upon termination, your Referral Link will be deactivated. Eligible, unpaid commissions earned prior to the termination date will typically be paid out according to the agreed-upon schedule and terms, unless termination was due to your breach of these Terms or fraudulent activity, in which case commissions may be forfeited.
-            </p>
-
-            <hr class="my-4 border-light" />
-
-
-            <h2 class="mt-4">5. Intellectual Property</h2>
-            <p>
-                Maillot Store grants you a non-exclusive, non-transferable, revocable right to use Maillot Store logos or promotional materials explicitly provided to you for the sole purpose of promoting the Website in accordance with these Terms. You may not modify these materials. All intellectual property rights related to Maillot Store, its website, and products remain the sole property of Maillot Store.
-            </p>
-
-            <hr class="my-4 border-light" />
-
-            <h2 class="mt-4">6. Disclaimers</h2>
-            <p>
-                The Influencer Program and the Maillot Store Website are provided on an "as is" and "as available" basis. Maillot Store makes no warranties, express or implied, regarding the Program, including warranties of merchantability, fitness for a particular purpose, or non-infringement. We do not guarantee any specific level of income or success from participation in the Program. Tracking of referrals relies on technical systems which may occasionally fail; Maillot Store is not liable for commissions lost due to tracking failures beyond our reasonable control.
+                4.5.
+                Upon termination, your Referral Link will be deactivated. Eligible, unpaid commissions earned prior to the termination date will typically be paid out according to the agreed-upon schedule and terms, unless termination was due to your breach of these Terms or fraudulent activity, in which case commissions may be forfeited.
             </p>
 
             <hr class="my-4 border-light" />
 
-            <h2 class="mt-4">7. Limitation of Liability</h2>
+
+            <h2 class="mt-4">
+                5.
+                Intellectual Property
+            </h2>
             <p>
-                Maillot Store shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or related to your participation in the Influencer Program or your use of (or inability to use) the Maillot Store Website, even if we have been advised of the possibility of such damages. Our total liability to you for any claims arising from the Program shall not exceed the total commission amounts paid or payable to you in the [e.g., six months] preceding the claim.
+                Maillot Store grants you a non-exclusive, non-transferable, revocable right to use Maillot Store logos or promotional materials explicitly provided to you for the sole purpose of promoting the Website in accordance with these Terms.
+                You may not modify these materials. All intellectual property rights related to Maillot Store, its website, and products remain the sole property of Maillot Store.
             </p>
 
             <hr class="my-4 border-light" />
 
-            <h2 class="mt-4">8. Indemnification</h2>
+            <h2 class="mt-4">
+                6.
+                Disclaimers
+            </h2>
+            <p>
+                The Influencer Program and the Maillot Store Website are provided on an "as is" and "as available" basis.
+                Maillot Store makes no warranties, express or implied, regarding the Program, including warranties of merchantability, fitness for a particular purpose, or non-infringement.
+                We do not guarantee any specific level of income or success from participation in the Program.
+                Tracking of referrals relies on technical systems which may occasionally fail;
+                Maillot Store is not liable for commissions lost due to tracking failures beyond our reasonable control.
+            </p>
+
+            <hr class="my-4 border-light" />
+
+            <h2 class="mt-4">
+                7.
+                Limitation of Liability
+            </h2>
+            <p>
+                Maillot Store shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or related to your participation in the Influencer Program or your use of (or inability to use) the Maillot Store Website, even if we have been advised of the possibility of such damages.
+                Our total liability to you for any claims arising from the Program shall not exceed the total commission amounts paid or payable to you in the [e.g., six months] preceding the claim.
+            </p>
+
+            <hr class="my-4 border-light" />
+
+            <h2 class="mt-4">
+                8.
+                Indemnification
+            </h2>
             <p>
                 You agree to indemnify, defend, and hold harmless Maillot Store and its affiliates, officers, directors, employees, and agents from any claims, liabilities, damages, losses, and expenses (including reasonable attorney's fees) arising out of or related to your participation in the Program, your promotional activities, or your breach of these Terms.
             </p>
 
             <hr class="my-4 border-light" />
 
-            <h2 class="mt-4">9. Privacy</h2>
+            <h2 class="mt-4">
+                9.
+                Privacy
+            </h2>
             <p>
-                By registering, you agree to the collection and use of your personal information (name, phone, email, etc.) as necessary for the administration of the Influencer Program. 
+                By registering, you agree to the collection and use of your personal information (name, phone, email, etc.) as necessary for the administration of the Influencer Program.
             </p>
 
             <hr class="my-4 border-light" />
 
             @* Section 10 (Governing Law) Removed *@
 
-            <h2 class="mt-4">10. Changes to Terms</h2> @* <-- Renumbered from 11 *@
+            <h2 class="mt-4">
+                10.
+                Changes to Terms
+            </h2> @* <-- Renumbered from 11 *@
             <p>
-                Maillot Store reserves the right to modify these Terms at any time. We will notify Influencers of significant changes via [e.g., email or a notice on the Influencer Dashboard]. Your continued participation in the Program after such changes constitutes acceptance of the new Terms. It is your responsibility to review these Terms periodically.
+                Maillot Store reserves the right to modify these Terms at any time.
+                We will notify Influencers of significant changes via [e.g., email or a notice on the Influencer Dashboard].
+                Your continued participation in the Program after such changes constitutes acceptance of the new Terms.
+                It is your responsibility to review these Terms periodically.
             </p>
 
             <hr class="my-4 border-light" />
 
-            <h2 class="mt-4">11. Contact Information</h2> @* <-- Renumbered from 12 *@
+            <h2 class="mt-4">
+                11.
+                Contact Information
+            </h2> @* <-- Renumbered from 12 *@
             <p>
-                For any questions regarding these Terms or the Influencer Program, please contact Maillot Store at: <mark>[Your Contact Email/Phone Number]</mark>
+                For any questions regarding these Terms or the Influencer Program, please contact Maillot Store at: <mark>@adminContactNumber</mark>
             </p>
 
             <hr class="my-4 border-light" />
 
-            <p class="fw-bold text-center mt-4">By checking the box during registration, you acknowledge that you have read, understood, and agree to be bound by these Influencer Program Terms and Conditions.</p>
+            <p class="fw-bold text-center mt-4">
+                By checking the box during
+                registration, you acknowledge that you have read, understood, and agree to be bound by these Influencer Program Terms and Conditions.
+            </p>
         </div> @* End card-body *@
     </div> @* End card *@
 </div> @* End container *@
 
 @code {
-    // No code needed for this static page
+    private string adminContactNumber = "[Contact Number Not Set]"; // Default text
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load the admin WhatsApp number from the AdminSettings table
+        var setting = await DbContext.AdminSettings
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Key == "AdminWhatsAppNumber");
+
+        if (setting != null && !string.IsNullOrWhiteSpace(setting.Value))
+        {
+            adminContactNumber = setting.Value;
+        }
+    }
 }

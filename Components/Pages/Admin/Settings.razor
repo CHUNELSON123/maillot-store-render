@@ -3,9 +3,12 @@
 @using MaillotStore.Data
 @using MaillotStore.Models
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @layout AdminLayout
 @inject ApplicationDbContext DbContext
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @attribute [Authorize(Roles = "Admin")]
 
 <PageTitle>Admin Settings</PageTitle>
@@ -18,7 +21,10 @@
     <div class="commission-rate-setter" style="margin-top: 2rem; padding: 1.5rem; background-color: #212529; color: #fff; border-radius: 8px; border: 1px solid #fff;">
         <h3 class="commissions-title">Global Commission Rate</h3>
         <p>Current Rate: <strong>@(currentCommissionRate * 100)%</strong></p>
-        <p>This rate will be applied to all new orders placed after you click "Update". It will not affect past orders.</p>
+        <p>
+            This rate will be applied to all new orders placed after you click "Update".
+            It will not affect past orders.
+        </p>
 
         <div class="input-group" style="max-width: 400px;">
             <InputNumber @bind-Value="newCommissionPercentage" class="form-control form-control-dark" placeholder="Enter new rate (e.g., 7)" />
@@ -37,6 +43,7 @@
 
     @* --- Admin WhatsApp Number Section --- *@
     <div class="whatsapp-setter" style="margin-top: 2rem; padding: 1.5rem; background-color: #212529; color: #fff; border-radius: 8px; border: 1px solid #fff;">
+
         <h3 class="commissions-title">Admin WhatsApp Number</h3>
         <p>Current Number: <strong>@(currentWhatsAppNumber ?? "Not Set")</strong></p>
         <p>This is the number where order notifications will be sent.</p>
@@ -47,6 +54,7 @@
         </div>
         @if (!string.IsNullOrEmpty(whatsAppSuccessMessage))
         {
+
             <div class="alert alert-success mt-2">@whatsAppSuccessMessage</div>
         }
         @if (!string.IsNullOrEmpty(whatsAppErrorMessage))
@@ -63,7 +71,6 @@
     private double newCommissionPercentage;
     private string commissionSuccessMessage = "";
     private string commissionErrorMessage = "";
-
     // WhatsApp Number Properties
     private string? currentWhatsAppNumber;
     private string newWhatsAppNumber = "";
@@ -120,11 +127,32 @@
     // --- WhatsApp Number Methods ---
     private async Task LoadWhatsAppNumber()
     {
+        // Try to find the saved setting
         var setting = await DbContext.AdminSettings.FirstOrDefaultAsync(s => s.Key == "AdminWhatsAppNumber");
         if (setting != null)
         {
+            // A setting is already saved, so use it
             currentWhatsAppNumber = setting.Value;
             newWhatsAppNumber = setting.Value;
+        }
+        else
+        {
+            // No setting found, so default to the Admin's account phone number
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = await UserManager.GetUserAsync(authState.User);
+
+            if (user != null && !string.IsNullOrWhiteSpace(user.PhoneNumber))
+            {
+                // Use the admin's phone number as the default
+                currentWhatsAppNumber = user.PhoneNumber;
+                newWhatsAppNumber = user.PhoneNumber;
+            }
+            else
+            {
+                // Fallback if the admin has no phone number on their account
+                currentWhatsAppNumber = null; // Will display "Not Set"
+                newWhatsAppNumber = "";
+            }
         }
     }
 
@@ -141,6 +169,7 @@
 
         try
         {
+            // Find the setting, or create it if it doesn't exist
             var setting = await DbContext.AdminSettings.FirstOrDefaultAsync(s => s.Key == "AdminWhatsAppNumber");
             if (setting == null)
             {
@@ -148,6 +177,7 @@
                 DbContext.AdminSettings.Add(setting);
             }
 
+            // Save the new value
             setting.Value = newWhatsAppNumber;
             await DbContext.SaveChangesAsync();
 

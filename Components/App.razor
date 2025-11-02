@@ -9,6 +9,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
+
+    <meta property="og:title" content="Maillot Store" />
+    <meta property="og:description" content="The best place to get your football jerseys in Cameroon." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="@NavigationManager.Uri" />
+
+    <meta property="og:image" content="@NavigationManager.ToAbsoluteUri("Images/maillotstore-logo.jpeg")" />
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="css/admin.css" />
@@ -36,13 +43,15 @@
             const anchor = event.target.closest('a');
             if (anchor && anchor.hasAttribute('href')) {
                 const href = anchor.getAttribute('href');
-                if (href.startsWith('Account/')) {
+
+                @* --- THIS IS THE FIXED LINE --- *@
+                if (href.startsWith('/Account/')) {
                     event.preventDefault();
                     location.href = href;
                 }
             }
         });
-    </script>
+    </script> @* <-- This was the line with the typo *@
 
 </body>
 

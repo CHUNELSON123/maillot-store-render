@@ -142,10 +142,10 @@ C:\Users\FLAVIN\Documents\MT\MaillotStore\obj\Debug\net8.0\staticwebassets.build
 C:\Users\FLAVIN\Documents\MT\MaillotStore\obj\Debug\net8.0\staticwebassets.build.json.cache
 C:\Users\FLAVIN\Documents\MT\MaillotStore\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\FLAVIN\Documents\MT\MaillotStore\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\FLAVIN\Documents\MT\MaillotStore\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\FLAVIN\Documents\MT\MaillotStore\obj\Debug\net8.0\MaillotS.D2A98623.Up2Date
 C:\Users\FLAVIN\Documents\MT\MaillotStore\obj\Debug\net8.0\MaillotStore.dll
 C:\Users\FLAVIN\Documents\MT\MaillotStore\obj\Debug\net8.0\refint\MaillotStore.dll
 C:\Users\FLAVIN\Documents\MT\MaillotStore\obj\Debug\net8.0\MaillotStore.pdb
 C:\Users\FLAVIN\Documents\MT\MaillotStore\obj\Debug\net8.0\MaillotStore.genruntimeconfig.cache
 C:\Users\FLAVIN\Documents\MT\MaillotStore\obj\Debug\net8.0\ref\MaillotStore.dll
-C:\Users\FLAVIN\Documents\MT\MaillotStore\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

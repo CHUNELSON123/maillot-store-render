@@ -1,6 +1,6 @@
 ﻿@using MaillotStore.Models
 @inject NavigationManager NavigationManager
-@inject IJSRuntime JSRuntime
+@* IJSRuntime is no longer needed as we removed the "copy" function *@
 
 @if (IsVisible && Product is not null)
 {
@@ -8,23 +8,12 @@
         <div class="share-modal-content" @onclick:stopPropagation="true">
             <h4>Share "@Product.Name"</h4>
             <div class="share-options">
-                <a href="@GetFacebookShareLink()" target="_blank" class="share-icon facebook">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
+                @* --- All other share icons have been removed --- *@
                 <a href="@GetWhatsAppShareLink()" target="_blank" class="share-icon whatsapp">
                     <i class="fab fa-whatsapp"></i>
                 </a>
-                <a @onclick="CopyLinkForMobile" class="share-icon instagram">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a @onclick="CopyLinkForMobile" class="share-icon tiktok">
-                    <i class="fab fa-tiktok"></i>
-                </a>
             </div>
-            @if (showCopyMessage)
-            {
-                <p class="copy-message">Link copied! Paste it in your story.</p>
-            }
+            @* --- Removed the "Link Copied" message --- *@
         </div>
     </div>
 }
@@ -39,11 +28,8 @@
     [Parameter]
     public EventCallback OnClose { get; set; }
 
-    private bool showCopyMessage = false;
-
     private Task CloseModal()
     {
-        showCopyMessage = false;
         return OnClose.InvokeAsync();
     }
 
@@ -52,23 +38,17 @@
         return NavigationManager.ToAbsoluteUri($"/product/{Product?.ProductId}").ToString();
     }
 
-    private string GetFacebookShareLink()
-    {
-        // Facebook's scraper will fetch the image and title from your product page.
-        // Sharing to stories is a mobile-app-only feature, so this creates a standard post.
-        return $"https://www.facebook.com/sharer/sharer.php?u={Uri.EscapeDataString(GetProductUrl())}";
-    }
-
     private string GetWhatsAppShareLink()
     {
-        var message = $"Check out this product: {GetProductUrl()}";
+        if (Product is null) return "";
+
+        var productUrl = GetProductUrl();
+
+        // --- NEW: Message now includes product name and description ---
+        var message = $"Check out this product: {Product.Name}\n\n{Product.Description}\n\n{productUrl}";
+
         return $"https://api.whatsapp.com/send?text={Uri.EscapeDataString(message)}";
     }
 
-    private async Task CopyLinkForMobile()
-    {
-        // For Instagram & TikTok, the best user experience is to copy the link.
-        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", GetProductUrl());
-        showCopyMessage = true;
-    }
+    // --- Removed GetFacebookShareLink and CopyLinkForMobile methods ---
 }

@@ -4,12 +4,16 @@
 @using MaillotStore.Services
 @using Microsoft.EntityFrameworkCore
 @using System.Text
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
 @inject StateContainer StateContainer
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @inject ApplicationDbContext DbContext
 @inject ReferralService ReferralService
 @inject OrderStateService OrderStateService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
 @implements IDisposable
 @rendermode InteractiveServer
 
@@ -44,7 +48,6 @@
                                         <div>
                                             <strong>@item.Product.Name</strong><br>
 
-                                            @* --- START: UPDATED --- *@
                                             <div class="d-flex align-items-center mt-1">
                                                 <span class="text-muted me-2">Size:</span>
                                                 <select class="form-select form-select-sm bg-dark text-white" style="width: 80px;"
@@ -55,7 +58,6 @@
                                                     }
                                                 </select>
                                             </div>
-                                            @* --- END: UPDATED --- *@
 
                                             @if (!string.IsNullOrEmpty(item.CustomName) || item.CustomNumber.HasValue)
                                             {
@@ -130,9 +132,7 @@
     private string customerAddress;
     private string optionalMessage;
 
-    // --- START: ADDED ---
     private List<string> availableSizes = new() { "S", "M", "L", "XL", "XXL" };
-    // --- END: ADDED ---
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -159,18 +159,18 @@
             if (productFromDb != null)
             {
                 orderItemsForDb.Add(new OrderItem
-                    {
-                        Product = productFromDb,
-                        Quantity = item.Quantity,
-                        Price = item.Price,
-                        Size = item.Size,
-                        CustomName = item.CustomName,
-                        CustomNumber = item.CustomNumber
-                    });
+                {
+                    Product = productFromDb,
+                    Quantity = item.Quantity,
+                    Price = item.Price,
+                    Size = item.Size,
+                    CustomName = item.CustomName,
+                    CustomNumber = item.CustomNumber
+                });
             }
         }
 
-        // --- START: COMMISSION LOGIC ---
+        // --- START: COMMISSION AND VISIBILITY LOGIC (UPDATED) ---
         var commissionSetting = await DbContext.CommissionSettings.FirstOrDefaultAsync();
         if (commissionSetting == null)
         {
@@ -182,29 +182,58 @@
         decimal orderCommission = 0;
         string referralCode = ReferralService.GetReferralCode();
 
-        if (!string.IsNullOrEmpty(referralCode))
+        // This is the logic for an influencer buying their own product
+        if (string.IsNullOrEmpty(referralCode))
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity.IsAuthenticated && user.IsInRole("Influencer"))
+            {
+                var appUser = await UserManager.GetUserAsync(user);
+                if (appUser != null && !string.IsNullOrEmpty(appUser.ReferralCode))
+                {
+                    referralCode = appUser.ReferralCode;
+                }
+            }
+        }
+
+        // Check if *any* referral code was found (from link OR self-purchase)
+        bool hasReferralCode = !string.IsNullOrEmpty(referralCode);
+
+        if (hasReferralCode)
         {
             orderCommission = Subtotal * commissionSetting.CurrentRate;
         }
-        // --- END: COMMISSION LOGIC ---
+        // --- END: COMMISSION AND VISIBILITY LOGIC ---
 
         var order = new Order
-            {
-                CustomerName = customerName,
-                CustomerPhone = customerPhone,
-                CustomerAddress = customerAddress,
-                OrderDate = DateTime.UtcNow,
-                OrderItems = orderItemsForDb,
-                TotalAmount = Subtotal,
-                ReferralCode = referralCode,
-                Status = "Pending",
-                CommissionAmount = orderCommission
-            };
+        {
+            CustomerName = customerName,
+            CustomerPhone = customerPhone,
+            CustomerAddress = customerAddress,
+            OrderDate = DateTime.UtcNow,
+            OrderItems = orderItemsForDb,
+            TotalAmount = Subtotal,
+            ReferralCode = referralCode,
+            Status = "Pending",
+            CommissionAmount = orderCommission,
+
+            // --- START: UPDATED LINES ---
+            // 1. Save the optional message (if one was entered)
+            OptionalMessage = string.IsNullOrWhiteSpace(optionalMessage) ? null : optionalMessage,
+
+            // 2. Set visibility: If a referral code exists (from link OR self-purchase),
+            //    make it visible on the dashboard by default.
+            IsVisibleToInfluencer = hasReferralCode
+            // --- END: UPDATED LINES ---
+        };
 
         DbContext.Orders.Add(order);
         await DbContext.SaveChangesAsync();
         OrderStateService.NotifyOrderPlaced();
 
+        // --- START: WHATSAPP MESSAGE BUILDER (UPDATED) ---
         var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine("Hello Maillot Store,");
         messageBuilder.AppendLine();
@@ -213,6 +242,15 @@
         messageBuilder.AppendLine($"  Name: {customerName}");
         messageBuilder.AppendLine($"  Phone: {customerPhone}");
         messageBuilder.AppendLine($"  Address: {customerAddress}");
+
+        // 3. Add the optional message to the WhatsApp text if it exists
+        if (!string.IsNullOrWhiteSpace(order.OptionalMessage))
+        {
+            messageBuilder.AppendLine();
+            messageBuilder.AppendLine($"  Message: {order.OptionalMessage}");
+        }
+        // --- END: WHATSAPP MESSAGE BUILDER (UPDATED) ---
+
         messageBuilder.AppendLine();
         messageBuilder.AppendLine("  Order Details:");
 
@@ -243,27 +281,15 @@
 
         string whatsappMessage = Uri.EscapeDataString(messageBuilder.ToString());
 
-        // --- START: THIS IS THE ONLY UPDATED SECTION ---
-        
-        // 1. Fetch the admin WhatsApp number from settings
+        // --- WHATSAPP URL LOGIC (This is your existing, correct logic) ---
         var adminSetting = await DbContext.AdminSettings.FirstOrDefaultAsync(s => s.Key == "AdminWhatsAppNumber");
-        
-        // 2. Use the number from settings, or fall back to your old number if not found.
         var adminPhoneNumber = adminSetting?.Value ?? "237671007313"; // Fallback number
-        
-        // 3. Clean the number (remove '+' and spaces)
         adminPhoneNumber = adminPhoneNumber.Replace("+", "").Replace(" ", "");
-        
-        // 4. Ensure the '237' prefix is present
         if (!adminPhoneNumber.StartsWith("237"))
         {
             adminPhoneNumber = "237" + adminPhoneNumber;
         }
-        
-        // 5. Build the dynamic URL
         string whatsappUrl = $"https://wa.me/{adminPhoneNumber}?text={whatsappMessage}";
-        
-        // --- END: UPDATED SECTION ---
 
 
         await JSRuntime.InvokeVoidAsync("open", whatsappUrl, "_blank");
@@ -283,18 +309,14 @@
         await StateContainer.UpdateCartItemQuantity(item, quantity);
     }
 
-    // --- START: ADDED ---
     private async Task UpdateSize(OrderItem item, ChangeEventArgs e)
     {
         var newSize = e.Value.ToString();
         if (!string.IsNullOrEmpty(newSize))
         {
-            // This assumes your StateContainer has a method 'UpdateCartItemSize'
-            // If it is named differently (like 'UpdateSize'), please adjust this line.
             await StateContainer.UpdateCartItemSize(item, newSize);
         }
     }
-    // --- END: ADDED ---
 
     public void Dispose()
     {

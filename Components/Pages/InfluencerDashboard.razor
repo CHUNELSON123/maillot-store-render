@@ -36,7 +36,7 @@
             <div class="share-links">
                 <span>Share Link Via</span>
                 <a href="@($"https://wa.me/?text={System.Net.WebUtility.UrlEncode(referralLink)}")" target="_blank" class="social-icon"><i class="fab fa-whatsapp"></i></a>
-                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                
             </div>
         </div>
 
@@ -79,9 +79,9 @@
                                             <div>@item.Product.Name</div>
                                         }
                                     </td>
-                                    <td>FCFA @order.TotalAmount.ToString("N0") XAF</td>
+                                    <td>FCFA @order.TotalAmount.ToString("N0")</td>
                                     @* --- UPDATED: Use CommissionAmount stored on the order --- *@
-                                    <td>FCFA @order.CommissionAmount.ToString("N0") XAF</td>
+                                    <td>FCFA @order.CommissionAmount.ToString("N0")</td>
                                     <td>@(string.IsNullOrEmpty(order.Status) ? "Pending" : order.Status)</td>
                                     <td>
                                         <button class="btn btn-danger btn-sm" @onclick="() => DeleteOrder(order.Id)">Delete</button>
@@ -117,9 +117,9 @@
                                         <li>@item.Product.Name</li>
                                     }
                                 </ul>
-                                <p><strong>Amount:</strong> FCFA @order.TotalAmount.ToString("N0") XAF</p>
+                                <p><strong>Amount:</strong> FCFA @order.TotalAmount.ToString("N0")</p>
                                 @* --- UPDATED: Use CommissionAmount stored on the order --- *@
-                                <p><strong>Commission:</strong> FCFA @order.CommissionAmount.ToString("N0") XAF</p>
+                                <p><strong>Commission:</strong> FCFA @order.CommissionAmount.ToString("N0")</p>
                                 <p><strong>Status:</strong> @(string.IsNullOrEmpty(order.Status) ? "Pending" : order.Status)</p>
                             </div>
                             <div class="card-footer">
@@ -141,9 +141,9 @@
             <p><strong>Current Commission Rate:</strong> @(currentCommissionRate * 100)% <em class="text-muted">(Applies to new orders)</em></p>
             @* --- END: NEW LINE TO DISPLAY RATE --- *@
             <p>Total Sales Recorded: @referredOrders.Count</p>
-            <p>Total Commission Earned: FCFA @totalCommission.ToString("N0") XAF</p>
-            <p>Total Commission Paid: FCFA @paidCommission.ToString("N0") XAF</p>
-            <p>Balance Remaining: FCFA @((totalCommission - paidCommission).ToString("N0")) XAF</p>
+            <p>Total Commission Earned: FCFA @totalCommission.ToString("N0") </p>
+            <p>Total Commission Paid: FCFA @paidCommission.ToString("N0") </p>
+            <p>Balance Remaining: FCFA @((totalCommission - paidCommission).ToString("N0")) </p>
         </div>
     </div>
 }
