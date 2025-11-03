@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\FLAVIN\\Documents\\MT\\MaillotStore\\MaillotStore.csproj": {}
+    "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\MaillotStore.csproj": {}
   },
   "projects": {
-    "C:\\Users\\FLAVIN\\Documents\\MT\\MaillotStore\\MaillotStore.csproj": {
+    "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\MaillotStore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\FLAVIN\\Documents\\MT\\MaillotStore\\MaillotStore.csproj",
+        "projectUniqueName": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\MaillotStore.csproj",
         "projectName": "MaillotStore",
-        "projectPath": "C:\\Users\\FLAVIN\\Documents\\MT\\MaillotStore\\MaillotStore.csproj",
+        "projectPath": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\MaillotStore.csproj",
         "packagesPath": "C:\\Users\\FLAVIN\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\FLAVIN\\Documents\\MT\\MaillotStore\\obj\\",
+        "outputPath": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\DevExpress 25.1\\Components\\Offline Packages",
@@ -62,13 +62,13 @@
               "target": "Package",
               "version": "[8.0.20, )"
             },
-            "Microsoft.EntityFrameworkCore.SqlServer": {
-              "target": "Package",
-              "version": "[8.0.20, )"
-            },
             "Microsoft.EntityFrameworkCore.Tools": {
               "target": "Package",
               "version": "[8.0.20, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[8.0.4, )"
             }
           },
           "imports": [
