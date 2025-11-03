@@ -5,10 +5,20 @@
 @using MaillotStore.Data
 @using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext DbContext
+@implements IDisposable
 
 <PageTitle>Home</PageTitle>
 
-<div class="hero-banner">
+@*
+    UPDATED:
+    - Added @onmouseover to start the timer
+    - Added @onmouseout to stop the timer
+*@
+<div class="hero-banner"
+     style="background-image: url(@CurrentImageUrl)"
+     @onmouseover="StartImageSlider"
+     @onmouseout="StopImageSlider">
+
     <div class="hero-content">
         <h2>Official Jerseys. Unbeatable Style.</h2>
         <p>Discover premium football jerseys at Maillot Store. Wear your passion and support your team in style.</p>
@@ -27,7 +37,6 @@
             @foreach (var product in featuredProducts)
             {
                 <div class="col-6 col-lg-4">
-                    @* The wrapper link has been removed *@
                     <ProductCard Product="product" />
                 </div>
             }
@@ -44,7 +53,6 @@
 <section class="why-choose-us container section-spacer">
     <h2 class="text-center mb-4">Why Choose Us?</h2>
     <div class="row justify-content-center g-4">
-        @* --- Card 1: Authenticity --- *@
         <div class="col-6 col-lg-4">
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-check-circle"></i></div>
@@ -52,8 +60,6 @@
                 <p>Original quality guaranteed from official suppliers.</p>
             </div>
         </div>
-
-        @* --- Card 2: Fast Delivery --- *@
         <div class="col-6 col-lg-4">
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-shipping-fast"></i></div>
@@ -61,8 +67,6 @@
                 <p>Get your jersey delivered quickly and reliable, no matter where you are.</p>
             </div>
         </div>
-
-        @* --- Card 3: Easy Ordering --- *@
         <div class="col-6 col-lg-4">
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-mouse-pointer"></i></div>
@@ -78,8 +82,6 @@
     <div class="container text-center">
         <h2>Become an Influencer</h2>
         <p class="lead"> Promote our jerseys, share your unique link, and earn commissions on every sale. Join the Maillot Store family today.</p>
-
-        @* ADDED data-no-enhance TO FIX NAVIGATION ISSUE *@
         <a href="/Account/Register" class="btn btn-lg cta-button-influencer" data-no-enhance>SignUp Now</a>
     </div>
 </section>
@@ -87,10 +89,61 @@
 
 @code {
     private List<Product>? featuredProducts;
+    private System.Threading.Timer _timer;
+    private int _currentImageIndex = 0;
+
+    // --- IMPORTANT: REPLACE THESE WITH YOUR 3 IMAGE URLS ---
+    private List<string> _heroImages = new List<string>
+    {
+        "https://m.media-amazon.com/images/I/71izjNHcVhL._AC_SL1500_.jpg",
+        "https://i.pinimg.com/1200x/18/45/7d/18457dd084412fe23d647327f14a6435.jpg", // <-- TODO: CHANGE THIS TO YOUR 2ND IMAGE
+        "https://i.pinimg.com/1200x/c1/8a/fb/c18afb7ba037d1e394020ab469710a17.jpg"   // <-- TODO: CHANGE THIS TO YOUR 3RD IMAGE
+    };
+
+    private string CurrentImageUrl => _heroImages[_currentImageIndex];
 
     protected override async Task OnInitializedAsync()
     {
-        // ToListAsync now works because of the Microsoft.EntityFrameworkCore using directive
+        // Load featured products (your existing code)
         featuredProducts = await DbContext.Products.Where(p => p.IsFeatured).ToListAsync();
+
+        // Note: We no longer start the timer here.
+    }
+
+    // --- NEW: This method starts the timer when you hover ---
+    private void StartImageSlider()
+    {
+        // Only start a new timer if one isn't already running
+        if (_timer == null)
+        {
+            // Call ChangeImage immediately, then every 3 seconds
+            _timer = new System.Threading.Timer(ChangeImage, null, 0, 3000);
+        }
+    }
+
+    // --- NEW: This method stops the timer when the mouse leaves ---
+    private void StopImageSlider()
+    {
+        _timer?.Dispose();
+        _timer = null;
+    }
+
+    // This method is called by the timer
+    private void ChangeImage(object state)
+    {
+        _currentImageIndex++;
+        if (_currentImageIndex >= _heroImages.Count)
+        {
+            _currentImageIndex = 0;
+        }
+
+        // Tell Blazor to update the UI
+        InvokeAsync(StateHasChanged);
+    }
+
+    // This stops the timer if you navigate to another page
+    public void Dispose()
+    {
+        _timer?.Dispose();
     }
 }

@@ -45,7 +45,8 @@ header {
 }
 
 .search-container {
-    width: 50%
+    width: 50% ;
+    border-radius: 50px
 }
 
 .search-container-mobile {
@@ -57,7 +58,7 @@ header {
     background-color: #fff;
     border: 1px solid #ced4da;
     color: #212529;
-    border-radius: 50px
+    border-radius: 50px  !important;
 }
 
     .search-bar::placeholder {
@@ -123,7 +124,7 @@ header {
 .hero-banner {
     position: relative;
     height: 90vh;
-    background-image: url(https://media.gettyimages.com/id/2212271656/photo/liverpool-england-mohamed-salah-of-liverpool-takes-a-selfie-with-the-fans-as-they-celebrate.jpg?s=612x612&w=0&k=20&c=jEPYUX_NB-8yFhR2ISt8Ss4uRbvrPyaX9E0q6mlyWfE=);
+    background-image: url(https://m.media-amazon.com/images/I/71izjNHcVhL._AC_SL1500_.jpg);
     background-color: #222; /* Fallback color */
     background-size: cover;
     background-position: center;
@@ -798,14 +799,24 @@ header {
 
 .social-icons {
     display: flex;
-    gap: 25px;
+    gap: 10px;
 }
 
 .social-icon i {
-    font-size: 2rem;
-    color: #fff;
-    text-decoration: none;
-    transition: color 0.3s ease;
+    display: inline-block;
+    height: 37px;
+    width: 37px;
+    line-height: 35px;
+    text-align: center;
+    border-radius: 50%;
+    background-color: #000000;
+    color: #ffffff;
+    font-size: 1rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.social-icons i:hover {
+    background-color: #00aaff;
 }
 
 
@@ -819,7 +830,7 @@ header {
     border: 1px solid #fff;
     color: #fff;
     padding: 12px;
-    border-radius: 0;
+    border-radius: 5px;
     font-size: 1.1rem;
     box-sizing: border-box; /* Ensures padding is included in the width */
 }
@@ -1269,3 +1280,35 @@ textarea.form-control {
     z-index: 1040; /* Position it behind the sidenav but above the main content */
     /* No transition needed, appears instantly when menu opens */
 }
+
+/* =================================
+   SHOP PAGINATION STYLES
+   ================================= */
+
+/* This styles the main pagination links (numbers, Previous, Next) */
+.pagination .page-item .page-link {
+    background-color: #000;  
+    color: #fff;  
+    border: 1px solid #fff; 
+}
+
+    /* This styles the link when you hover over it */
+    .pagination .page-item .page-link:hover {
+        background-color: #fff; /* Dark grey on hover */
+        color: #000;
+    }
+
+/* This styles the currently active page number */
+.pagination .page-item.active .page-link {
+    background-color: #000; /* White background for active page */
+    color: #fff; /* Black text for active page */
+    border-color: #fff;
+}
+
+/* This styles the "Previous" or "Next" button when it's disabled */
+.pagination .page-item.disabled .page-link {
+    background-color: #222; /* Dark grey for disabled */
+    color: #777; /* Lighter grey text */
+    border-color: #444;
+}
+
