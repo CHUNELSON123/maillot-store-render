@@ -119,8 +119,8 @@ header {
     }
 
 /* =================================
-   HERO BANNER (Desktop)
-   ================================= */
+   HERO BANNER (Desktop)
+   ================================= */
 .hero-banner {
     position: relative;
     height: 90vh;
@@ -197,8 +197,8 @@ header {
 
 
 /* =================================
-   RESPONSIVE STYLES FOR MOBILE ✨
-   ================================= */
+   RESPONSIVE STYLES FOR MOBILE ✨
+   ================================= */
 @media (max-width: 768px) {
     .hero-banner {
         height: 70vh; /* Shorter height on mobile */
@@ -223,6 +223,51 @@ header {
             font-size: 1.2rem; /* Smaller sub-heading */
             margin-bottom: 2.5rem; /* A bit more space before the button */
         }
+
+    /* === START OF CORRECTED CODE === */
+
+    /* 1. All rules are now separate (not nested) */
+    .product-card {
+        min-height: 340px;
+        background-color: #000000; /* Fix: Re-add black background */
+    }
+
+        .product-card .product-image-container {
+            flex-basis: 60%; /* This is the 60% you asked for */
+            flex-shrink: 0;
+            height: 60%;
+        }
+
+        .product-card .card-img-top {
+            aspect-ratio: unset; /* Remove the desktop rule */
+            height: 100%; /* Fill the 60% container */
+            object-fit: cover; /* Keep the image looking good */
+        }
+
+        .product-card .card-body {
+            flex-basis: 40%; /* This is the 40% you asked for */
+            flex-shrink: 0;
+            height: 40%;
+            padding: 0.75rem; /* Adjust padding to fit */
+        }
+
+        /* 2. Fix: Re-add white text color for price/season */
+        .product-card .card-season,
+        .product-card .card-price {
+            color: #ffffff;
+        }
+
+    /* 3. Fix: Re-add colors for "Why Choose Us" section */
+    .feature-card {
+        background-color: #000000;
+        color: #ffffff;
+    }
+
+        .feature-card h3 {
+            color: #ffffff;
+        }
+
+    /* === END OF CORRECTED CODE === */
 
     .cta-button {
         padding: 10px 24px; /* Slightly smaller button */
