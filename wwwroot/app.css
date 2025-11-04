@@ -1,4 +1,4 @@
-﻿﻿body {
+﻿body {
     background-color: #000000;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     color: white;
@@ -222,29 +222,6 @@ header {
         .hero-content h3 {
             font-size: 1.2rem; /* Smaller sub-heading */
             margin-bottom: 2.5rem; /* A bit more space before the button */
-        }
-
-    .product-card {
-        min-height: 340px;
-    }
-
-        .product-card .product-image-container {
-            flex-basis: 60%; /* This is the 60% you asked for */
-            flex-shrink: 0;
-            height: 60%;
-        }
-
-        .product-card .card-img-top {
-            aspect-ratio: unset; /* Remove the desktop rule */
-            height: 100%; /* Fill the 60% container */
-            object-fit: cover; /* Keep the image looking good */
-        }
-
-        .product-card .card-body {
-            flex-basis: 40%; /* This is the 40% you asked for */
-            flex-shrink: 0;
-            height: 40%;
-            padding: 0.75rem; /* Adjust padding to fit */
         }
 
     .cta-button {
