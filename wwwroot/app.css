@@ -1,4 +1,4 @@
-﻿body {
+﻿﻿body {
     background-color: #000000;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     color: white;
@@ -45,7 +45,7 @@ header {
 }
 
 .search-container {
-    width: 50% ;
+    width: 50%;
     border-radius: 50px
 }
 
@@ -58,7 +58,7 @@ header {
     background-color: #fff;
     border: 1px solid #ced4da;
     color: #212529;
-    border-radius: 50px  !important;
+    border-radius: 50px !important;
 }
 
     .search-bar::placeholder {
@@ -207,15 +207,6 @@ header {
         padding: 1rem; /* Less padding on smaller screens */
     }
 
-    .product-card {
-        flex-direction: row; /* 1. Change to horizontal layout */
-    }
-
-        .product-card .product-image-container {
-            flex-basis: 60%; /* 2. Set image container to 60% width */
-            flex-shrink: 0;
-        }
-
     .hero-content {
         text-align: center; /* Center-align all text */
     }
@@ -233,32 +224,40 @@ header {
             margin-bottom: 2.5rem; /* A bit more space before the button */
         }
 
+    .product-card {
+        min-height: 340px;
+    }
+
+        .product-card .product-image-container {
+            flex-basis: 60%; /* This is the 60% you asked for */
+            flex-shrink: 0;
+            height: 60%;
+        }
+
+        .product-card .card-img-top {
+            aspect-ratio: unset; /* Remove the desktop rule */
+            height: 100%; /* Fill the 60% container */
+            object-fit: cover; /* Keep the image looking good */
+        }
+
+        .product-card .card-body {
+            flex-basis: 40%; /* This is the 40% you asked for */
+            flex-shrink: 0;
+            height: 40%;
+            padding: 0.75rem; /* Adjust padding to fit */
+        }
+
     .cta-button {
         padding: 10px 24px; /* Slightly smaller button */
         font-size: 0.9rem;
     }
 
-    .product-card .card-body {
-        flex-basis: 40%; /* 3. Set text container to 40% width */
-        flex-shrink: 0;
-        padding: 0.5rem; /* 4. Reduce padding to fit content */
-        justify-content: center;
-    }
-
     .btn-product-action {
-        display: flex;
-        flex-direction: column; /* 6. Stack icon and text vertically */
-        align-items: center;
-        justify-content: center;
-        font-size: 0.8rem; /* 7. Adjust font for small button */
-        padding: 0.4rem 0.2rem;
+        font-size: 0.85rem; /* Makes the font smaller */
+        padding-left: 0.25rem; /* Reduces padding on the sides */
+        padding-right: 0.25rem;
         white-space: nowrap; /* Stops the text from wrapping to a new line */
     }
-
-        .btn-product-action i {
-            margin-right: 0 !important; /* 9. Override the 'me-1' from the HTML */
-            margin-bottom: 0.25rem; /* 10. Add space between icon and text */
-        }
 }
 /* =================================
    SPACING UTILITIES
@@ -1326,9 +1325,9 @@ textarea.form-control {
 
 /* This styles the main pagination links (numbers, Previous, Next) */
 .pagination .page-item .page-link {
-    background-color: #000;  
-    color: #fff;  
-    border: 1px solid #fff; 
+    background-color: #000;
+    color: #fff;
+    border: 1px solid #fff;
 }
 
     /* This styles the link when you hover over it */
@@ -1350,4 +1349,3 @@ textarea.form-control {
     color: #777; /* Lighter grey text */
     border-color: #444;
 }
-
