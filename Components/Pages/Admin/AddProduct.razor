@@ -102,7 +102,8 @@
                     </div>
                     @* --- END: PREVIEW AND INPUT FOR URL 2 --- *@
 
-                    @* --- START: PREVIEW AND INPUT FOR URL 3 --- *@
+                    @* --- START: PREVIEW AND 
+INPUT FOR URL 3 --- *@
                     <div class="image-input-container">
                         @if (!string.IsNullOrEmpty(imageUrlPreviews[2]))
                         {
@@ -179,7 +180,8 @@
     private string[] imageUrlPreviews = new string[3];
     private string[] filePreviews = new string[3];
     private List<string> SeasonYears { get; set; } = new();
-    private const long MaxFileSize = 1024 * 1024 * 5; // 5MB limit
+    private const long MaxFileSize = 1024 * 1024 * 5;
+    // 5MB limit
 
     protected override void OnInitialized()
     {
@@ -199,7 +201,6 @@
         {
             // Store the full file reference for later saving
             loadedFiles[index] = e.File;
-
             if (e.File != null)
             {
                 // Check the size *before* doing anything
@@ -207,7 +208,8 @@
                 {
                     Logger.LogWarning($"File '{e.File.Name}' exceeds {MaxFileSize} byte limit. Preview aborted.");
                     loadedFiles[index] = null; // Clear the file
-                    filePreviews[index] = null; // Clear the preview
+                    filePreviews[index] = null;
+                    // Clear the preview
                     return;
                 }
 
@@ -215,7 +217,8 @@
                 // Request a small, resized image preview from the browser
                 // instead of loading the entire file into memory.
                 // This prevents the TimeoutException.
-                var resizedImage = await e.File.RequestImageFileAsync(e.File.ContentType, 150, 150); // 150x150 preview
+                var resizedImage = await e.File.RequestImageFileAsync(e.File.ContentType, 150, 150);
+                // 150x150 preview
 
                 // Only read the small preview's bytes
                 var buffer = new byte[resizedImage.Size];
@@ -252,11 +255,9 @@
             IsFeatured = productViewModel.IsFeatured,
             Season = $"{productViewModel.SeasonType} ({productViewModel.SeasonYear})"
         };
-
         var uploadedImageUrls = new List<string>(new string[3]);
         var uploadPath = Path.Combine(Environment.WebRootPath, "Images", "products");
         Directory.CreateDirectory(uploadPath);
-
         try
         {
             for (int i = 0; i < loadedFiles.Count; i++)
@@ -277,7 +278,6 @@
                     await using FileStream fs = new(path, FileMode.Create);
                     // Stream the full file (up to 5MB) to the server disk
                     await file.OpenReadStream(maxAllowedSize: MaxFileSize).CopyToAsync(fs);
-
                     uploadedImageUrls[i] = $"/Images/products/{uniqueFileName}";
                 }
             }
@@ -289,6 +289,7 @@
             return;
         }
 
+        // This logic is correct: [0] -> ImageUrl, [1] -> ImageUrl2, [2] -> ImageUrl3
         newProduct.ImageUrl = !string.IsNullOrEmpty(uploadedImageUrls[0]) ? uploadedImageUrls[0] : productViewModel.ImageUrl1;
         newProduct.ImageUrl2 = !string.IsNullOrEmpty(uploadedImageUrls[1]) ? uploadedImageUrls[1] : productViewModel.ImageUrl2;
         newProduct.ImageUrl3 = !string.IsNullOrEmpty(uploadedImageUrls[2]) ? uploadedImageUrls[2] : productViewModel.ImageUrl3;

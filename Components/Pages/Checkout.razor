@@ -281,16 +281,29 @@
 
         string whatsappMessage = Uri.EscapeDataString(messageBuilder.ToString());
 
-        // --- WHATSAPP URL LOGIC (This is your existing, correct logic) ---
+        // --- START: MODIFIED WHATSAPP URL LOGIC ---
+        // 1. Get the saved number from settings
         var adminSetting = await DbContext.AdminSettings.FirstOrDefaultAsync(s => s.Key == "AdminWhatsAppNumber");
-        var adminPhoneNumber = adminSetting?.Value ?? "237671007313"; // Fallback number
-        adminPhoneNumber = adminPhoneNumber.Replace("+", "").Replace(" ", "");
+
+        // 2. Check if the setting is missing or empty
+        if (adminSetting == null || string.IsNullOrWhiteSpace(adminSetting.Value))
+        {
+            // Show an error to the customer and stop
+            await JSRuntime.InvokeVoidAsync("alert", "Order cannot be placed: The store's contact number is not configured. Please contact support.");
+            return; // Stop the checkout
+        }
+
+        // 3. A number was found, so format it (this removes the fallback number)
+        var adminPhoneNumber = adminSetting.Value.Replace("+", "").Replace(" ", "");
+
+        // Add your country code logic (assuming Cameroon)
         if (!adminPhoneNumber.StartsWith("237"))
         {
             adminPhoneNumber = "237" + adminPhoneNumber;
         }
-        string whatsappUrl = $"https://wa.me/{adminPhoneNumber}?text={whatsappMessage}";
 
+        string whatsappUrl = $"https://wa.me/{adminPhoneNumber}?text={whatsappMessage}";
+        // --- END: MODIFIED WHATSAPP URL LOGIC ---
 
         await JSRuntime.InvokeVoidAsync("open", whatsappUrl, "_blank");
 

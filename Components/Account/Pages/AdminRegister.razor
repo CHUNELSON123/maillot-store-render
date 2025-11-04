@@ -5,6 +5,8 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using MaillotStore.Data
+@using MaillotStore.Models
+@using Microsoft.EntityFrameworkCore
 
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
@@ -12,6 +14,7 @@
 @inject IUserStore<ApplicationUser> UserStore
 @inject NavigationManager NavigationManager
 @inject ILogger<Register> Logger
+@inject ApplicationDbContext DbContext
 
 <PageTitle>Admin Register</PageTitle>
 
@@ -122,6 +125,28 @@
 
             // 2. Add user to the role
             await UserManager.AddToRoleAsync(user, "Admin");
+
+            // --- START: MODIFIED SECTION ---
+            // Automatically save the new admin's phone number as the WhatsApp number
+            try
+            {
+                // Check if a number is already set
+                var setting = await DbContext.AdminSettings.FirstOrDefaultAsync(s => s.Key == "AdminWhatsAppNumber");
+
+                // Only set the number if one doesn't exist (i.e., first admin registering)
+                if (setting == null)
+                {
+                    setting = new AdminSetting { Key = "AdminWhatsAppNumber", Value = Input.PhoneNumber };
+                    DbContext.AdminSettings.Add(setting);
+                    await DbContext.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to save new admin phone number to AdminSettings.");
+                // Don't block registration, just log the error
+            }
+            // --- END: MODIFIED SECTION ---
 
             // 3. Automatically log the new admin in
             await SignInManager.SignInAsync(user, isPersistent: false);
