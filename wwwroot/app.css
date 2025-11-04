@@ -228,6 +228,13 @@ header {
         padding: 10px 24px; /* Slightly smaller button */
         font-size: 0.9rem;
     }
+
+    .btn-product-action {
+        font-size: 0.85rem; /* Makes the font smaller */
+        padding-left: 0.25rem; /* Reduces padding on the sides */
+        padding-right: 0.25rem;
+        white-space: nowrap; /* Stops the text from wrapping to a new line */
+    }
 }
 /* =================================
    SPACING UTILITIES
@@ -255,7 +262,8 @@ header {
     border-radius: 5px;
     overflow: hidden;
     text-align: left;
-    height: 100%;
+    display: flex; /* <-- ADD THIS */
+    flex-direction: column; /* <-- ADD THIS */
 }
 
     .product-card .card-img-top {
@@ -266,7 +274,14 @@ header {
 
     .product-card .card-body {
         padding: 1rem;
+        display: flex; /* <-- ADD THIS */
+        flex-direction: column; /* <-- ADD THIS */
+        flex-grow: 1; /* <-- ADD THIS */
     }
+
+        .product-card .card-body .d-grid {
+            margin-top: auto;
+        }
 
     .product-card .card-title {
         font-size: 1.1rem;

@@ -1,0 +1,29 @@
+wwwroot\app.css
+wwwroot\bootstrap\bootstrap.min.css
+wwwroot\bootstrap\bootstrap.min.css.map
+wwwroot\css\account.css
+wwwroot\css\add-product.css
+wwwroot\css\admin.css
+wwwroot\css\commissions.css
+wwwroot\css\influencers.css
+wwwroot\css\order.css
+wwwroot\css\Products.css
+wwwroot\css\view-order.css
+wwwroot\css\viewinfluencer.css
+wwwroot\favicon.png
+wwwroot\Images\heroimage.jpg
+wwwroot\Images\liv.jpeg
+wwwroot\Images\maillotstore-logo.jpeg
+wwwroot\Images\products\3cb232d3-1a61-4908-981a-e40b57c05c22.jpeg
+wwwroot\Images\products\barca.jpeg
+wwwroot\Images\products\Barcelona-Home-Retro.jpg
+wwwroot\Images\products\Barcelona.jpeg
+wwwroot\Images\products\f5ef2a58-796b-4f07-8bcf-e5fc7348ff77.jpeg
+wwwroot\Images\products\hala.jpg
+wwwroot\Images\products\leManoosh.jpeg
+wwwroot\Images\products\psg.jpeg
+wwwroot\Images\products\real.jpeg
+wwwroot\Images\products\WhatsApp Image 2025-10-22 at 19.55.51 (1).jpeg
+wwwroot\Images\products\WhatsApp Image 2025-10-22 at 19.55.51.jpeg
+wwwroot\Images\psg.jpeg
+wwwroot\Images\real.jpeg

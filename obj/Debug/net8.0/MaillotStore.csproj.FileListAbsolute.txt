@@ -266,3 +266,4 @@ C:\Users\FLAVIN\source\repos\Maillot-Store\obj\Debug\net8.0\MaillotStore.genrunt
 C:\Users\FLAVIN\source\repos\Maillot-Store\obj\Debug\net8.0\ref\MaillotStore.dll
 C:\Users\FLAVIN\source\repos\Maillot-Store\bin\Debug\net8.0\Npgsql.dll
 C:\Users\FLAVIN\source\repos\Maillot-Store\bin\Debug\net8.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
+C:\Users\FLAVIN\source\repos\Maillot-Store\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
