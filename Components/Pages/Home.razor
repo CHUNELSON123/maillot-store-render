@@ -96,8 +96,8 @@
     private List<string> _heroImages = new List<string>
     {
         "https://m.media-amazon.com/images/I/71izjNHcVhL._AC_SL1500_.jpg",
-        "https://i.pinimg.com/1200x/18/45/7d/18457dd084412fe23d647327f14a6435.jpg", // <-- TODO: CHANGE THIS TO YOUR 2ND IMAGE
-        "https://i.pinimg.com/1200x/c1/8a/fb/c18afb7ba037d1e394020ab469710a17.jpg"   // <-- TODO: CHANGE THIS TO YOUR 3RD IMAGE
+        "https://https://www.nflshop.com/content/ws/all/08fa06a8-4387-4fb4-948d-a2360e384c99__2400X900.gif", // <-- TODO: CHANGE THIS TO YOUR 2ND IMAGE
+        "https://https://store.nba.com/content/ws/all/cbcd52bf-451e-4c9a-afef-fd6a16b4becd__2400X900.gif"   // <-- TODO: CHANGE THIS TO YOUR 3RD IMAGE
     };
 
     private string CurrentImageUrl => _heroImages[_currentImageIndex];
@@ -117,7 +117,7 @@
         if (_timer == null)
         {
             // Call ChangeImage immediately, then every 3 seconds
-            _timer = new System.Threading.Timer(ChangeImage, null, 0, 3000);
+            _timer = new System.Threading.Timer(ChangeImage, null, 0, 6000);
         }
     }
 
