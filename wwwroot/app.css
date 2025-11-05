@@ -1371,3 +1371,21 @@ textarea.form-control {
     color: #777; /* Lighter grey text */
     border-color: #444;
 }
+
+/* This media query will only apply to screens 576px or smaller (like phones) */
+@media (max-width: 576px) {
+
+    .footer-content {
+        flex-direction: column; /* Stack the links and icons vertically */
+        align-items: center; /* Center them */
+        gap: 1.25rem; /* Add some space between the links and icons */
+    }
+
+    .footer-links-group {
+        order: 2; /* Make the links appear below the icons */
+    }
+
+    .social-icons {
+        order: 1; /* Make the icons appear on top */
+    }
+}
