@@ -1389,3 +1389,65 @@ textarea.form-control {
         order: 1; /* Make the icons appear on top */
     }
 }
+
+/* --- START: NEW STYLES FOR MOBILE NAVBAR --- */
+
+/* This container holds the new search icon and the hamburger */
+.mobile-icons-container {
+    display: flex;
+    align-items: center;
+}
+
+/* Styles the new search icon to look like a nav button */
+.search-icon-mobile {
+    color: rgba(255, 255, 255, 0.55); /* Bootstrap's default nav-link color */
+    font-size: 1.1rem;
+    padding-right: 0.5rem; /* Space between search and hamburger */
+    padding-left: 0.5rem;
+    background: none;
+    border: none;
+}
+
+    .search-icon-mobile:hover {
+        color: rgba(255, 255, 255, 0.75);
+    }
+
+/* This is the slide-down search bar container */
+.search-container-mobile {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #0c0f12; /* Match your navbar's dark color */
+    border-bottom: 1px solid #212529; /* A slightly lighter border */
+    animation: slideDown 0.3s ease-out;
+    /* The .d-lg-none class on the element handles showing/hiding */
+}
+
+    /* Style for the 'X' close button inside the mobile search bar */
+    .search-container-mobile .btn-close {
+        background-color: white; /* Make the 'X' visible on dark background */
+        opacity: 0.7;
+    }
+
+/* Animation for the search bar appearing */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* On mobile (screens smaller than 992px), make the brand logo grow */
+/* This is what pushes the new icons to the far right */
+@media (max-width: 991.98px) {
+    header .navbar-brand {
+        flex-grow: 1;
+    }
+}
+
+/* --- END: NEW STYLES FOR MOBILE NAVBAR --- */

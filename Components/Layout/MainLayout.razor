@@ -56,18 +56,32 @@
                 </ul>
             </div>
 
-            @* --- Mobile Hamburger Button --- *@
-            <button class="navbar-toggler d-lg-none" type="button" @onclick="ToggleNavMenu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            @* --- START: NEW MOBILE ICONS CONTAINER --- *@
+            @* This groups the search icon and hamburger button on mobile *@
+            <div class="mobile-icons-container d-lg-none">
+                <button class="btn btn-link nav-link search-icon-mobile" @onclick="ToggleMobileSearch">
+                    <i class="fas fa-search"></i>
+                </button>
+
+                @* --- Mobile Hamburger Button --- *@
+                <button class="navbar-toggler" type="button" @onclick="ToggleNavMenu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+            @* --- END: NEW MOBILE ICONS CONTAINER --- *@
         </div>
     </nav>
 
-    @* --- Search Bar (Mobile) --- *@
-    <div class="search-container-mobile d-lg-none mt-2 px-3">
-        <input type="text" class="form-control search-bar" placeholder="Search for jerseys..."
-               @bind="searchTerm" @oninput="PerformSearch" />
-    </div>
+    @* --- START: UPDATED Search Bar (Mobile) - Now Toggleable --- *@
+    @if (showMobileSearch)
+    {
+        <div class="search-container-mobile d-lg-none px-3 py-2">
+            <input type="text" class="form-control search-bar" placeholder="Search for jerseys..."
+                   @bind="searchTerm" @oninput="PerformSearch" />
+            <button class="btn-close" @onclick="ToggleMobileSearch"></button> @* Added a close button *@
+        </div>
+    }
+    @* --- END: UPDATED Search Bar (Mobile) --- *@
 </header>
 
 @* Add Overlay Div - This covers the screen when the menu is open *@
@@ -123,6 +137,7 @@
 
 @code {
     private bool collapseNavMenu = true;
+    private bool showMobileSearch = false; // <-- ADD THIS LINE
     private string searchTerm = string.Empty;
     private bool isReferred;
 
@@ -136,7 +151,22 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+        if (showMobileSearch) // Close search if opening nav
+        {
+            showMobileSearch = false;
+        }
     }
+
+    // --- START: ADD THIS NEW METHOD ---
+    private void ToggleMobileSearch()
+    {
+        showMobileSearch = !showMobileSearch;
+        if (collapseNavMenu == false) // Close nav if opening search
+        {
+            collapseNavMenu = true;
+        }
+    }
+    // --- END: ADD THIS NEW METHOD ---
 
     // Explicit method to ensure the menu closes
     private void CloseNavMenu()
