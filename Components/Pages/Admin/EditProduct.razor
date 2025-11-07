@@ -252,7 +252,11 @@
         productToUpdate.Stock = productViewModel.Stock;
         productToUpdate.Description = productViewModel.Description;
         productToUpdate.IsFeatured = productViewModel.IsFeatured;
-        productToUpdate.Season = $"{productViewModel.SeasonType} ({productViewModel.SeasonYear})";
+
+        // --- FIX: Conditionally build the season string to avoid " ()" ---
+        productToUpdate.Season = !string.IsNullOrEmpty(productViewModel.SeasonType)
+                                     ? $"{productViewModel.SeasonType}{(!string.IsNullOrEmpty(productViewModel.SeasonYear) ? $" ({productViewModel.SeasonYear})" : "")}"
+                                     : null;
 
         var uploadedImageUrls = new List<string>(new string[3]);
         for (int i = 0; i < loadedFiles.Count; i++)
