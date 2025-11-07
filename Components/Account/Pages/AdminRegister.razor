@@ -69,7 +69,6 @@
 
 @code {
     private string? errorMessage;
-
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
 
@@ -103,8 +102,18 @@
 
     public async Task RegisterAdminUser()
     {
-        var user = CreateUser();
+        // --- START: ADDED SECTION ---
+        // Check how many users are already in the "Admin" role
+        var adminUsers = await UserManager.GetUsersInRoleAsync("Admin");
+        if (adminUsers.Count >= 2)
+        {
+            errorMessage = "Error: A maximum of 2 admin accounts can be created.";
+            StateHasChanged();
+            return; // Stop the registration process
+        }
+        // --- END: ADDED SECTION ---
 
+        var user = CreateUser();
         user.FullName = Input.FullName;
         user.PhoneNumber = Input.PhoneNumber;
         user.JoinedDate = DateTime.UtcNow;

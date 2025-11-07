@@ -11,13 +11,11 @@
 
 @*
     UPDATED:
-    - Added @onmouseover to start the timer
-    - Added @onmouseout to stop the timer
+    - Removed @onmouseover and @onmouseout
+    - The timer now starts automatically in OnInitializedAsync
 *@
 <div class="hero-banner"
-     style="background-image: url(@CurrentImageUrl)"
-     @onmouseover="StartImageSlider"
-     @onmouseout="StopImageSlider">
+     style="background-image: url(@CurrentImageUrl)">
 
     <div class="hero-content">
         <h2>Official Jerseys. Unbeatable Style.</h2>
@@ -89,47 +87,40 @@
 
 @code {
     private List<Product>? featuredProducts;
-    private System.Threading.Timer _timer;
+    private System.Threading.Timer? _timer;
     private int _currentImageIndex = 0;
 
-    // --- IMPORTANT: REPLACE THESE WITH YOUR 3 IMAGE URLS ---
+    // --- UPDATED: List expanded to 6 items. Add your new image URLs here. ---
     private List<string> _heroImages = new List<string>
     {
         "https://m.media-amazon.com/images/I/71izjNHcVhL._AC_SL1500_.jpg",
-        "https://cdn.nba.com/manage/2025/10/f7f39c27-8107-478a-bab8-f82de7005235.jpg?w=735&h=413", // <-- TODO: CHANGE THIS TO YOUR 2ND IMAGE
-        "https://www.nflshop.com/content/ws/all/42df8aac-4fc9-453f-a56f-e1a46b4af334__1200X980.jpg"   // <-- TODO: CHANGE THIS TO YOUR 3RD IMAGE
+        "https://cdn.nba.com/manage/2025/10/f7f39c27-8107-478a-bab8-f82de7005235.jpg?w=735&h=413",
+        "https://www.nflshop.com/content/ws/all/42df8aac-4fc9-453f-a56f-e1a46b4af334__1200X980.jpg",
+        "https://i.pinimg.com/1200x/18/45/7d/18457dd084412fe23d647327f14a6435.jpg", // <-- TODO: ADD YOUR 4TH IMAGE (Example)
+        "https://www.nflshop.com/content/ws/all/a6ff99a0-e81b-4001-90a3-cc41e7dca58c__2400X900.jpg",     // <-- TODO: ADD YOUR 5TH IMAGE (Example)
+        "https://www.nflshop.com/content/ws/all/7047a40b-c1dc-48bd-80d8-8441d6f35292__1200X980.jpg"      // <-- TODO: ADD YOUR 6TH IMAGE (Example)
     };
 
     private string CurrentImageUrl => _heroImages[_currentImageIndex];
 
     protected override async Task OnInitializedAsync()
     {
-        // Load featured products (your existing code)
-        featuredProducts = await DbContext.Products.Where(p => p.IsFeatured).ToListAsync();
+        // Load featured products
+        featuredProducts = await DbContext.Products
+            .Where(p => p.IsFeatured)
+            .OrderByDescending(p => p.ProductId) // Optional: Get the newest featured items
+            .Take(6) // Optional: Limit to 6 featured products
+            .ToListAsync();
 
-        // Note: We no longer start the timer here.
+        // --- UPDATED: Timer now starts automatically on page load ---
+        // It will change the image immediately (0ms delay), then every 3 seconds (3000ms)
+        _timer = new System.Threading.Timer(ChangeImage, null, 0, 3000);
     }
 
-    // --- NEW: This method starts the timer when you hover ---
-    private void StartImageSlider()
-    {
-        // Only start a new timer if one isn't already running
-        if (_timer == null)
-        {
-            // Call ChangeImage immediately, then every 3 seconds
-            _timer = new System.Threading.Timer(ChangeImage, null, 0, 6000);
-        }
-    }
-
-    // --- NEW: This method stops the timer when the mouse leaves ---
-    private void StopImageSlider()
-    {
-        _timer?.Dispose();
-        _timer = null;
-    }
+    // --- REMOVED StartImageSlider() and StopImageSlider() methods ---
 
     // This method is called by the timer
-    private void ChangeImage(object state)
+    private void ChangeImage(object? state)
     {
         _currentImageIndex++;
         if (_currentImageIndex >= _heroImages.Count)
