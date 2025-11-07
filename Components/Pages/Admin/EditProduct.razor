@@ -216,6 +216,12 @@
                     productViewModel.SeasonYear = parts[1].TrimEnd(')');
                 }
             }
+            // --- UPDATED LOGIC TO HANDLE "HOME" with no "()" ---
+            else if (!string.IsNullOrEmpty(product.Season))
+            {
+                productViewModel.SeasonType = product.Season;
+                productViewModel.SeasonYear = string.Empty;
+            }
         }
     }
 
@@ -257,6 +263,7 @@
         productToUpdate.Season = !string.IsNullOrEmpty(productViewModel.SeasonType)
                                      ? $"{productViewModel.SeasonType}{(!string.IsNullOrEmpty(productViewModel.SeasonYear) ? $" ({productViewModel.SeasonYear})" : "")}"
                                      : null;
+        // --- END OF FIX ---
 
         var uploadedImageUrls = new List<string>(new string[3]);
         for (int i = 0; i < loadedFiles.Count; i++)
@@ -264,10 +271,17 @@
             var file = loadedFiles[i];
             if (file != null)
             {
-                var path = Path.Combine(Environment.WebRootPath, "Images", "products", file.Name);
+                // -- FIX: Use a unique file name to avoid overwrites --
+                var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+                var path = Path.Combine(Environment.WebRootPath, "Images", "products", uniqueFileName);
+                // -- END OF FIX --
+
                 await using FileStream fs = new(path, FileMode.Create);
                 await file.OpenReadStream(file.Size).CopyToAsync(fs);
-                uploadedImageUrls[i] = $"/Images/products/{file.Name}";
+
+                // -- FIX: Use the unique file name in the URL --
+                uploadedImageUrls[i] = $"/Images/products/{uniqueFileName}";
+                // -- END OF FIX --
             }
         }
 

@@ -253,10 +253,12 @@ INPUT FOR URL 3 --- *@
             Stock = productViewModel.Stock,
             Description = productViewModel.Description,
             IsFeatured = productViewModel.IsFeatured,
+
             // --- FIX: Conditionally build the season string to avoid " ()" ---
             Season = !string.IsNullOrEmpty(productViewModel.SeasonType)
                        ? $"{productViewModel.SeasonType}{(!string.IsNullOrEmpty(productViewModel.SeasonYear) ? $" ({productViewModel.SeasonYear})" : "")}"
                        : null
+            // --- END OF FIX ---
         };
         var uploadedImageUrls = new List<string>(new string[3]);
         var uploadPath = Path.Combine(Environment.WebRootPath, "Images", "products");
