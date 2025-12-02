@@ -4,51 +4,29 @@
 @inject StateContainer StateContainer
 @inject NavigationManager NavigationManager
 
-@* UPDATED:
-    - 'product-card' class kept for original styling.
-    - Added style="height: 320px;" to force a fixed height on mobile so percentages work.
-    - Added 'overflow: hidden' to ensure nothing pushes out.
-*@
-<div class="product-card h-100 border-0 shadow-sm d-flex flex-column" style="height: 320px; overflow: hidden;">
-
-    @* IMAGE SECTION (65%) 
-       - height: 65%
-       - w-100 to fill width
-    *@
-    <div class="product-image-container position-relative" style="height: 65%; width: 100%;">
-        <a href="/product/@Product.ProductId" class="d-block h-100 w-100">
-            @* object-fit: cover ensures image fills the 65% area fully *@
-            <img src="@Product.ImageUrl" class="w-100 h-100" alt="@Product.Name" style="object-fit: cover; width: 100%; height: 100%;">
+<div class="product-card">
+    <div class="product-image-container">
+        <a href="/product/@Product.ProductId">
+            <img src="@Product.ImageUrl" class="card-img-top" alt="@Product.Name">
         </a>
 
         <AuthorizeView Roles="Influencer">
-            <button @onclick="ToggleShareModal" class="product-share-icon-button position-absolute top-0 end-0 m-2 btn btn-light rounded-circle btn-sm shadow-sm" style="z-index: 10;">
+            <button @onclick="ToggleShareModal" class="product-share-icon-button">
                 <i class="fas fa-share-alt"></i>
             </button>
         </AuthorizeView>
     </div>
 
-    @* CONTENT SECTION (35%)
-       - height: 35%
-       - p-2 for padding (smaller padding for mobile)
-       - d-flex flex-column justify-content-between to space out title/price and buttons
-    *@
-    <div class="card-body p-2 d-flex flex-column justify-content-between" style="height: 35%; background-color: white;">
-
-        @* Text wrapper with overflow hidden *@
-        <div style="overflow: hidden;">
-            <h5 class="card-title text-truncate mb-1" style="font-size: 0.9rem; font-weight: bold;">@Product.Name</h5>
-            <p class="card-price mb-0 fw-bold text-primary" style="font-size: 0.85rem;">@($"FCFA {Product.Price:N0}")</p>
-            <p class="card-season text-muted small mb-0 text-truncate" style="font-size: 0.75rem;">@Product.Season</p>
-        </div>
-
-        @* Buttons *@
-        <div class="d-flex gap-1 mt-1">
-            <a href="/product/@Product.ProductId" class="btn btn-outline-dark btn-sm flex-grow-1 py-0 d-flex align-items-center justify-content-center" style="font-size: 0.75rem;">
-                <i class="fas fa-eye me-1"></i> View
+    <div class="card-body">
+        <h5 class="card-title">@Product.Name</h5>
+        <p class="card-price">@($"FCFA {Product.Price:N0}")</p>
+        <p class="card-season">@Product.Season</p>
+        <div class="d-grid gap-2">
+            <a href="/product/@Product.ProductId" class="btn btn-product-action">
+                <i class="fas fa-eye me-1"></i> View Details
             </a>
-            <button @onclick="() => AddToCartAndNavigate(Product)" class="btn btn-dark btn-sm flex-grow-1 py-0 d-flex align-items-center justify-content-center" style="font-size: 0.75rem;">
-                <i class="fas fa-cart-plus"></i>
+            <button @onclick="() => AddToCartAndNavigate(Product)" class="btn btn-product-action">
+                <i class="fas fa-cart-plus me-1"></i> Add to Cart
             </button>
         </div>
     </div>
