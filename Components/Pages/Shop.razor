@@ -11,8 +11,11 @@
 
 <PageTitle>Shop</PageTitle>
 
-<div class="container mt-4">
-    <div class="row mb-4">
+@* UPDATED: 
+    - Added 'px-1 px-md-3' to container to reduce side padding on mobile 
+*@
+<div class="container mt-4 px-1 px-md-3">
+    <div class="row mb-4 mx-1 mx-md-0">
         <div class="col-md-6">
             <h2>Shop</h2>
             <p>Browse our collection of authentic football jerseys.</p>
@@ -39,7 +42,10 @@
     </div>
     @if (pagedProducts is not null)
     {
-        <div class="row g-4">
+        @* UPDATED: 
+           - Changed 'g-4' to 'g-1 g-md-4' (Tiny gap on mobile, normal gap on desktop)
+        *@
+        <div class="row g-1 g-md-4">
             @foreach (var product in pagedProducts)
             {
                 <div class="col-6 col-lg-4">
