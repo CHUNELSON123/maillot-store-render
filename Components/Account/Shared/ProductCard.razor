@@ -5,19 +5,20 @@
 @inject NavigationManager NavigationManager
 
 @* UPDATED:
-   - Added fixed height for mobile (h-350px or similar) to ensure 65% calculation works.
-   - On desktop (md), we let it grow or set a different height.
-   - overflow-hidden prevents content from pushing out.
+    - 'product-card' class kept for original styling.
+    - Added style="height: 320px;" to force a fixed height on mobile so percentages work.
+    - Added 'overflow: hidden' to ensure nothing pushes out.
 *@
-<div class="product-card border-0 shadow-sm d-flex flex-column" style="height: 350px; overflow: hidden;">
+<div class="product-card h-100 border-0 shadow-sm d-flex flex-column" style="height: 320px; overflow: hidden;">
 
-    @* UPDATED:
-       - height: 65% forced.
-       - position-relative for the share button.
+    @* IMAGE SECTION (65%) 
+       - height: 65%
+       - w-100 to fill width
     *@
-    <div class="product-image-container position-relative" style="height: 65%; width: 100%; background-color: #f8f9fa;">
+    <div class="product-image-container position-relative" style="height: 65%; width: 100%;">
         <a href="/product/@Product.ProductId" class="d-block h-100 w-100">
-            <img src="@Product.ImageUrl" class="w-100 h-100" alt="@Product.Name" style="object-fit: cover;">
+            @* object-fit: cover ensures image fills the 65% area fully *@
+            <img src="@Product.ImageUrl" class="w-100 h-100" alt="@Product.Name" style="object-fit: cover; width: 100%; height: 100%;">
         </a>
 
         <AuthorizeView Roles="Influencer">
@@ -27,40 +28,28 @@
         </AuthorizeView>
     </div>
 
-    @* UPDATED:
-       - height: 35% forced.
-       - p-2 for padding.
-       - d-flex flex-column to organize text and buttons.
+    @* CONTENT SECTION (35%)
+       - height: 35%
+       - p-2 for padding (smaller padding for mobile)
+       - d-flex flex-column justify-content-between to space out title/price and buttons
     *@
     <div class="card-body p-2 d-flex flex-column justify-content-between" style="height: 35%; background-color: white;">
 
-        <div class="text-content" style="overflow: hidden;">
-            @* Title: Truncate to 1 line to save space *@
-            <h5 class="card-title text-truncate mb-1" style="font-size: 0.95rem; font-weight: 600;">
-                <a href="/product/@Product.ProductId" class="text-decoration-none text-dark">@Product.Name</a>
-            </h5>
-
-            @* Price & Season Row *@
-            <div class="d-flex justify-content-between align-items-center mb-1">
-                <p class="card-price text-primary fw-bold mb-0" style="font-size: 0.9rem;">
-                    @($"FCFA {Product.Price:N0}")
-                </p>
-                <span class="badge bg-light text-dark border" style="font-size: 0.7rem;">@Product.Season</span>
-            </div>
+        @* Text wrapper with overflow hidden *@
+        <div style="overflow: hidden;">
+            <h5 class="card-title text-truncate mb-1" style="font-size: 0.9rem; font-weight: bold;">@Product.Name</h5>
+            <p class="card-price mb-0 fw-bold text-primary" style="font-size: 0.85rem;">@($"FCFA {Product.Price:N0}")</p>
+            <p class="card-season text-muted small mb-0 text-truncate" style="font-size: 0.75rem;">@Product.Season</p>
         </div>
 
-        @* Buttons: Compact Grid *@
-        <div class="row g-1 mt-auto">
-            <div class="col-8">
-                <a href="/product/@Product.ProductId" class="btn btn-outline-dark btn-sm w-100 d-flex align-items-center justify-content-center" style="font-size: 0.8rem; padding: 0.25rem 0;">
-                    Details
-                </a>
-            </div>
-            <div class="col-4">
-                <button @onclick="() => AddToCartAndNavigate(Product)" class="btn btn-dark btn-sm w-100 d-flex align-items-center justify-content-center" style="font-size: 0.8rem; padding: 0.25rem 0;">
-                    <i class="fas fa-cart-plus"></i>
-                </button>
-            </div>
+        @* Buttons *@
+        <div class="d-flex gap-1 mt-1">
+            <a href="/product/@Product.ProductId" class="btn btn-outline-dark btn-sm flex-grow-1 py-0 d-flex align-items-center justify-content-center" style="font-size: 0.75rem;">
+                <i class="fas fa-eye me-1"></i> View
+            </a>
+            <button @onclick="() => AddToCartAndNavigate(Product)" class="btn btn-dark btn-sm flex-grow-1 py-0 d-flex align-items-center justify-content-center" style="font-size: 0.75rem;">
+                <i class="fas fa-cart-plus"></i>
+            </button>
         </div>
     </div>
 </div>

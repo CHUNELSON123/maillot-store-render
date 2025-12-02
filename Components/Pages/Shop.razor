@@ -11,9 +11,7 @@
 
 <PageTitle>Shop</PageTitle>
 
-@* UPDATED: 
-    - Added 'px-1 px-md-3' to container to reduce side padding on mobile 
-*@
+@* UPDATED: Added px-1 for mobile to stretch content closer to edges, keeping px-md-3 for desktop *@
 <div class="container mt-4 px-1 px-md-3">
     <div class="row mb-4 mx-1 mx-md-0">
         <div class="col-md-6">
@@ -42,9 +40,8 @@
     </div>
     @if (pagedProducts is not null)
     {
-        @* UPDATED: 
-           - Changed 'g-4' to 'g-1 g-md-4' (Tiny gap on mobile, normal gap on desktop)
-        *@
+        @* UPDATED: Changed g-4 to 'g-1 g-md-4'. 
+           This makes the gap very small (0.25rem) on mobile and normal (1.5rem) on desktop. *@
         <div class="row g-1 g-md-4">
             @foreach (var product in pagedProducts)
             {
