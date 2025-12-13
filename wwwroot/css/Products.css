@@ -48,7 +48,6 @@
     border-collapse: collapse;
     color: white;
     background-color: #000 !important;
-     
 }
 
     .product-container .table thead th {
@@ -112,4 +111,103 @@
             font-weight: bold;
         }
 
- 
+/* =========================================
+   MOBILE VIEW ADJUSTMENTS (Product Cards)
+   ========================================= */
+@media (max-width: 576px) {
+
+    /* 1. Reduce Container Padding & Grid Gaps */
+    .container {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+    }
+
+    .row.g-4 {
+        --bs-gutter-x: 0.5rem !important; /* Tiny horizontal gap */
+        --bs-gutter-y: 0.5rem !important; /* Tiny vertical gap */
+        margin-left: -0.25rem !important;
+        margin-right: -0.25rem !important;
+    }
+
+    .col-6 {
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+    }
+
+    /* 2. Fixed Card Dimensions & Layout */
+    .product-card {
+        height: 320px !important; /* Fixed height to support percentages */
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #333;
+        overflow: hidden;
+        border-radius: 4px; /* Optional rounded corners */
+    }
+
+    /* 3. Image Section (65%) */
+    .product-image-container {
+        height: 65% !important;
+        width: 100%;
+        overflow: hidden;
+        background-color: #fff; /* White background for transparent images */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .product-image-container a {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .product-image-container img.card-img-top {
+            width: 100%;
+            height: 100%;
+            object-fit: contain !important; /* Ensure full image is visible */
+            border-radius: 0 !important;
+        }
+
+    /* 4. Info Section (35%) */
+    .card-body {
+        height: 35% !important;
+        padding: 0.5rem !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-color: #000; /* Match theme */
+        color: white;
+    }
+
+        /* Compact Text Styles */
+        .card-body .card-title {
+            font-size: 0.9rem !important;
+            margin-bottom: 0.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; /* ... if name is too long */
+        }
+
+        .card-body .card-price {
+            font-size: 0.9rem !important;
+            margin-bottom: 0.1rem;
+            font-weight: bold;
+        }
+
+        .card-body .card-season {
+            font-size: 0.75rem !important;
+            margin-bottom: 0.2rem;
+            color: #ccc;
+        }
+
+        /* Compact Buttons */
+        .card-body .btn-product-action {
+            font-size: 0.7rem !important;
+            padding: 0.25rem 0.2rem !important;
+        }
+
+        .card-body .d-grid {
+            display: flex !important;
+            gap: 0.25rem !important;
+        }
+}

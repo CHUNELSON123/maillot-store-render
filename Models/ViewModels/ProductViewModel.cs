@@ -20,8 +20,10 @@ namespace MaillotStore.Models.ViewModels
         public string? SeasonType { get; set; }
         public string? SeasonYear { get; set; }
         public bool IsFeatured { get; set; }
-        public string? ImageUrl1 { get; set; }
-        public string? ImageUrl2 { get; set; }
-        public string? ImageUrl3 { get; set; }
+
+        public string? ImageUrl { get; set; }
+
+        // Gallery Images (Dynamic List)
+        public List<ProductImage> Gallery { get; set; } = new();
     }
 }

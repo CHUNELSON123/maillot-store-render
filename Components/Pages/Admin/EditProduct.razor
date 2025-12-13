@@ -3,12 +3,9 @@
 @using MaillotStore.Models
 @using MaillotStore.Data
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Hosting
-@using Microsoft.Extensions.Logging
+@using System.IO
 @using Microsoft.EntityFrameworkCore
-@using System.ComponentModel.DataAnnotations
 @using MaillotStore.Models.ViewModels
-@using Microsoft.AspNetCore.Components.Forms
 @layout AdminLayout
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavigationManager
@@ -87,59 +84,58 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Image URLs (Optional):</label>
-                    <div class="input-row">
-                        <div class="image-input-container">
-                            @if (!string.IsNullOrEmpty(imageUrlPreviews[0]))
-                            {
-                                <img src="@imageUrlPreviews[0]" class="inline-preview" />
-                            }
-                            <InputText placeholder="Image URL 1" class="form-control-dark" @bind-Value="productViewModel.ImageUrl1" @oninput="(e) => UpdateUrlPreview(e, 0)" />
-                        </div>
-                        <div class="image-input-container">
-                            @if (!string.IsNullOrEmpty(imageUrlPreviews[1]))
-                            {
-                                <img src="@imageUrlPreviews[1]" class="inline-preview" />
-                            }
-                            <InputText placeholder="Image URL 2" class="form-control-dark" @bind-Value="productViewModel.ImageUrl2" @oninput="(e) => UpdateUrlPreview(e, 1)" />
-                        </div>
-                        <div class="image-input-container">
-                            @if (!string.IsNullOrEmpty(imageUrlPreviews[2]))
-                            {
-                                <img src="@imageUrlPreviews[2]" class="inline-preview" />
-                            }
-                            <InputText placeholder="Image URL 3" class="form-control-dark" @bind-Value="productViewModel.ImageUrl3" @oninput="(e) => UpdateUrlPreview(e, 2)" />
-                        </div>
+                    <label style="font-weight:bold; margin-bottom: 8px; display:block;">Main Product Image</label>
+                    <div class="input-row" style="gap: 10px; align-items: center;">
+                        <InputText class="form-control-dark" @bind-Value="productViewModel.ImageUrl" placeholder="Paste URL or upload file..." style="flex: 1;" />
+                        <label class="btn-saved" style="cursor: pointer; margin:0; padding: 10px 15px; display:flex; align-items:center;">
+                            @if (isUploadingMain) { <span>Uploading...</span> } else { <span>Upload</span> }
+                            <InputFile OnChange="LoadMainImage" hidden accept=".jpg,.jpeg,.png,.webp" />
+                        </label>
                     </div>
+                    @if (!string.IsNullOrEmpty(productViewModel.ImageUrl))
+                    {
+                        <div style="margin-top: 10px; border: 1px solid #444; padding: 5px; border-radius: 4px; display: inline-block;">
+                            <img src="@productViewModel.ImageUrl" style="max-height: 150px; object-fit: cover;" />
+                        </div>
+                    }
                 </div>
 
                 <div class="form-group">
-                    <label>Or Upload Images From PC (Max 3):</label>
-                    <div class="input-row">
-                        <div class="image-input-container">
-                            @if (!string.IsNullOrEmpty(filePreviews[0]))
-                            {
-                                <img src="@filePreviews[0]" class="inline-preview" />
-                            }
-                            <InputFile OnChange="@(e => LoadFile(e, 0))" class="form-control-file" />
-                        </div>
-                        <div class="image-input-container">
-                            @if (!string.IsNullOrEmpty(filePreviews[1]))
-                            {
-                                <img src="@filePreviews[1]" class="inline-preview" />
-                            }
-                            <InputFile OnChange="@(e => LoadFile(e, 1))" class="form-control-file" />
-                        </div>
-                        <div class="image-input-container">
-                            @if (!string.IsNullOrEmpty(filePreviews[2]))
-                            {
-                                <img src="@filePreviews[2]" class="inline-preview" />
-                            }
-                            <InputFile OnChange="@(e => LoadFile(e, 2))" class="form-control-file" />
-                        </div>
+                    <label style="font-weight:bold; margin-bottom: 8px; display:block;">Gallery Images (Unlimited)</label>
+                    <div style="margin-bottom: 10px;">
+                        <label class="btn-saved" style="cursor: pointer; margin-right: 10px;">
+                            + Upload Multiple Images
+                            <InputFile OnChange="LoadGalleryImages" multiple hidden accept=".jpg,.jpeg,.png,.webp" />
+                        </label>
+                        <button type="button" class="btn-cancel" @onclick="AddEmptyGallerySlot">
+                            + Add URL Manually
+                        </button>
                     </div>
-                </div>
 
+                    @if (isUploadingGallery)
+                    {
+                        <p><em>Uploading images...</em></p>
+                    }
+
+                    @foreach (var image in productViewModel.Gallery)
+                    {
+                        <div class="input-row" style="margin-bottom: 10px; align-items: center;">
+                            <span style="color: #fff; margin-right: 10px;">Img:</span>
+                            <InputText class="form-control-dark" @bind-Value="image.ImageUrl" placeholder="Image URL" style="flex: 1;" />
+                            
+                            @if (!string.IsNullOrEmpty(image.ImageUrl))
+                            {
+                                <div style="width: 50px; height: 38px; margin: 0 10px; overflow: hidden; border: 1px solid #555;">
+                                    <img src="@image.ImageUrl" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'" />
+                                </div>
+                            }
+
+                            <button type="button" class="btn-cancel" style="background-color: #dc3545; border:none;" @onclick="() => RemoveGalleryImage(image)">
+                                X
+                            </button>
+                        </div>
+                    }
+                </div>
                 <div class="form-group featured-group">
                     <label>Featured:</label>
                     <div class="featured-options">
@@ -157,7 +153,7 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn-saved">Update</button>
+                    <button type="submit" class="btn-saved" disabled="@(isUploadingMain || isUploadingGallery)">Update</button>
                     <button type="button" class="btn-cancel" @onclick='() => NavigationManager.NavigateTo("/admin/products")'>Cancel</button>
                 </div>
             </EditForm>
@@ -166,14 +162,12 @@
 </div>
 
 @code {
-    [Parameter]
-    public int ProductId { get; set; }
-
+    [Parameter] public int ProductId { get; set; }
     private ProductViewModel? productViewModel;
-    private List<IBrowserFile> loadedFiles = new(new IBrowserFile[3]);
-    private string[] imageUrlPreviews = new string[3];
-    private string[] filePreviews = new string[3];
     private List<string> SeasonYears { get; set; } = new();
+    private const long MaxFileSize = 1024 * 1024 * 10;
+    private bool isUploadingMain = false;
+    private bool isUploadingGallery = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -185,7 +179,10 @@
         }
         SeasonYears.Reverse();
 
-        var product = await DbContext.Products.FindAsync(ProductId);
+        // Include the Gallery when fetching
+        var product = await DbContext.Products
+            .Include(p => p.Gallery)
+            .FirstOrDefaultAsync(p => p.ProductId == ProductId);
 
         if (product != null)
         {
@@ -197,16 +194,13 @@
                 Stock = product.Stock,
                 Description = product.Description,
                 IsFeatured = product.IsFeatured,
-                ImageUrl1 = product.ImageUrl,
-                ImageUrl2 = product.ImageUrl2,
-                ImageUrl3 = product.ImageUrl3
+                ImageUrl = product.ImageUrl,
+                
+                // Copy existing gallery
+                Gallery = product.Gallery.ToList() 
             };
 
-            // Pre-fill URL previews with existing images
-            imageUrlPreviews[0] = product.ImageUrl;
-            imageUrlPreviews[1] = product.ImageUrl2;
-            imageUrlPreviews[2] = product.ImageUrl3;
-
+            // Parse Season (existing logic)
             if (!string.IsNullOrEmpty(product.Season) && product.Season.Contains(" (") && product.Season.EndsWith(")"))
             {
                 var parts = product.Season.Split(new[] { " (" }, StringSplitOptions.None);
@@ -216,7 +210,6 @@
                     productViewModel.SeasonYear = parts[1].TrimEnd(')');
                 }
             }
-            // --- UPDATED LOGIC TO HANDLE "HOME" with no "()" ---
             else if (!string.IsNullOrEmpty(product.Season))
             {
                 productViewModel.SeasonType = product.Season;
@@ -225,32 +218,56 @@
         }
     }
 
-    private async Task LoadFile(InputFileChangeEventArgs e, int index)
+    private async Task LoadMainImage(InputFileChangeEventArgs e)
     {
-        loadedFiles[index] = e.File;
-        if (e.File != null)
+        isUploadingMain = true;
+        try
         {
-            var buffer = new byte[e.File.Size];
-            await e.File.OpenReadStream(maxAllowedSize: 1024 * 1024 * 5).ReadAsync(buffer); // Limit to 5MB
-            var base64Image = Convert.ToBase64String(buffer);
-            filePreviews[index] = $"data:{e.File.ContentType};base64,{base64Image}";
-            imageUrlPreviews[index] = string.Empty; // Clear URL preview if a file is uploaded
+            var url = await UploadFileAsync(e.File);
+            productViewModel.ImageUrl = url;
         }
+        finally { isUploadingMain = false; }
     }
 
-    private void UpdateUrlPreview(ChangeEventArgs e, int index)
+    private async Task LoadGalleryImages(InputFileChangeEventArgs e)
     {
-        imageUrlPreviews[index] = e.Value.ToString();
-        filePreviews[index] = string.Empty; // Clear file preview if a URL is entered
+        isUploadingGallery = true;
+        try
+        {
+            foreach (var file in e.GetMultipleFiles(10))
+            {
+                var url = await UploadFileAsync(file);
+                productViewModel.Gallery.Add(new ProductImage { ImageUrl = url, ProductId = ProductId });
+            }
+        }
+        finally { isUploadingGallery = false; }
     }
+
+    private async Task<string> UploadFileAsync(IBrowserFile file)
+    {
+        var fileExtension = Path.GetExtension(file.Name);
+        var trustedFileName = $"{Guid.NewGuid()}{fileExtension}";
+        var uploadPath = Path.Combine(Environment.WebRootPath, "Images", "products");
+        Directory.CreateDirectory(uploadPath);
+        var filePath = Path.Combine(uploadPath, trustedFileName);
+
+        await using FileStream fs = new(filePath, FileMode.Create);
+        await file.OpenReadStream(MaxFileSize).CopyToAsync(fs);
+
+        return $"/Images/products/{trustedFileName}";
+    }
+
+    private void AddEmptyGallerySlot() => productViewModel.Gallery.Add(new ProductImage());
+    
+    private void RemoveGalleryImage(ProductImage image) => productViewModel.Gallery.Remove(image);
 
     private async Task HandleUpdateSubmit()
     {
-        var productToUpdate = await DbContext.Products.FindAsync(ProductId);
-        if (productToUpdate == null || productViewModel == null)
-        {
-            return;
-        }
+        var productToUpdate = await DbContext.Products
+            .Include(p => p.Gallery)
+            .FirstOrDefaultAsync(p => p.ProductId == ProductId);
+
+        if (productToUpdate == null || productViewModel == null) return;
 
         productToUpdate.Name = productViewModel.Name;
         productToUpdate.Price = productViewModel.Price;
@@ -258,36 +275,27 @@
         productToUpdate.Stock = productViewModel.Stock;
         productToUpdate.Description = productViewModel.Description;
         productToUpdate.IsFeatured = productViewModel.IsFeatured;
+        productToUpdate.ImageUrl = productViewModel.ImageUrl;
 
-        // --- FIX: Conditionally build the season string to avoid " ()" ---
         productToUpdate.Season = !string.IsNullOrEmpty(productViewModel.SeasonType)
                                      ? $"{productViewModel.SeasonType}{(!string.IsNullOrEmpty(productViewModel.SeasonYear) ? $" ({productViewModel.SeasonYear})" : "")}"
                                      : null;
-        // --- END OF FIX ---
 
-        var uploadedImageUrls = new List<string>(new string[3]);
-        for (int i = 0; i < loadedFiles.Count; i++)
+        // Update Gallery
+        // 1. Remove images not in ViewModel
+        var validIds = productViewModel.Gallery.Where(g => g.Id != 0).Select(g => g.Id).ToList();
+        var toRemove = productToUpdate.Gallery.Where(g => !validIds.Contains(g.Id)).ToList();
+        DbContext.ProductImages.RemoveRange(toRemove);
+
+        // 2. Add new images
+        foreach (var imgVM in productViewModel.Gallery)
         {
-            var file = loadedFiles[i];
-            if (file != null)
+            if (imgVM.Id == 0 && !string.IsNullOrWhiteSpace(imgVM.ImageUrl))
             {
-                // -- FIX: Use a unique file name to avoid overwrites --
-                var uniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
-                var path = Path.Combine(Environment.WebRootPath, "Images", "products", uniqueFileName);
-                // -- END OF FIX --
-
-                await using FileStream fs = new(path, FileMode.Create);
-                await file.OpenReadStream(file.Size).CopyToAsync(fs);
-
-                // -- FIX: Use the unique file name in the URL --
-                uploadedImageUrls[i] = $"/Images/products/{uniqueFileName}";
-                // -- END OF FIX --
+                productToUpdate.Gallery.Add(new ProductImage { ImageUrl = imgVM.ImageUrl });
             }
+            // Existing images are already tracked or don't need updates if they are just URLs
         }
-
-        productToUpdate.ImageUrl = !string.IsNullOrEmpty(uploadedImageUrls[0]) ? uploadedImageUrls[0] : productViewModel.ImageUrl1;
-        productToUpdate.ImageUrl2 = !string.IsNullOrEmpty(uploadedImageUrls[1]) ? uploadedImageUrls[1] : productViewModel.ImageUrl2;
-        productToUpdate.ImageUrl3 = !string.IsNullOrEmpty(uploadedImageUrls[2]) ? uploadedImageUrls[2] : productViewModel.ImageUrl3;
 
         await DbContext.SaveChangesAsync();
         NavigationManager.NavigateTo("/admin/products");

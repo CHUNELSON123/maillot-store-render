@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization; // <-- IMPORTANT: Required for ReferenceHandler
 using System.Threading.Tasks;
 
 namespace MaillotStore.Services
@@ -11,6 +12,13 @@ namespace MaillotStore.Services
     public class StateContainer
     {
         private readonly IJSRuntime _jsRuntime;
+
+        // --- DEFINE OPTIONS TO HANDLE CYCLES ---
+        private readonly JsonSerializerOptions _jsonOptions = new()
+        {
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            WriteIndented = false
+        };
 
         public StateContainer(IJSRuntime jsRuntime)
         {
@@ -52,7 +60,6 @@ namespace MaillotStore.Services
 
         public async Task RemoveFromCart(OrderItem item)
         {
-            // Find the item based on ProductId, Size, CustomName, and CustomNumber
             var itemToRemove = CartItems.FirstOrDefault(i =>
                 i.Product.ProductId == item.Product.ProductId &&
                 i.Size == item.Size &&
@@ -66,7 +73,6 @@ namespace MaillotStore.Services
                 NotifyStateChanged();
             }
         }
-
 
         public async Task UpdateCartItemQuantity(OrderItem item, int quantity)
         {
@@ -88,36 +94,30 @@ namespace MaillotStore.Services
             }
         }
 
-        // --- START: NEW METHOD ---
         public async Task UpdateCartItemSize(OrderItem item, string newSize)
         {
-            // Find the item based on ProductId, *original* Size, CustomName, and CustomNumber
             var itemInCart = CartItems.FirstOrDefault(i =>
                 i.Product.ProductId == item.Product.ProductId &&
-                i.Size == item.Size && // Use the item's current size to find it
+                i.Size == item.Size &&
                 i.CustomName == item.CustomName &&
                 i.CustomNumber == item.CustomNumber);
 
             if (itemInCart != null)
             {
-                // Check if an item with the *new* size already exists (for merging)
                 var existingItemWithNewSize = CartItems.FirstOrDefault(i =>
                    i.Product.ProductId == item.Product.ProductId &&
-                   i.Size == newSize && // Check for the new size
+                   i.Size == newSize &&
                    i.CustomName == item.CustomName &&
                    i.CustomNumber == item.CustomNumber &&
-                   i != itemInCart); // Make sure it's not the same item we are changing
+                   i != itemInCart);
 
                 if (existingItemWithNewSize != null)
                 {
-                    // Merge quantities: Add current item's quantity to the existing one
                     existingItemWithNewSize.Quantity += itemInCart.Quantity;
-                    // Remove the original item we were changing
                     CartItems.Remove(itemInCart);
                 }
                 else
                 {
-                    // No existing item found with the new size, just update the size
                     itemInCart.Size = newSize;
                 }
 
@@ -125,7 +125,6 @@ namespace MaillotStore.Services
                 NotifyStateChanged();
             }
         }
-        // --- END: NEW METHOD ---
 
         public async Task ClearCart()
         {
@@ -134,10 +133,10 @@ namespace MaillotStore.Services
             NotifyStateChanged();
         }
 
-
         public async Task SaveState()
         {
-            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "maillot_store_cart", JsonSerializer.Serialize(CartItems));
+            // --- UPDATED: Pass _jsonOptions here ---
+            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "maillot_store_cart", JsonSerializer.Serialize(CartItems, _jsonOptions));
         }
 
         public async Task LoadState()
@@ -147,18 +146,19 @@ namespace MaillotStore.Services
             {
                 try
                 {
-                    CartItems = JsonSerializer.Deserialize<List<OrderItem>>(cartJson) ?? new List<OrderItem>();
+                    // --- UPDATED: Pass _jsonOptions here ---
+                    CartItems = JsonSerializer.Deserialize<List<OrderItem>>(cartJson, _jsonOptions) ?? new List<OrderItem>();
                 }
                 catch (JsonException ex)
                 {
                     Console.WriteLine($"Error deserializing cart: {ex.Message}");
-                    CartItems = new List<OrderItem>(); // Reset cart if deserialization fails
-                    await SaveState(); // Clear the invalid state in local storage
+                    CartItems = new List<OrderItem>();
+                    await SaveState();
                 }
             }
             else
             {
-                CartItems = new List<OrderItem>(); // Ensure CartItems is initialized if localStorage is empty
+                CartItems = new List<OrderItem>();
             }
             NotifyStateChanged();
         }

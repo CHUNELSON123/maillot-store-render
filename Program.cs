@@ -29,11 +29,8 @@ builder.Services.AddAuthentication(options =>
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-// --- CHANGED FOR POSTGRESQL ---
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-  options.UseNpgsql(connectionString));
-// ------------------------------
-
+ options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // --- Enable Roles ---
