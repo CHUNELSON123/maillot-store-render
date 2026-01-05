@@ -150,7 +150,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 253,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -159,10 +159,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
             },
             {
               "$type": "Document",
@@ -174,8 +170,7 @@
               "RelativeToolTip": "Services\\StateContainer.cs",
               "ViewState": "AgIAAJEAAAAAAAAAAAAgwKcAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-13T16:24:52.169Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-13T16:24:52.169Z"
             },
             {
               "$type": "Document",
@@ -187,8 +182,7 @@
               "RelativeToolTip": "wwwroot\\css\\Products.css",
               "ViewState": "AgIAAL0AAAAAAAAAAAAowNUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-12-13T16:08:56.221Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-13T16:08:56.221Z"
             },
             {
               "$type": "Document",
@@ -198,7 +192,7 @@
               "RelativeDocumentMoniker": "Components\\Pages\\ProductDetails.razor",
               "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\ProductDetails.razor",
               "RelativeToolTip": "Components\\Pages\\ProductDetails.razor",
-              "ViewState": "AgIAACcCAAAAAAAAAAAYwD0CAAAIAAAAAAAAAA==",
+              "ViewState": "AgIAACcCAAAAAAAAAAAiwD0CAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-12-13T16:07:04.03Z",
               "EditorCaption": ""
@@ -213,8 +207,7 @@
               "RelativeToolTip": "Models\\ViewModels\\ProductViewModel.cs",
               "ViewState": "AgIAAAoAAAAAAAAAAAAIwBoAAABAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-13T15:56:11.859Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-13T15:56:11.859Z"
             },
             {
               "$type": "Document",
@@ -226,8 +219,7 @@
               "RelativeToolTip": "Models\\Product.cs",
               "ViewState": "AgIAAAQAAAAAAAAAAAAywBsAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-13T15:55:41.253Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-13T15:55:41.253Z"
             },
             {
               "$type": "Document",
@@ -239,8 +231,7 @@
               "RelativeToolTip": "Services\\Data\\ProductImage.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-13T15:54:46.175Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-13T15:54:46.175Z"
             },
             {
               "$type": "Document",
@@ -252,8 +243,7 @@
               "RelativeToolTip": "Services\\Data\\ApplicationDbContext.cs",
               "ViewState": "AgIAAAcAAAAAAAAAAAAAABIAAAA+AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-13T15:35:54.983Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-13T15:35:54.983Z"
             },
             {
               "$type": "Document",
@@ -265,8 +255,7 @@
               "RelativeToolTip": "Components\\Account\\Shared\\ProductCard.razor",
               "ViewState": "AgIAACsAAAAAAAAAAAAYwEEAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-02T12:52:14.622Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-02T12:52:14.622Z"
             },
             {
               "$type": "Document",
@@ -278,8 +267,7 @@
               "RelativeToolTip": "Components\\Pages\\Admin\\AddProduct.razor",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABIBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-04T18:08:39.048Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-04T18:08:39.048Z"
             },
             {
               "$type": "Document",
@@ -291,8 +279,7 @@
               "RelativeToolTip": "Components\\Pages\\Admin\\EditProduct.razor",
               "ViewState": "AgIAABcBAAAAAAAAAAAAwC4BAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-07T09:37:06.121Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-07T09:37:06.121Z"
             },
             {
               "$type": "Document",
@@ -304,8 +291,7 @@
               "RelativeToolTip": "Components\\Pages\\Home.razor",
               "ViewState": "AgIAAIsAAAAAAAAAAAAAAIsAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-02T16:21:36.027Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-02T16:21:36.027Z"
             },
             {
               "$type": "Document",
@@ -317,8 +303,7 @@
               "RelativeToolTip": "appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-11-03T17:27:10.418Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-03T17:27:10.418Z"
             },
             {
               "$type": "Document",
@@ -330,8 +315,7 @@
               "RelativeToolTip": "Components\\Shared\\ShareModal.razor",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAADUAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-02T11:50:56.218Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-02T11:50:56.218Z"
             },
             {
               "$type": "Document",
@@ -355,8 +339,7 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAAA0AAAAAAAAAAAAAACAAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-03T17:03:58.598Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-03T17:03:58.598Z"
             },
             {
               "$type": "Document",
@@ -368,8 +351,7 @@
               "RelativeToolTip": "Components\\Pages\\Shop.razor",
               "ViewState": "AgIAAI8AAAAAAAAAAAAAwKgAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-02T18:02:47.657Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-02T18:02:47.657Z"
             },
             {
               "$type": "Document",
@@ -381,8 +363,7 @@
               "RelativeToolTip": "Components\\Account\\Pages\\AdminRegister.razor",
               "ViewState": "AgIAAGAAAAAAAAAAAAAUwLgAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-23T15:37:11.784Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-23T15:37:11.784Z"
             },
             {
               "$type": "Document",
@@ -394,8 +375,7 @@
               "RelativeToolTip": "Components\\Layout\\AdminSidebar.razor",
               "ViewState": "AgIAAAkAAAAAAAAAAAAAABYAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-03T20:20:20.362Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-03T20:20:20.362Z"
             },
             {
               "$type": "Document",
@@ -407,8 +387,7 @@
               "RelativeToolTip": "Components\\Layout\\MainLayout.razor",
               "ViewState": "AgIAAKYAAAAAAAAAAAAiwLoAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-02T16:22:25.959Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-02T16:22:25.959Z"
             },
             {
               "$type": "Document",
@@ -420,8 +399,7 @@
               "RelativeToolTip": "Components\\Layout\\Footer.razor",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAA3AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-02T16:10:11.706Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-02T16:10:11.706Z"
             },
             {
               "$type": "Document",
@@ -433,8 +411,7 @@
               "RelativeToolTip": "Components\\Pages\\Contact.razor",
               "ViewState": "AgIAAEEAAACAmZmZmZkBwEUAAABnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-02T11:37:04.502Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-02T11:37:04.502Z"
             },
             {
               "$type": "Document",
@@ -446,8 +423,7 @@
               "RelativeToolTip": "Components\\Pages\\Checkout.razor",
               "ViewState": "AgIAAD0BAAAAAAAAAAAmwFEBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-02T12:19:18.844Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-02T12:19:18.844Z"
             },
             {
               "$type": "Document",
@@ -459,8 +435,7 @@
               "RelativeToolTip": "Components\\Pages\\Terms.razor",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAPoAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-02T11:37:47.227Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-02T11:37:47.227Z"
             },
             {
               "$type": "Document",
@@ -483,8 +458,7 @@
               "RelativeToolTip": ".dockerignore",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2025-11-03T19:18:15.526Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-03T19:18:15.526Z"
             },
             {
               "$type": "Document",
@@ -496,8 +470,7 @@
               "RelativeToolTip": "Components\\Pages\\InfluencerDashboard.razor",
               "ViewState": "AgIAAAYAAAAAAAAAAAAAADMAAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-03T20:02:24.31Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-03T20:02:24.31Z"
             },
             {
               "$type": "Document",
@@ -509,8 +482,7 @@
               "RelativeToolTip": "Components\\Layout\\MainLayout.razor.css",
               "ViewState": "AgIAAGAAAAAAAAAAAAAAAA8AAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-11-02T16:18:57.574Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-02T16:18:57.574Z"
             },
             {
               "$type": "Document",
@@ -522,8 +494,7 @@
               "RelativeToolTip": "Components\\Pages\\Admin\\Settings.razor",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAMAAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-02T11:44:11.38Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-02T11:44:11.38Z"
             },
             {
               "$type": "Document",
@@ -535,8 +506,7 @@
               "RelativeToolTip": "Models\\Order.cs",
               "ViewState": "AgIAAA4AAAAAAAAAAAAAwBUAAAA0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-02T12:37:08.763Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-02T12:37:08.763Z"
             },
             {
               "$type": "Document",
@@ -548,8 +518,7 @@
               "RelativeToolTip": "Components\\App.razor",
               "ViewState": "AgIAAD4AAAAAAAAAAAAiwE0AAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-31T12:57:04.277Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-31T12:57:04.277Z"
             },
             {
               "$type": "Document",
@@ -561,8 +530,7 @@
               "RelativeToolTip": "Components\\Routes.razor",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-31T10:57:18.382Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-31T10:57:18.382Z"
             },
             {
               "$type": "Document",
@@ -574,8 +542,7 @@
               "RelativeToolTip": "Components\\Account\\Pages\\Register.razor",
               "ViewState": "AgIAAJ4AAAAAAAAAAAAiwK0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-08T07:34:21.338Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-08T07:34:21.338Z"
             },
             {
               "$type": "Document",
@@ -587,8 +554,7 @@
               "RelativeToolTip": "Components\\Account\\Pages\\Login.razor",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-08T07:47:59.11Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-08T07:47:59.11Z"
             },
             {
               "$type": "Document",
@@ -600,8 +566,7 @@
               "RelativeToolTip": "Components\\Pages\\Admin\\Influencers.razor",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-04T16:26:15.872Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-04T16:26:15.872Z"
             },
             {
               "$type": "Document",
@@ -613,8 +578,7 @@
               "RelativeToolTip": "Components\\Pages\\Admin\\Commissions.razor",
               "ViewState": "AgIAABgAAAAAAAAAAAAAAMkAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-04T16:45:44.798Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-04T16:45:44.798Z"
             }
           ]
         },
