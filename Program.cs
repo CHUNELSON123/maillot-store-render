@@ -53,19 +53,7 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-    // 1. Seed Roles
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-    string[] roleNames = { "Admin", "Influencer" };
-    foreach (var roleName in roleNames)
-    {
-        var roleExist = await roleManager.RoleExistsAsync(roleName);
-        if (!roleExist)
-        {
-            await roleManager.CreateAsync(new IdentityRole(roleName));
-        }
-    }
-
-    // 2. Run Database Migrations (for Render)
+    // 1. Run Database Migrations FIRST (Creates the tables)
     try
     {
         var dbContext = services.GetRequiredService<ApplicationDbContext>();
@@ -76,6 +64,26 @@ using (var scope = app.Services.CreateScope())
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "An error occurred while migrating the database.");
+    }
+
+    // 2. Seed Roles SECOND (Now that tables exist)
+    try
+    {
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        string[] roleNames = { "Admin", "Influencer" };
+        foreach (var roleName in roleNames)
+        {
+            var roleExist = await roleManager.RoleExistsAsync(roleName);
+            if (!roleExist)
+            {
+                await roleManager.CreateAsync(new IdentityRole(roleName));
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding roles.");
     }
 }
 // --- End of new block ---
