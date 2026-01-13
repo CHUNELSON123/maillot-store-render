@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MaillotStore")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c1911f2e6f05f28dc328ef1352cc0652bcb8c523")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+39da70de33969fd88c8164db21b78acb078a95da")]
 [assembly: System.Reflection.AssemblyProductAttribute("MaillotStore")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MaillotStore")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

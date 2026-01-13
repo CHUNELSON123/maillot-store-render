@@ -20,10 +20,9 @@
     <hr />
     <StatusMessage Message="@errorMessage" />
 
-    @* --- THIS IS THE FIXED LINE --- *@
     <EditForm Model="Input" OnValidSubmit="RegisterUser" FormName="register" Method="post" class="account-form">
         <DataAnnotationsValidator />
-        <ValidationSummary class="text-danger" role="alert" />
+        
 
         <div class="form-floating mb-3">
             <InputText @bind-Value="Input.FullName" class="form-control" autocomplete="name" placeholder="John Doe" />
@@ -88,14 +87,17 @@
         [Display(Name = "Full Name")]
         public string FullName { get; set; } = "";
 
+        // ✅ VALIDATION: Cameroon Phone Numbers (e.g., 677123456, +237..., 237...)
         [Required]
-        [Phone]
         [Display(Name = "Phone Number")]
+        [RegularExpression(@"^(?:\+237|237)?6[0-9]{8}$", ErrorMessage = "Please enter a valid Cameroonian phone number (e.g., 6xxxxxxxxx).")]
         public string PhoneNumber { get; set; } = "";
 
+        // ✅ VALIDATION: Only allows @gmail.com addresses
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@gmail\.com$", ErrorMessage = "Please use a valid @gmail.com address.")]
         public string Email { get; set; } = "";
 
         [Required]
