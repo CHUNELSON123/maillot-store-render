@@ -28,8 +28,18 @@
     <link rel="stylesheet" href="css/commissions.css" />
 
     <link rel="stylesheet" href="MaillotStore.styles.css" />
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QN5WNN5LMG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-QN5WNN5LMG');
+    </script>
     <HeadOutlet />
 </head>
 
@@ -43,7 +53,6 @@
             const anchor = event.target.closest('a');
             if (anchor && anchor.hasAttribute('href')) {
                 const href = anchor.getAttribute('href');
-
                 @* --- THIS IS THE FIXED LINE --- *@
                 if (href.startsWith('/Account/')) {
                     event.preventDefault();
@@ -51,7 +60,7 @@
                 }
             }
         });
-    </script> @* <-- This was the line with the typo *@
+    </script>
 
 </body>
 
@@ -60,9 +69,9 @@
         private HttpContext? HttpContext { get; set; }
 
         private IComponentRenderMode? RenderModeForPage =>
-                (HttpContext?.Request.Path.StartsWithSegments("/Account") ?? false)
-                ? null
-                : Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer;
+                        (HttpContext?.Request.Path.StartsWithSegments("/Account") ?? false)
+                        ? null
+                        : Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer;
 
         protected override void OnInitialized()
         {
