@@ -7,6 +7,18 @@
 @inject ApplicationDbContext DbContext
 @rendermode InteractiveServer
 
+<style>
+    /* Ensures links in the info list look like regular text but remain clickable */
+    .info-list a {
+        color: inherit;
+        text-decoration: none;
+    }
+    .info-list a:hover {
+        text-decoration: underline;
+        color: #007bff; /* Adjust this color to match your theme */
+    }
+</style>
+
 <div class="contact-us-container">
     <h1 class="contact-title">Contact Us</h1>
     <p class="contact-intro">
@@ -15,21 +27,28 @@
 
     <div class="contact-body">
 
-        @* --- "GET IN TOUCH" SECTION (FIRST) --- *@
+        @* --- "GET IN TOUCH" SECTION --- *@
         <div class="contact-info-section">
             <h3 class="info-title">Get In Touch</h3>
             <ul class="info-list">
                 <li>
                     <span class="icon"><i class="fa-solid fa-phone"></i></span>
-                    <p>+237 690 05 91 97</p>
+                    <p><a href="tel:+237690059197">+237 690 05 91 97</a></p>
                 </li>
                 <li>
                     <span class="icon"><i class="fa-brands fa-whatsapp"></i></span>
-                    <p>+237 90059197</p>
+                    <p>
+                        <a href="https://wa.me/@(adminWhatsAppNumber.Replace("+", "").Replace(" ", ""))" target="_blank">
+                            @(string.IsNullOrWhiteSpace(adminWhatsAppNumber) ? "+237 690 05 91 97" : adminWhatsAppNumber)
+                        </a>
+                    </p>
                 </li>
                 <li>
                     <span class="icon"><i class="fa-solid fa-envelope"></i></span>
-                    <p>maillotstore@gmail.com</p>
+                    <div>
+                        <p><a href="mailto:support@maillotstore.store">support@maillotstore.store</a></p>
+                        <p><a href="mailto:contact@maillotstore.store">contact@maillotstore.store</a></p>
+                    </div>
                 </li>
                 <li>
                     <span class="icon"><i class="fa-solid fa-location-dot"></i></span>
@@ -40,11 +59,10 @@
             <h3 class="info-title social-links-title">Social Links</h3>
 
             <div class="social-icons">
-                <a href="https://wa.me/23790059197" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://wa.me/@(adminWhatsAppNumber.Replace("+", "").Replace(" ", ""))" target="_blank"><i class="fab fa-whatsapp"></i></a>
 
                 <a href="https://www.instagram.com/maillotstorecm?igsh=MWRveGdudzZiMmN3dw%3D%3D&utm_source=qr" target="_blank"><i class="fab fa-instagram"></i></a>
 
-                @* ✅ FIX: This now uses the correct variable below *@
                 <a href="@tiktokUrl" target="_blank" class="social-icon">
                     <i class="fa-brands fa-tiktok"></i>
                 </a>
@@ -55,7 +73,7 @@
             </div>
         </div>
 
-        @* --- "SEND US A MESSAGE" SECTION (SECOND) --- *@
+        @* --- "SEND US A MESSAGE" SECTION --- *@
         <div class="contact-form-section px-0 mx-0 px-md-3">
             <h3 class="form-title">Send Us A Message</h3>
 
@@ -67,13 +85,12 @@
                     <InputText @bind-Value="contactForm.Name" class="form-control" placeholder="Name" />
                 </div>
                 <div class="form-group">
-                    <InputText @bind-Value="contactForm.ContactInfo" class="form-control" placeholder="Phone Number" />
+                    <InputText @bind-Value="contactForm.ContactInfo" class="form-control" placeholder="Email or Phone Number" />
                 </div>
                 <div class="form-group">
                     <InputTextArea @bind-Value="contactForm.Message" class="form-control" rows="8" placeholder="Message" />
                 </div>
                 <button type="submit" class="submit-message-btn">SUBMIT</button>
-
             </EditForm>
         </div>
     </div>
@@ -81,14 +98,12 @@
 
 @code {
     private ContactForm contactForm = new();
-    private string adminWhatsAppNumber = "";
+    private string adminWhatsAppNumber = "237690059197"; // Default fallback
 
-    // ✅ FIXED: Added the dot (.) to the username
     private string tiktokUrl = "https://www.tiktok.com/@maillotstore.cm";
 
     protected override async Task OnInitializedAsync()
     {
-        // Load the admin WhatsApp number from the AdminSettings table
         var setting = await DbContext.AdminSettings
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Key == "AdminWhatsAppNumber");
@@ -101,28 +116,24 @@
 
     private void HandleSubmit()
     {
-        // Check if the contact info is an email or a phone number
+        if (string.IsNullOrWhiteSpace(contactForm.ContactInfo)) return;
+
         if (contactForm.ContactInfo.Contains("@"))
         {
-            // It's an email, create a mailto link
             var subject = HttpUtility.UrlEncode($"Message from {contactForm.Name}");
             var body = HttpUtility.UrlEncode(contactForm.Message);
-            var mailtoUrl = $"mailto:maillotstore32@gmail.com?subject={subject}&body={body}";
+            var mailtoUrl = $"mailto:support@maillotstore.store?subject={subject}&body={body}";
             NavigationManager.NavigateTo(mailtoUrl, forceLoad: true);
         }
         else
         {
-            // It's a phone number, create a WhatsApp link
             var text = HttpUtility.UrlEncode($"Name: {contactForm.Name}\nMessage: {contactForm.Message}");
-
-            // Use the loaded admin number. Remove '+' and spaces for the wa.me URL.
             var whatsAppNumberForUrl = adminWhatsAppNumber.Replace("+", "").Replace(" ", "");
             var whatsappUrl = $"https://wa.me/{whatsAppNumberForUrl}?text={text}";
 
             NavigationManager.NavigateTo(whatsappUrl, forceLoad: true);
         }
 
-        // Reset the form after submission
         contactForm = new();
     }
 
