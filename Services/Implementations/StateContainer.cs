@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization; // <-- IMPORTANT: Required for ReferenceHandler
 using System.Threading.Tasks;
 
-namespace MaillotStore.Services
+namespace MaillotStore.Services.Implementations
 {
     public class StateContainer
     {

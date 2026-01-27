@@ -1,7 +1,8 @@
 using MaillotStore.Components;
 using MaillotStore.Components.Account;
 using MaillotStore.Data;
-using MaillotStore.Services;
+using MaillotStore.Services.Interfaces;
+using MaillotStore.Services.Implementations;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -41,7 +42,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
   .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-builder.Services.AddScoped<MaillotStore.Services.ICartService, MaillotStore.Services.CartService>();
+builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<StateContainer>();
 builder.Services.AddSingleton<SearchStateService>();
 builder.Services.AddSingleton<OrderStateService>();

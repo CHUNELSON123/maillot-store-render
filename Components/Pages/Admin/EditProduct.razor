@@ -1,11 +1,12 @@
 ﻿@page "/admin/edit-product/{ProductId:int}"
-@using MaillotStore.Components.Layout
-@using MaillotStore.Models
-@using MaillotStore.Data
-@using Microsoft.AspNetCore.Authorization
 @using System.IO
+@using MaillotStore.Components.Layout
+@using MaillotStore.Data
+@using MaillotStore.Models
+@using MaillotStore.ViewModels
+@using MaillotStore.ViewModels
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
-@using MaillotStore.Models.ViewModels
 @layout AdminLayout
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavigationManager

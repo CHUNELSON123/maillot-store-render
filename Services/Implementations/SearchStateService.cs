@@ -1,4 +1,4 @@
-﻿namespace MaillotStore.Services
+﻿namespace MaillotStore.Services.Implementations
 {
     public class SearchStateService
     {

@@ -1,7 +1,7 @@
 ﻿using MaillotStore.Models;
 using System;
 
-namespace MaillotStore.Services
+namespace MaillotStore.Services.Implementations
 {
     public class OrderStateService
     {

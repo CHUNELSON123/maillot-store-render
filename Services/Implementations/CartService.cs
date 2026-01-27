@@ -1,20 +1,12 @@
 ﻿using MaillotStore.Models;
+using MaillotStore.Services.Interfaces; // <--- Import the interface here
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MaillotStore.Services
+namespace MaillotStore.Services.Implementations
 {
-    public interface ICartService
-    {
-        event Action OnChange;
-        List<OrderItem> GetCartItems();
-        void AddToCart(Product product, int quantity, string size, string? customName, int? customNumber);
-        void RemoveFromCart(OrderItem item);
-        void UpdateQuantity(OrderItem item, int quantity);
-        void UpdateSize(OrderItem item, string size);
-        void ClearCart(); // Add this line
-    }
+    // DELETE "public interface ICartService { ... }" from here. It is now in its own file.
 
     public class CartService : ICartService
     {
@@ -86,7 +78,6 @@ namespace MaillotStore.Services
             }
         }
 
-        // --- New method to clear the cart after an order ---
         public void ClearCart()
         {
             _cartItems.Clear();

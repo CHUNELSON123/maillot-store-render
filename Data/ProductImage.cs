@@ -1,4 +1,6 @@
-﻿namespace MaillotStore.Models
+﻿using MaillotStore.Models;
+
+namespace MaillotStore.Data
 {
     public class ProductImage
     {

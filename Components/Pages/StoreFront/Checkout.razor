@@ -1,11 +1,12 @@
 ﻿@page "/checkout"
+@using System.Text
 @using MaillotStore.Data
 @using MaillotStore.Models
 @using MaillotStore.Services
-@using Microsoft.EntityFrameworkCore
-@using System.Text
+@using MaillotStore.Services.Implementations
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
 @inject StateContainer StateContainer
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime

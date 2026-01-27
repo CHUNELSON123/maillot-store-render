@@ -1,9 +1,10 @@
 ﻿@page "/product/{ProductId:int}"
-@using MaillotStore.Models
 @using MaillotStore.Components.Account.Shared
 @using MaillotStore.Data
-@using Microsoft.EntityFrameworkCore
+@using MaillotStore.Models
 @using MaillotStore.Services
+@using MaillotStore.Services.Implementations
+@using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavigationManager
 @inject StateContainer StateContainer

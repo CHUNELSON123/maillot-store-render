@@ -196,10 +196,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcRm9vdGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/About.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBYm91dC5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/Admin/AddProduct.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxBZGRQcm9kdWN0LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -240,44 +236,48 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxWaWV3T3JkZXIucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/Auth.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBdXRoLnJhem9y
+[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/StoreFront/About.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdG9yZUZyb250XEFib3V0LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/Checkout.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDaGVja291dC5yYXpvcg==
+[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/StoreFront/Auth.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdG9yZUZyb250XEF1dGgucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/Contact.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb250YWN0LnJhem9y
+[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/StoreFront/Checkout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdG9yZUZyb250XENoZWNrb3V0LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/Error.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
+[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/StoreFront/Contact.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdG9yZUZyb250XENvbnRhY3QucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/Home.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
+[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/StoreFront/Error.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdG9yZUZyb250XEVycm9yLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/InfluencerDashboard.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xJbmZsdWVuY2VyRGFzaGJvYXJkLnJhem9y
+[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/StoreFront/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdG9yZUZyb250XEhvbWUucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/LoginRedirect.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMb2dpblJlZGlyZWN0LnJhem9y
+[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/StoreFront/InfluencerDashboard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdG9yZUZyb250XEluZmx1ZW5jZXJEYXNoYm9hcmQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/ProductDetails.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQcm9kdWN0RGV0YWlscy5yYXpvcg==
+[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/StoreFront/LoginRedirect.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdG9yZUZyb250XExvZ2luUmVkaXJlY3QucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/Shop.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTaG9wLnJhem9y
+[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/StoreFront/ProductDetails.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdG9yZUZyb250XFByb2R1Y3REZXRhaWxzLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/Terms.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUZXJtcy5yYXpvcg==
+[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/StoreFront/Shop.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdG9yZUZyb250XFNob3AucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/StoreFront/Terms.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTdG9yZUZyb250XFRlcm1zLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Routes.razor]

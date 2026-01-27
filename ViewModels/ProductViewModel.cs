@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MaillotStore.Data;
+using System.ComponentModel.DataAnnotations;
 
-namespace MaillotStore.Models.ViewModels
+namespace MaillotStore.ViewModels
 {
     public class ProductViewModel
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace MaillotStore.Services
+namespace MaillotStore.Services.Implementations
 {
     public class ReferralService
     {

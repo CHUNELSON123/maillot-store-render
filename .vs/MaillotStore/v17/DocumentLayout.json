@@ -3,8 +3,60 @@
   "WorkspaceRootPath": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\contact.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\contact.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\admin\\editproduct.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\admin\\editproduct.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\admin\\addproduct.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\admin\\addproduct.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\services\\interfaces\\icartservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:services\\interfaces\\icartservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\services\\implementations\\cartservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:services\\implementations\\cartservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\services\\implementations\\statecontainer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:services\\implementations\\statecontainer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\storefront\\about.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\storefront\\about.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\services\\implementations\\searchstateservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:services\\implementations\\searchstateservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\services\\implementations\\referralservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:services\\implementations\\referralservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\services\\implementations\\orderstateservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:services\\implementations\\orderstateservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\storefront\\shop.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\storefront\\shop.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\storefront\\contact.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\storefront\\contact.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -31,14 +83,6 @@
       "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\about.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\about.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\maillotstore.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:maillotstore.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
@@ -47,12 +91,8 @@
       "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\productdetails.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\productdetails.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\services\\statecontainer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:services\\statecontainer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\storefront\\productdetails.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\storefront\\productdetails.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\wwwroot\\css\\products.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
@@ -63,36 +103,20 @@
       "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\account\\shared\\productcard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\admin\\editproduct.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\admin\\editproduct.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\admin\\addproduct.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\admin\\addproduct.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\viewmodels\\productviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:viewmodels\\productviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\services\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:services\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\data\\productimage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:data\\productimage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\models\\viewmodels\\productviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:models\\viewmodels\\productviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\services\\data\\productimage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:services\\data\\productimage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\shop.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\shop.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\storefront\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\storefront\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\shared\\sharemodal.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -111,20 +135,20 @@
       "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\layout\\adminsidebar.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\checkout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\checkout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\storefront\\checkout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\storefront\\checkout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\.dockerignore||{3B902123-F8A7-4915-9F01-361F908088D0}",
       "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:.dockerignore||{3B902123-F8A7-4915-9F01-361F908088D0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\influencerdashboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\influencerdashboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\storefront\\influencerdashboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\storefront\\influencerdashboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\terms.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\terms.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\pages\\storefront\\terms.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|solutionrelative:components\\pages\\storefront\\terms.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C10239AD-A6C8-4EF8-AFF7-FD21EE0892F3}|MaillotStore.csproj|c:\\users\\flavin\\source\\repos\\maillot-store\\components\\layout\\mainlayout.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
@@ -162,104 +186,41 @@
       "DocumentGroups": [
         {
           "DockedWidth": 253,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
-            },
-            {
               "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "ProductViewModel.cs",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Models\\ViewModels\\ProductViewModel.cs",
-              "RelativeDocumentMoniker": "Models\\ViewModels\\ProductViewModel.cs",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Models\\ViewModels\\ProductViewModel.cs",
-              "RelativeToolTip": "Models\\ViewModels\\ProductViewModel.cs",
-              "ViewState": "AgIAAAoAAAAAAAAAAAAIwBoAAABAAAAAAAAAAA==",
+              "DocumentIndex": 11,
+              "Title": "OrderStateService.cs",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Services\\Implementations\\OrderStateService.cs",
+              "RelativeDocumentMoniker": "Services\\Implementations\\OrderStateService.cs",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Services\\Implementations\\OrderStateService.cs",
+              "RelativeToolTip": "Services\\Implementations\\OrderStateService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-13T15:56:11.859Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\appsettings.json",
-              "RelativeDocumentMoniker": "appsettings.json",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\appsettings.json",
-              "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAABgAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-11-03T17:27:10.418Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Contact.razor",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Contact.razor",
-              "RelativeDocumentMoniker": "Components\\Pages\\Contact.razor",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Contact.razor*",
-              "RelativeToolTip": "Components\\Pages\\Contact.razor*",
-              "ViewState": "AgIAAA8AAAAAAAAAAAAAACAAAAAeAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-02T11:37:04.502Z",
+              "WhenOpened": "2026-01-27T15:18:37.444Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Register.razor",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Account\\Pages\\Register.razor",
-              "RelativeDocumentMoniker": "Components\\Account\\Pages\\Register.razor",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Account\\Pages\\Register.razor",
-              "RelativeToolTip": "Components\\Account\\Pages\\Register.razor",
-              "ViewState": "AgIAABIAAAAAAAAAAAAAABgAAAAIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-08T07:34:21.338Z"
+              "DocumentIndex": 6,
+              "Title": "CartService.cs",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Services\\Implementations\\CartService.cs",
+              "RelativeDocumentMoniker": "Services\\Implementations\\CartService.cs",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Services\\Implementations\\CartService.cs",
+              "RelativeToolTip": "Services\\Implementations\\CartService.cs",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAYwFgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T15:18:09.179Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Login.razor",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Account\\Pages\\Login.razor",
-              "RelativeDocumentMoniker": "Components\\Account\\Pages\\Login.razor",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Account\\Pages\\Login.razor",
-              "RelativeToolTip": "Components\\Account\\Pages\\Login.razor",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-08T07:47:59.11Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Footer.razor",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Layout\\Footer.razor",
-              "RelativeDocumentMoniker": "Components\\Layout\\Footer.razor",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Layout\\Footer.razor",
-              "RelativeToolTip": "Components\\Layout\\Footer.razor",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAYwBMAAAAOAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-02T16:10:11.706Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "account.css",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\wwwroot\\css\\account.css",
-              "RelativeDocumentMoniker": "wwwroot\\css\\account.css",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\wwwroot\\css\\account.css",
-              "RelativeToolTip": "wwwroot\\css\\account.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAKwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-01-12T11:59:08.66Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 14,
               "Title": "App.razor",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\App.razor",
               "RelativeDocumentMoniker": "Components\\App.razor",
@@ -272,19 +233,177 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
+              "Title": "About.razor",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Components\\Pages\\StoreFront\\About.razor",
+              "RelativeDocumentMoniker": "Components\\Pages\\StoreFront\\About.razor",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Components\\Pages\\StoreFront\\About.razor",
+              "RelativeToolTip": "Components\\Pages\\StoreFront\\About.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-12T11:10:01.471Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFUAAAAvAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-03T17:03:58.598Z"
+              "WhenOpened": "2025-11-03T17:03:58.598Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Product.cs",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Models\\Product.cs",
+              "RelativeDocumentMoniker": "Models\\Product.cs",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Models\\Product.cs",
+              "RelativeToolTip": "Models\\Product.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAABsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-13T15:55:41.253Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AddProduct.razor",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Admin\\AddProduct.razor",
+              "RelativeDocumentMoniker": "Components\\Pages\\Admin\\AddProduct.razor",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Admin\\AddProduct.razor*",
+              "RelativeToolTip": "Components\\Pages\\Admin\\AddProduct.razor*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-04T18:08:39.048Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "EditProduct.razor",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Admin\\EditProduct.razor",
+              "RelativeDocumentMoniker": "Components\\Pages\\Admin\\EditProduct.razor",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Admin\\EditProduct.razor*",
+              "RelativeToolTip": "Components\\Pages\\Admin\\EditProduct.razor*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-07T09:37:06.121Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ReferralService.cs",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Services\\Implementations\\ReferralService.cs",
+              "RelativeDocumentMoniker": "Services\\Implementations\\ReferralService.cs",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Services\\Implementations\\ReferralService.cs",
+              "RelativeToolTip": "Services\\Implementations\\ReferralService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T15:18:49.15Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 9,
+              "Title": "SearchStateService.cs",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Services\\Implementations\\SearchStateService.cs",
+              "RelativeDocumentMoniker": "Services\\Implementations\\SearchStateService.cs",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Services\\Implementations\\SearchStateService.cs",
+              "RelativeToolTip": "Services\\Implementations\\SearchStateService.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T15:18:58.578Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ICartService.cs",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Services\\Interfaces\\ICartService.cs",
+              "RelativeDocumentMoniker": "Services\\Interfaces\\ICartService.cs",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Services\\Interfaces\\ICartService.cs",
+              "RelativeToolTip": "Services\\Interfaces\\ICartService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-27T15:41:55.861Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "_Imports.razor",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\_Imports.razor",
+              "RelativeDocumentMoniker": "Components\\_Imports.razor",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\_Imports.razor",
+              "RelativeToolTip": "Components\\_Imports.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-27T15:44:02.611Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "account.css",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\wwwroot\\css\\account.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\account.css",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\wwwroot\\css\\account.css",
+              "RelativeToolTip": "wwwroot\\css\\account.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAKwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-01-12T11:59:08.66Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "StateContainer.cs",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Services\\Implementations\\StateContainer.cs",
+              "RelativeDocumentMoniker": "Services\\Implementations\\StateContainer.cs",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Services\\Implementations\\StateContainer.cs",
+              "RelativeToolTip": "Services\\Implementations\\StateContainer.cs",
+              "ViewState": "AgIAAJEAAAAAAAAAAAAgwKcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-13T16:24:52.169Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "Footer.razor",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Layout\\Footer.razor",
+              "RelativeDocumentMoniker": "Components\\Layout\\Footer.razor",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Layout\\Footer.razor",
+              "RelativeToolTip": "Components\\Layout\\Footer.razor",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAYwBMAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-02T16:10:11.706Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Login.razor",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Account\\Pages\\Login.razor",
+              "RelativeDocumentMoniker": "Components\\Account\\Pages\\Login.razor",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Account\\Pages\\Login.razor",
+              "RelativeToolTip": "Components\\Account\\Pages\\Login.razor",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-08T07:47:59.11Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
               "Title": "MaillotStore.csproj",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\MaillotStore.csproj",
               "RelativeDocumentMoniker": "MaillotStore.csproj",
@@ -296,43 +415,83 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "About.razor",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\About.razor",
-              "RelativeDocumentMoniker": "Components\\Pages\\About.razor",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\About.razor",
-              "RelativeToolTip": "Components\\Pages\\About.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 12,
+              "Title": "Shop.razor",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Components\\Pages\\StoreFront\\Shop.razor",
+              "RelativeDocumentMoniker": "Components\\Pages\\StoreFront\\Shop.razor",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Components\\Pages\\StoreFront\\Shop.razor",
+              "RelativeToolTip": "Components\\Pages\\StoreFront\\Shop.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAABPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-01-12T11:10:01.471Z"
+              "WhenOpened": "2025-11-02T18:02:47.657Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "ProductImage.cs",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Services\\Data\\ProductImage.cs",
-              "RelativeDocumentMoniker": "Services\\Data\\ProductImage.cs",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Services\\Data\\ProductImage.cs",
-              "RelativeToolTip": "Services\\Data\\ProductImage.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-13T15:54:46.175Z"
+              "DocumentIndex": 16,
+              "Title": "Register.razor",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Account\\Pages\\Register.razor",
+              "RelativeDocumentMoniker": "Components\\Account\\Pages\\Register.razor",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Account\\Pages\\Register.razor",
+              "RelativeToolTip": "Components\\Account\\Pages\\Register.razor",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAABgAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-10-08T07:34:21.338Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Contact.razor",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Components\\Pages\\StoreFront\\Contact.razor",
+              "RelativeDocumentMoniker": "Components\\Pages\\StoreFront\\Contact.razor",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Components\\Pages\\StoreFront\\Contact.razor",
+              "RelativeToolTip": "Components\\Pages\\StoreFront\\Contact.razor",
+              "ViewState": "AgIAABYAAAAAAAAAAAAAAI4AAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-02T11:37:04.502Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 19,
-              "Title": "Product.cs",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Models\\Product.cs",
-              "RelativeDocumentMoniker": "Models\\Product.cs",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Models\\Product.cs",
-              "RelativeToolTip": "Models\\Product.cs",
-              "ViewState": "AgIAAAQAAAAAAAAAAAAywBsAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-13T15:55:41.253Z"
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAABgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-11-03T17:27:10.418Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 26,
+              "Title": "ProductViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\ViewModels\\ProductViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\ProductViewModel.cs",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\ViewModels\\ProductViewModel.cs",
+              "RelativeToolTip": "ViewModels\\ProductViewModel.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAIwBoAAABAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-13T15:56:11.859Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "ProductImage.cs",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Data\\ProductImage.cs",
+              "RelativeDocumentMoniker": "Data\\ProductImage.cs",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Data\\ProductImage.cs",
+              "RelativeToolTip": "Data\\ProductImage.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-13T15:54:46.175Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
               "Title": "Dockerfile",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Dockerfile",
               "RelativeDocumentMoniker": "Dockerfile",
@@ -344,19 +503,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 22,
               "Title": "ProductDetails.razor",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\ProductDetails.razor",
-              "RelativeDocumentMoniker": "Components\\Pages\\ProductDetails.razor",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\ProductDetails.razor",
-              "RelativeToolTip": "Components\\Pages\\ProductDetails.razor",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Components\\Pages\\StoreFront\\ProductDetails.razor",
+              "RelativeDocumentMoniker": "Components\\Pages\\StoreFront\\ProductDetails.razor",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Components\\Pages\\StoreFront\\ProductDetails.razor",
+              "RelativeToolTip": "Components\\Pages\\StoreFront\\ProductDetails.razor",
               "ViewState": "AgIAACcCAAAAAAAAAAAiwD0CAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-13T16:07:04.03Z"
+              "WhenOpened": "2025-12-13T16:07:04.03Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 23,
               "Title": "Products.css",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\wwwroot\\css\\Products.css",
               "RelativeDocumentMoniker": "wwwroot\\css\\Products.css",
@@ -368,31 +528,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "StateContainer.cs",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Services\\StateContainer.cs",
-              "RelativeDocumentMoniker": "Services\\StateContainer.cs",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Services\\StateContainer.cs",
-              "RelativeToolTip": "Services\\StateContainer.cs",
-              "ViewState": "AgIAAJEAAAAAAAAAAAAgwKcAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-13T16:24:52.169Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 25,
               "Title": "ApplicationDbContext.cs",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Services\\Data\\ApplicationDbContext.cs",
-              "RelativeDocumentMoniker": "Services\\Data\\ApplicationDbContext.cs",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Services\\Data\\ApplicationDbContext.cs",
-              "RelativeToolTip": "Services\\Data\\ApplicationDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Data\\ApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "Data\\ApplicationDbContext.cs",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Data\\ApplicationDbContext.cs",
+              "RelativeToolTip": "Data\\ApplicationDbContext.cs",
               "ViewState": "AgIAAAcAAAAAAAAAAAAAABIAAAA+AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-13T15:35:54.983Z"
+              "WhenOpened": "2025-12-13T15:35:54.983Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 24,
               "Title": "ProductCard.razor",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Account\\Shared\\ProductCard.razor",
               "RelativeDocumentMoniker": "Components\\Account\\Shared\\ProductCard.razor",
@@ -400,47 +549,24 @@
               "RelativeToolTip": "Components\\Account\\Shared\\ProductCard.razor",
               "ViewState": "AgIAACsAAAAAAAAAAAAYwEEAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-02T12:52:14.622Z"
+              "WhenOpened": "2025-11-02T12:52:14.622Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "AddProduct.razor",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Admin\\AddProduct.razor",
-              "RelativeDocumentMoniker": "Components\\Pages\\Admin\\AddProduct.razor",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Admin\\AddProduct.razor",
-              "RelativeToolTip": "Components\\Pages\\Admin\\AddProduct.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIBAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-04T18:08:39.048Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "EditProduct.razor",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Admin\\EditProduct.razor",
-              "RelativeDocumentMoniker": "Components\\Pages\\Admin\\EditProduct.razor",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Admin\\EditProduct.razor",
-              "RelativeToolTip": "Components\\Pages\\Admin\\EditProduct.razor",
-              "ViewState": "AgIAABcBAAAAAAAAAAAAwC4BAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-07T09:37:06.121Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 28,
               "Title": "Home.razor",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Home.razor",
-              "RelativeDocumentMoniker": "Components\\Pages\\Home.razor",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Home.razor",
-              "RelativeToolTip": "Components\\Pages\\Home.razor",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Components\\Pages\\StoreFront\\Home.razor",
+              "RelativeDocumentMoniker": "Components\\Pages\\StoreFront\\Home.razor",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Components\\Pages\\StoreFront\\Home.razor",
+              "RelativeToolTip": "Components\\Pages\\StoreFront\\Home.razor",
               "ViewState": "AgIAAIsAAAAAAAAAAAAAAIsAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-10-02T16:21:36.027Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 29,
               "Title": "ShareModal.razor",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Shared\\ShareModal.razor",
               "RelativeDocumentMoniker": "Components\\Shared\\ShareModal.razor",
@@ -452,19 +578,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
-              "Title": "Shop.razor",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Shop.razor",
-              "RelativeDocumentMoniker": "Components\\Pages\\Shop.razor",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Shop.razor",
-              "RelativeToolTip": "Components\\Pages\\Shop.razor",
-              "ViewState": "AgIAAI8AAAAAAAAAAAAAwKgAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-02T18:02:47.657Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 30,
               "Title": "AdminRegister.razor",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Account\\Pages\\AdminRegister.razor",
               "RelativeDocumentMoniker": "Components\\Account\\Pages\\AdminRegister.razor",
@@ -476,7 +590,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 32,
               "Title": "AdminSidebar.razor",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Layout\\AdminSidebar.razor",
               "RelativeDocumentMoniker": "Components\\Layout\\AdminSidebar.razor",
@@ -488,7 +602,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 31,
               "Title": "MainLayout.razor",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Layout\\MainLayout.razor",
               "RelativeDocumentMoniker": "Components\\Layout\\MainLayout.razor",
@@ -496,35 +610,37 @@
               "RelativeToolTip": "Components\\Layout\\MainLayout.razor",
               "ViewState": "AgIAAKYAAAAAAAAAAAAiwLoAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-02T16:22:25.959Z"
+              "WhenOpened": "2025-11-02T16:22:25.959Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 33,
               "Title": "Checkout.razor",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Checkout.razor",
-              "RelativeDocumentMoniker": "Components\\Pages\\Checkout.razor",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Checkout.razor",
-              "RelativeToolTip": "Components\\Pages\\Checkout.razor",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Components\\Pages\\StoreFront\\Checkout.razor",
+              "RelativeDocumentMoniker": "Components\\Pages\\StoreFront\\Checkout.razor",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Components\\Pages\\StoreFront\\Checkout.razor",
+              "RelativeToolTip": "Components\\Pages\\StoreFront\\Checkout.razor",
               "ViewState": "AgIAAD0BAAAAAAAAAAAmwFEBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-02T12:19:18.844Z"
+              "WhenOpened": "2025-11-02T12:19:18.844Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 36,
               "Title": "Terms.razor",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Terms.razor",
-              "RelativeDocumentMoniker": "Components\\Pages\\Terms.razor",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Terms.razor",
-              "RelativeToolTip": "Components\\Pages\\Terms.razor",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Components\\Pages\\StoreFront\\Terms.razor",
+              "RelativeDocumentMoniker": "Components\\Pages\\StoreFront\\Terms.razor",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Components\\Pages\\StoreFront\\Terms.razor",
+              "RelativeToolTip": "Components\\Pages\\StoreFront\\Terms.razor",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAPoAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-11-02T11:37:47.227Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
+              "DocumentIndex": 43,
               "Title": "Dockerfile.txt",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Dockerfile.txt",
               "RelativeDocumentMoniker": "Dockerfile.txt",
@@ -535,7 +651,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 34,
               "Title": ".dockerignore",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\.dockerignore",
               "RelativeDocumentMoniker": ".dockerignore",
@@ -547,19 +663,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 35,
               "Title": "InfluencerDashboard.razor",
-              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\InfluencerDashboard.razor",
-              "RelativeDocumentMoniker": "Components\\Pages\\InfluencerDashboard.razor",
-              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\InfluencerDashboard.razor",
-              "RelativeToolTip": "Components\\Pages\\InfluencerDashboard.razor",
+              "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Components\\Pages\\StoreFront\\InfluencerDashboard.razor",
+              "RelativeDocumentMoniker": "Components\\Pages\\StoreFront\\InfluencerDashboard.razor",
+              "ToolTip": "C:\\Users\\FLAVIN\\source\\repos\\Maillot-Store\\Components\\Pages\\StoreFront\\InfluencerDashboard.razor",
+              "RelativeToolTip": "Components\\Pages\\StoreFront\\InfluencerDashboard.razor",
               "ViewState": "AgIAAAYAAAAAAAAAAAAAADMAAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-03T20:02:24.31Z"
+              "WhenOpened": "2025-10-03T20:02:24.31Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 37,
               "Title": "MainLayout.razor.css",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Layout\\MainLayout.razor.css",
               "RelativeDocumentMoniker": "Components\\Layout\\MainLayout.razor.css",
@@ -571,7 +688,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 39,
               "Title": "Settings.razor",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Admin\\Settings.razor",
               "RelativeDocumentMoniker": "Components\\Pages\\Admin\\Settings.razor",
@@ -583,7 +700,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 38,
               "Title": "Order.cs",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Models\\Order.cs",
               "RelativeDocumentMoniker": "Models\\Order.cs",
@@ -595,7 +712,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 40,
               "Title": "Routes.razor",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Routes.razor",
               "RelativeDocumentMoniker": "Components\\Routes.razor",
@@ -607,7 +724,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 41,
               "Title": "Influencers.razor",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Admin\\Influencers.razor",
               "RelativeDocumentMoniker": "Components\\Pages\\Admin\\Influencers.razor",
@@ -619,7 +736,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 42,
               "Title": "Commissions.razor",
               "DocumentMoniker": "C:\\Users\\FLAVIN\\source\\repos\\maillot-store\\Components\\Pages\\Admin\\Commissions.razor",
               "RelativeDocumentMoniker": "Components\\Pages\\Admin\\Commissions.razor",
@@ -627,16 +744,13 @@
               "RelativeToolTip": "Components\\Pages\\Admin\\Commissions.razor",
               "ViewState": "AgIAABgAAAAAAAAAAAAAAMkAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-04T16:45:44.798Z"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
+              "WhenOpened": "2025-10-04T16:45:44.798Z",
+              "EditorCaption": ""
             }
           ]
         },
         {
-          "DockedWidth": 1354,
+          "DockedWidth": 1110,
           "SelectedChildIndex": -1,
           "Children": [
             {
@@ -658,7 +772,7 @@
           ]
         },
         {
-          "DockedWidth": 927,
+          "DockedWidth": 1354,
           "SelectedChildIndex": -1,
           "Children": [
             {

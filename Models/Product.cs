@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic; // Ensure this is present
+﻿using MaillotStore.Data;
+using System.Collections.Generic; // Ensure this is present
 
 namespace MaillotStore.Models
 {

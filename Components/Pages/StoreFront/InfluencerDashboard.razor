@@ -1,10 +1,11 @@
 ﻿@page "/influencer-dashboard"
+@using MaillotStore.Data
+@using MaillotStore.Models
+@using MaillotStore.Services
+@using MaillotStore.Services.Implementations
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
-@using MaillotStore.Data
-@using MaillotStore.Models  
-@using MaillotStore.Services
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager

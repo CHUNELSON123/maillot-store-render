@@ -1,8 +1,9 @@
 ﻿@page "/shop"
 @using MaillotStore.Components.Account.Shared
-@using MaillotStore.Models
 @using MaillotStore.Data
+@using MaillotStore.Models
 @using MaillotStore.Services
+@using MaillotStore.Services.Implementations
 @using Microsoft.EntityFrameworkCore
 @rendermode InteractiveServer
 @inject ApplicationDbContext DbContext
@@ -15,7 +16,7 @@
     <div class="row mb-4">
         <div class="col-md-6">
             <h2>Shop</h2>
-            <p>Browse our collection of authentic football jerseys.</p>
+            <p>Browse our collection of authentic football, basketball, and nfl jerseys.</p>
         </div>
         <div class="col-md-6 d-flex justify-content-end align-items-center">
             <div class="me-3">
