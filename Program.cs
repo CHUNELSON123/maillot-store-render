@@ -66,6 +66,27 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 
 var app = builder.Build();
 
+// =========================================================================
+//  ADD THIS BLOCK HERE: It automatically creates tables on startup
+// =========================================================================
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var dbContext = services.GetRequiredService<ApplicationDbContext>();
+        // This command applies any pending migrations and creates the database if it doesn't exist
+        await dbContext.Database.MigrateAsync();
+    }
+    catch (Exception ex)
+    {
+        // Log errors if the migration fails
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database.");
+    }
+}
+// =========================================================================
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
