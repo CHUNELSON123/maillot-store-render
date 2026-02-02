@@ -95,6 +95,74 @@ namespace MaillotStore.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("MaillotStore.Data.League", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Leagues");
+                });
+
+            modelBuilder.Entity("MaillotStore.Data.ProductImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductImages");
+                });
+
+            modelBuilder.Entity("MaillotStore.Data.Team", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("DisplayOnHome")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("LeagueId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LogoUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LeagueId");
+
+                    b.ToTable("Teams");
+                });
+
             modelBuilder.Entity("MaillotStore.Models.AdminSetting", b =>
                 {
                     b.Property<int>("Id")
@@ -234,21 +302,20 @@ namespace MaillotStore.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProductId"));
 
                     b.Property<string>("Category")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
                     b.Property<string>("ImageUrl")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ImageUrl2")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ImageUrl3")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsFeatured")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsOnSale")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
@@ -261,37 +328,24 @@ namespace MaillotStore.Migrations
                     b.Property<string>("Season")
                         .HasColumnType("text");
 
-                    b.Property<string>("Sizes")
+                    b.Property<string>("Size")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Stock")
                         .HasColumnType("integer");
 
-                    b.HasKey("ProductId");
-
-                    b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("MaillotStore.Models.ProductImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int?>("TeamId")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
+                    b.Property<string>("Version")
                         .HasColumnType("text");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
+                    b.HasKey("ProductId");
 
-                    b.HasKey("Id");
+                    b.HasIndex("TeamId");
 
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductImages");
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -426,6 +480,28 @@ namespace MaillotStore.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("MaillotStore.Data.ProductImage", b =>
+                {
+                    b.HasOne("MaillotStore.Models.Product", "Product")
+                        .WithMany("Gallery")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("MaillotStore.Data.Team", b =>
+                {
+                    b.HasOne("MaillotStore.Data.League", "League")
+                        .WithMany("Teams")
+                        .HasForeignKey("LeagueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("League");
+                });
+
             modelBuilder.Entity("MaillotStore.Models.OrderItem", b =>
                 {
                     b.HasOne("MaillotStore.Models.Order", null)
@@ -443,15 +519,13 @@ namespace MaillotStore.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("MaillotStore.Models.ProductImage", b =>
+            modelBuilder.Entity("MaillotStore.Models.Product", b =>
                 {
-                    b.HasOne("MaillotStore.Models.Product", "Product")
-                        .WithMany("Gallery")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("MaillotStore.Data.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamId");
 
-                    b.Navigation("Product");
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -503,6 +577,11 @@ namespace MaillotStore.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("MaillotStore.Data.League", b =>
+                {
+                    b.Navigation("Teams");
                 });
 
             modelBuilder.Entity("MaillotStore.Models.Order", b =>

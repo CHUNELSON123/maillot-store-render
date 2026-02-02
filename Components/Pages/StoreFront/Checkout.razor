@@ -4,7 +4,8 @@
 @using MaillotStore.Models
 @using MaillotStore.Services
 @using MaillotStore.Services.Implementations
-@using Microsoft.AspNetCore.Components.Authorization
+@using MaillotStore.Services.Interfaces
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @inject StateContainer StateContainer
@@ -12,7 +13,7 @@
 @inject IJSRuntime JSRuntime
 @inject ApplicationDbContext DbContext
 @inject ReferralService ReferralService
-@inject OrderStateService OrderStateService
+@inject IOrderStateService OrderStateService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<ApplicationUser> UserManager
 @implements IDisposable
@@ -24,7 +25,7 @@
     <div class="checkout-container">
         <h1 class="text-center mb-4">Check Out</h1>
 
-        @* --- YOUR ORDER SUMMARY (HTML is unchanged) --- *@
+        @* --- ORDER SUMMARY (Unchanged) --- *@
         <div class="order-summary mb-5">
             <h2 class="mb-3">Your Order Summary</h2>
 
@@ -48,7 +49,6 @@
                                         <img src="@item.Product.ImageUrl" alt="@item.Product.Name" class="img-fluid me-3" style="width: 50px;">
                                         <div>
                                             <strong>@item.Product.Name</strong><br>
-
                                             <div class="d-flex align-items-center mt-1">
                                                 <span class="text-muted me-2">Size:</span>
                                                 <select class="form-select form-select-sm bg-dark text-white" style="width: 80px;"
@@ -59,7 +59,6 @@
                                                     }
                                                 </select>
                                             </div>
-
                                             @if (!string.IsNullOrEmpty(item.CustomName) || item.CustomNumber.HasValue)
                                             {
                                                 <div class="customization-display">
@@ -99,26 +98,30 @@
             }
         </div>
 
-        @* --- CUSTOMER DETAILS (HTML is unchanged) --- *@
+        @* --- CUSTOMER DETAILS --- *@
         <div class="customer-details">
             <h2 class="mb-3">Customer Details</h2>
             <div class="mb-3">
-                <input type="text" class="form-control form-control-dark" placeholder="Name" @bind="customerName">
+                <input type="text" class="form-control form-control-dark" placeholder="Name (Required)" @bind="customerName">
             </div>
             <div class="mb-3">
-                <input type="text" class="form-control form-control-dark" placeholder="Phone Number" @bind="customerPhone">
+                <input type="text" class="form-control form-control-dark" placeholder="Phone Number (Required)" @bind="customerPhone">
             </div>
             <div class="mb-3">
-                <input type="text" class="form-control form-control-dark" placeholder="Delivery Address" @bind="customerAddress">
+                @* UPDATED: Placeholder to Required *@
+                <input type="text" class="form-control form-control-dark" placeholder="Delivery Address (Required)" @bind="customerAddress">
             </div>
             <div class="mb-3">
-                <textarea class="form-control form-control-dark" rows="4" placeholder="Optional Message" @bind="optionalMessage"></textarea>
+                <textarea class="form-control form-control-dark" rows="4" placeholder="Message (Optional)" @bind="optionalMessage"></textarea>
             </div>
         </div>
 
-        @* --- CHECKOUT BUTTON (HTML is unchanged) --- *@
+        @* --- CHECKOUT BUTTON --- *@
         <div class="d-grid gap-2 mt-4">
-            <button class="btn btn-lg btn-success" disabled="@(!orderItems.Any() || string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(customerPhone))" @onclick="CheckoutViaWhatsApp">
+            @* UPDATED: Added customerAddress to the check so button is disabled if empty *@
+            <button class="btn btn-lg btn-success"
+                    disabled="@(!orderItems.Any() || string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(customerPhone) || string.IsNullOrWhiteSpace(customerAddress))"
+                    @onclick="CheckoutViaWhatsApp">
                 Check Out Via WhatsApp
             </button>
         </div>
@@ -128,10 +131,11 @@
 @code {
     private List<OrderItem> orderItems = new();
     private decimal Subtotal => orderItems.Sum(item => item.Price * item.Quantity);
-    private string customerName;
-    private string customerPhone;
-    private string customerAddress;
-    private string optionalMessage;
+
+    private string customerName = string.Empty;
+    private string customerPhone = string.Empty;
+    private string customerAddress = string.Empty;
+    private string optionalMessage = string.Empty;
 
     private List<string> availableSizes = new() { "S", "M", "L", "XL", "XXL" };
 
@@ -139,8 +143,16 @@
     {
         if (firstRender)
         {
-            await StateContainer.LoadState();
-            orderItems = StateContainer.CartItems;
+            var stagedItem = OrderStateService.GetStagedOrder();
+            if (stagedItem != null && stagedItem.OrderItems != null && stagedItem.OrderItems.Any())
+            {
+                orderItems = stagedItem.OrderItems.ToList();
+            }
+            else
+            {
+                await StateContainer.LoadState();
+                orderItems = StateContainer.CartItems;
+            }
             StateContainer.OnChange += StateHasChanged;
             StateHasChanged();
         }
@@ -148,11 +160,19 @@
 
     private async Task CheckoutViaWhatsApp()
     {
+        // 1. Validation (Include Address)
         var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to place this order?");
         if (!confirmed) return;
 
-        if (!orderItems.Any() || string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(customerPhone)) return;
+        if (!orderItems.Any() ||
+            string.IsNullOrWhiteSpace(customerName) ||
+            string.IsNullOrWhiteSpace(customerPhone) ||
+            string.IsNullOrWhiteSpace(customerAddress)) // Check Address
+        {
+            return;
+        }
 
+        // 2. Prepare Items
         var orderItemsForDb = new List<OrderItem>();
         foreach (var item in orderItems)
         {
@@ -171,7 +191,7 @@
             }
         }
 
-        // --- START: COMMISSION AND VISIBILITY LOGIC (UPDATED) ---
+        // 3. Commission Logic
         var commissionSetting = await DbContext.CommissionSettings.FirstOrDefaultAsync();
         if (commissionSetting == null)
         {
@@ -183,12 +203,10 @@
         decimal orderCommission = 0;
         string referralCode = ReferralService.GetReferralCode();
 
-        // This is the logic for an influencer buying their own product
         if (string.IsNullOrEmpty(referralCode))
         {
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
-
             if (user.Identity.IsAuthenticated && user.IsInRole("Influencer"))
             {
                 var appUser = await UserManager.GetUserAsync(user);
@@ -199,58 +217,42 @@
             }
         }
 
-        // Check if *any* referral code was found (from link OR self-purchase)
         bool hasReferralCode = !string.IsNullOrEmpty(referralCode);
+        if (hasReferralCode) orderCommission = Subtotal * commissionSetting.CurrentRate;
 
-        if (hasReferralCode)
-        {
-            orderCommission = Subtotal * commissionSetting.CurrentRate;
-        }
-        // --- END: COMMISSION AND VISIBILITY LOGIC ---
-
+        // 4. Create Order
         var order = new Order
         {
             CustomerName = customerName,
             CustomerPhone = customerPhone,
-            CustomerAddress = customerAddress,
+            CustomerAddress = customerAddress, // Required now
             OrderDate = DateTime.UtcNow,
             OrderItems = orderItemsForDb,
             TotalAmount = Subtotal,
             ReferralCode = referralCode,
             Status = "Pending",
             CommissionAmount = orderCommission,
-
-            // --- START: UPDATED LINES ---
-            // 1. Save the optional message (if one was entered)
-            OptionalMessage = string.IsNullOrWhiteSpace(optionalMessage) ? null : optionalMessage,
-
-            // 2. Set visibility: If a referral code exists (from link OR self-purchase),
-            //    make it visible on the dashboard by default.
+            OptionalMessage = string.IsNullOrWhiteSpace(optionalMessage) ? "" : optionalMessage,
             IsVisibleToInfluencer = hasReferralCode
-            // --- END: UPDATED LINES ---
         };
 
         DbContext.Orders.Add(order);
         await DbContext.SaveChangesAsync();
         OrderStateService.NotifyOrderPlaced();
 
-        // --- START: WHATSAPP MESSAGE BUILDER (UPDATED) ---
+        // 5. Build WhatsApp Message
         var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine("Hello Maillot Store,");
         messageBuilder.AppendLine();
-        messageBuilder.AppendLine($"An order has been placed with the following details (Order ID: {order.Id}):");
-        messageBuilder.AppendLine();
+        messageBuilder.AppendLine($"An order has been placed (Order ID: {order.Id}):");
         messageBuilder.AppendLine($"  Name: {customerName}");
         messageBuilder.AppendLine($"  Phone: {customerPhone}");
         messageBuilder.AppendLine($"  Address: {customerAddress}");
 
-        // 3. Add the optional message to the WhatsApp text if it exists
-        if (!string.IsNullOrWhiteSpace(order.OptionalMessage))
+        if (!string.IsNullOrWhiteSpace(optionalMessage))
         {
-            messageBuilder.AppendLine();
-            messageBuilder.AppendLine($"  Message: {order.OptionalMessage}");
+            messageBuilder.AppendLine($"  Message: {optionalMessage}");
         }
-        // --- END: WHATSAPP MESSAGE BUILDER (UPDATED) ---
 
         messageBuilder.AppendLine();
         messageBuilder.AppendLine("  Order Details:");
@@ -259,14 +261,9 @@
         foreach (var item in orderItems)
         {
             messageBuilder.Append($"{itemNumber}. {item.Product.Name} (x{item.Quantity}) - Size: {item.Size}");
-            if (!string.IsNullOrEmpty(item.CustomName))
-            {
-                messageBuilder.Append($" - Name: {item.CustomName}");
-            }
-            if (item.CustomNumber.HasValue)
-            {
-                messageBuilder.Append($" - Number: {item.CustomNumber}");
-            }
+            if (!string.IsNullOrEmpty(item.CustomName)) messageBuilder.Append($" - Name: {item.CustomName}");
+            if (item.CustomNumber.HasValue) messageBuilder.Append($" - Number: {item.CustomNumber}");
+
             messageBuilder.AppendLine($" – FCFA {item.Price.ToString("N0")} XAF");
 
             string productUrl = $"{NavigationManager.BaseUri}product/{item.Product.ProductId}";
@@ -277,63 +274,33 @@
 
         messageBuilder.AppendLine();
         messageBuilder.AppendLine($"  Total: FCFA {Subtotal.ToString("N0")} XAF");
-        messageBuilder.AppendLine();
         messageBuilder.AppendLine("Thank you.");
 
-        string whatsappMessage = Uri.EscapeDataString(messageBuilder.ToString());
-
-        // --- START: MODIFIED WHATSAPP URL LOGIC ---
-        // 1. Get the saved number from settings
+        // 6. Send to WhatsApp
         var adminSetting = await DbContext.AdminSettings.FirstOrDefaultAsync(s => s.Key == "AdminWhatsAppNumber");
-
-        // 2. Check if the setting is missing or empty
         if (adminSetting == null || string.IsNullOrWhiteSpace(adminSetting.Value))
         {
-            // Show an error to the customer and stop
-            await JSRuntime.InvokeVoidAsync("alert", "Order cannot be placed: The store's contact number is not configured. Please contact support.");
-            return; // Stop the checkout
+            await JSRuntime.InvokeVoidAsync("alert", "Store contact number not configured.");
+            return;
         }
 
-        // 3. A number was found, so format it (this removes the fallback number)
         var adminPhoneNumber = adminSetting.Value.Replace("+", "").Replace(" ", "");
+        if (!adminPhoneNumber.StartsWith("237")) adminPhoneNumber = "237" + adminPhoneNumber;
 
-        // Add your country code logic (assuming Cameroon)
-        if (!adminPhoneNumber.StartsWith("237"))
-        {
-            adminPhoneNumber = "237" + adminPhoneNumber;
-        }
-
-        string whatsappUrl = $"https://wa.me/{adminPhoneNumber}?text={whatsappMessage}";
-        // --- END: MODIFIED WHATSAPP URL LOGIC ---
+        string whatsappUrl = $"https://wa.me/{adminPhoneNumber}?text={Uri.EscapeDataString(messageBuilder.ToString())}";
 
         await JSRuntime.InvokeVoidAsync("open", whatsappUrl, "_blank");
-
         await StateContainer.ClearCart();
-
         NavigationManager.NavigateTo("/shop");
     }
 
-    private async Task RemoveFromCart(OrderItem item)
-    {
-        await StateContainer.RemoveFromCart(item);
-    }
-
-    private async Task UpdateQuantity(OrderItem item, int quantity)
-    {
-        await StateContainer.UpdateCartItemQuantity(item, quantity);
-    }
-
+    private async Task RemoveFromCart(OrderItem item) => await StateContainer.RemoveFromCart(item);
+    private async Task UpdateQuantity(OrderItem item, int quantity) => await StateContainer.UpdateCartItemQuantity(item, quantity);
     private async Task UpdateSize(OrderItem item, ChangeEventArgs e)
     {
-        var newSize = e.Value.ToString();
-        if (!string.IsNullOrEmpty(newSize))
-        {
-            await StateContainer.UpdateCartItemSize(item, newSize);
-        }
+        var newSize = e.Value?.ToString();
+        if (!string.IsNullOrEmpty(newSize)) await StateContainer.UpdateCartItemSize(item, newSize);
     }
 
-    public void Dispose()
-    {
-        StateContainer.OnChange -= StateHasChanged;
-    }
+    public void Dispose() => StateContainer.OnChange -= StateHasChanged;
 }

@@ -1,0 +1,243 @@
+﻿@page "/admin/teams"
+@using MaillotStore.Data
+@using MaillotStore.Services.Interfaces
+@inject ITeamService TeamService
+@inject ILeagueService LeagueService
+@inject IWebHostEnvironment Environment
+@layout MaillotStore.Components.Layout.AdminLayout
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
+
+<PageTitle>Manage Teams</PageTitle>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Manage Teams</h2>
+        <button class="btn btn-primary" @onclick="OpenAddModal">
+            <i class="bi bi-plus-lg"></i> Add New Team
+        </button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @errorMessage
+            <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+        </div>
+    }
+
+    @if (teams == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var team in teams)
+            {
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            @if (!string.IsNullOrEmpty(team.LogoUrl))
+                            {
+                                <img src="@team.LogoUrl" alt="@team.Name" class="img-fluid mb-3" style="max-height: 80px;" />
+                            }
+                            <h5 class="card-title">@team.Name</h5>
+
+                            @* Show League Name if available *@
+                            <p class="text-muted small">
+                                @(team.League != null ? team.League.Name : "No League")
+                            </p>
+
+                            <div class="form-check form-switch d-flex justify-content-center">
+                                <input class="form-check-input me-2" type="checkbox" checked="@team.DisplayOnHome" disabled />
+                                <label class="form-check-label">Show on Home</label>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-top-0 d-flex justify-content-between">
+                            <button class="btn btn-sm btn-outline-primary" @onclick="() => EditTeam(team)">Edit</button>
+                            <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteTeam(team.Id)">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@if (showModal)
+{
+    <div class="modal show d-block" style="background: rgba(0,0,0,0.5);" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(editingTeam.Id == 0 ? "Add Team" : "Edit Team")</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="editingTeam" OnValidSubmit="SaveTeam">
+                        <DataAnnotationsValidator />
+
+                        <div class="mb-3">
+                            <label class="form-label">Team Name</label>
+                            <InputText @bind-Value="editingTeam.Name" class="form-control" />
+                        </div>
+
+                        @* --- NEW: LEAGUE DROPDOWN --- *@
+                        <div class="mb-3">
+                            <label class="form-label">League</label>
+                            <InputSelect @bind-Value="editingTeam.LeagueId" class="form-select">
+                                <option value="0">-- Select League --</option>
+                                @if (leagues != null)
+                                {
+                                    @foreach (var l in leagues)
+                                    {
+                                        <option value="@l.Id">@l.Name</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </div>
+                        @* ---------------------------- *@
+
+                        <div class="mb-3">
+                            <label class="form-label">Team Logo</label>
+                            <InputFile OnChange="HandleFileSelected" class="form-control" />
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <InputCheckbox @bind-Value="editingTeam.DisplayOnHome" class="form-check-input" />
+                            <label class="form-check-label">Display on Home Page</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Save</button>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Team> teams;
+    private List<League> leagues; // List to hold leagues
+    private Team editingTeam = new();
+    private bool showModal = false;
+    private IBrowserFile? uploadedFile;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        // Load both teams and leagues
+        teams = await TeamService.GetAllTeamsAsync();
+        leagues = await LeagueService.GetAllLeaguesAsync();
+    }
+
+    private void OpenAddModal()
+    {
+        editingTeam = new Team { DisplayOnHome = true };
+        uploadedFile = null;
+        errorMessage = null;
+        showModal = true;
+    }
+
+    private void EditTeam(Team team)
+    {
+        editingTeam = new Team
+        {
+            Id = team.Id,
+            Name = team.Name,
+            LogoUrl = team.LogoUrl,
+            DisplayOnHome = team.DisplayOnHome,
+            LeagueId = team.LeagueId // Load existing LeagueId
+        };
+        uploadedFile = null;
+        errorMessage = null;
+        showModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
+        errorMessage = null;
+    }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        uploadedFile = e.File;
+    }
+
+    private async Task SaveTeam()
+    {
+        try
+        {
+            // Validate League Selection
+            if (editingTeam.LeagueId == 0)
+            {
+                errorMessage = "Please select a league for this team.";
+                return;
+            }
+
+            // Duplicate Check
+            bool duplicateExists = teams.Any(t =>
+                t.Name.Trim().Equals(editingTeam.Name.Trim(), StringComparison.OrdinalIgnoreCase)
+                && t.Id != editingTeam.Id);
+
+            if (duplicateExists)
+            {
+                errorMessage = "Error: A team with this name already exists.";
+                return;
+            }
+
+            if (uploadedFile != null)
+            {
+                var folderPath = Path.Combine(Environment.WebRootPath, "images", "teams");
+                Directory.CreateDirectory(folderPath);
+
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(uploadedFile.Name)}";
+                var filePath = Path.Combine(folderPath, fileName);
+
+                await using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await uploadedFile.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024).CopyToAsync(stream);
+                }
+
+                editingTeam.LogoUrl = $"/images/teams/{fileName}";
+            }
+
+            if (editingTeam.LogoUrl == null) editingTeam.LogoUrl = string.Empty;
+
+            if (editingTeam.Id == 0)
+            {
+                await TeamService.AddTeamAsync(editingTeam);
+            }
+            else
+            {
+                await TeamService.UpdateTeamAsync(editingTeam);
+            }
+
+            await LoadData(); // Reload both to refresh View
+            CloseModal();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error saving team: {ex.Message}";
+        }
+    }
+
+    private async Task DeleteTeam(int id)
+    {
+        try
+        {
+            await TeamService.DeleteTeamAsync(id);
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error deleting team: {ex.Message}";
+        }
+    }
+}

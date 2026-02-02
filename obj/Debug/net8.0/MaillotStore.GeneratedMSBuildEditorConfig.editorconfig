@@ -216,6 +216,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxJbmZsdWVuY2Vycy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/Admin/ManageLeagues.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxNYW5hZ2VMZWFndWVzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/Admin/ManageTeams.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxNYW5hZ2VUZWFtcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/FLAVIN/source/repos/Maillot-Store/Components/Pages/Admin/Orders.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxPcmRlcnMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 

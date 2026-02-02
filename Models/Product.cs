@@ -1,29 +1,44 @@
-﻿using MaillotStore.Data;
-using System.Collections.Generic; // Ensure this is present
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using MaillotStore.Data; // Needed for Team and ProductImage
 
 namespace MaillotStore.Models
 {
     public class Product
     {
+        [Key]
         public int ProductId { get; set; }
-        public string Name { get; set; } = string.Empty;
+
+        [Required]
+        public string Name { get; set; }
+
         public string? Description { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
-        public string? Category { get; set; }
 
-        // Main Image
-        public string? ImageUrl { get; set; }
+        public string ImageUrl { get; set; }
 
-        // New Gallery Collection
-        public List<ProductImage> Gallery { get; set; } = new();
+        public string Category { get; set; }
 
-        // (Legacy fields - keep them for now to avoid breaking existing data immediately)
-        public string? ImageUrl2 { get; set; }
-        public string? ImageUrl3 { get; set; }
+        public string Size { get; set; }
 
+        public bool IsOnSale { get; set; }
+
+        // --- NEW PROPERTIES ADDED TO FIX ERRORS ---
         public int Stock { get; set; }
-        public string? Season { get; set; }
-        public string? Sizes { get; set; }
+
         public bool IsFeatured { get; set; }
+
+        public string? Season { get; set; }
+
+        // Navigation property for Gallery Images
+        public List<ProductImage> Gallery { get; set; } = new();
+        public string? Version { get; set; }
+        // --- EXISTING RELATIONSHIPS ---
+        public int? TeamId { get; set; }
+
+        [ForeignKey("TeamId")]
+        public Team? Team { get; set; }
     }
 }

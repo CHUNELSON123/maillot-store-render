@@ -3,13 +3,14 @@
 @using MaillotStore.Data
 @using MaillotStore.Models
 @using MaillotStore.Services.Implementations
+@using MaillotStore.Services.Interfaces
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @layout AdminLayout
 @inject ApplicationDbContext DbContext
 @inject UserManager<ApplicationUser> UserManager
-@inject OrderStateService OrderStateService
+@inject IOrderStateService OrderStateService
 @inject IJSRuntime JSRuntime
 @attribute [Authorize(Roles = "Admin")]
 

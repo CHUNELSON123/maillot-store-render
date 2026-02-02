@@ -3,17 +3,15 @@
 @using MaillotStore.Components.Account.Shared
 @using MaillotStore.Models
 @using MaillotStore.Data
+@using MaillotStore.Services.Interfaces
 @using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext DbContext
+@inject ITeamService TeamService
 @implements IDisposable
 
 <PageTitle>Home</PageTitle>
 
-@*
-    UPDATED:
-    - Removed @onmouseover and @onmouseout
-    - The timer now starts automatically in OnInitializedAsync
-*@
+@* --- HERO BANNER --- *@
 <div class="hero-banner"
      style="background-image: url(@CurrentImageUrl)">
 
@@ -27,6 +25,34 @@
     </div>
 </div>
 
+@* --- TOP TEAMS SECTION --- *@
+<section class="container mt-5">
+    <h2 class="text-center mb-4">Top Teams</h2>
+    @if (topTeams == null)
+    {
+        <p class="text-center">Loading teams...</p>
+    }
+    else if (!topTeams.Any())
+    {
+        @* Optional: Hide if empty *@
+    }
+    else
+    {
+        <div class="teams-wrapper">
+            @foreach (var team in topTeams)
+            {
+                <a href="/shop?teamId=@team.Id" class="team-item">
+                    <div class="logo-wrapper">
+                        <img src="@team.LogoUrl" alt="@team.Name" />
+                    </div>
+                    <p class="team-name">@team.Name</p>
+                </a>
+            }
+        </div>
+    }
+</section>
+
+@* --- FEATURED JERSEYS --- *@
 <section class="featured-jerseys container section-spacer">
     <h2 class="text-center mb-4">Featured Jerseys</h2>
     @if (featuredProducts is not null)
@@ -45,7 +71,6 @@
         <p class="text-center"><em>Loading featured jerseys...</em></p>
     }
 </section>
-
 
 @* --- WHY CHOOSE US SECTION --- *@
 <section class="why-choose-us container section-spacer">
@@ -84,42 +109,112 @@
     </div>
 </section>
 
+@* --- CSS STYLES --- *@
+<style>
+    /* --- MOBILE DEFAULT (iPhone 6s / Small Screens) --- */
+    .teams-wrapper {
+        display: flex;
+        flex-wrap: wrap; /* FIX: Allow items to wrap to next line so none are cut off */
+        justify-content: center; /* Center items in the grid */
+        gap: 20px 15px; /* Vertical gap 20px, Horizontal 15px */
+        padding: 10px 10px;
+    }
+
+    .team-item {
+        flex: 0 0 auto;
+        width: 80px;
+        text-align: center;
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.3s ease;
+    }
+
+    .logo-wrapper img {
+        width: 100%;
+        height: 80px;
+        object-fit: contain;
+        filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .team-name {
+        margin-top: 8px;
+        font-weight: bold;
+        font-size: 0.8rem;
+        color: inherit;
+        transition: color 0.3s;
+        /* --- UPDATED: Allow text wrapping for long names --- */
+        white-space: normal;
+        line-height: 1.1;
+        /* Removed overflow: hidden; and text-overflow: ellipsis; */
+    }
+
+    /* --- DESKTOP BREAKPOINT --- */
+    @@media (min-width: 992px) {
+        .teams-wrapper {
+            /* Keep centered layout but with larger gaps */
+            gap: 40px 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .team-item {
+            width: 120px;
+        }
+
+        .logo-wrapper img {
+            height: 120px;
+            max-width: 120px;
+        }
+
+        .team-name {
+            font-size: 1rem;
+            white-space: normal;
+        }
+        /* Hover Effects */
+        .team-item:hover .logo-wrapper img {
+            transform: scale(1.15);
+        }
+
+        .team-item:hover .team-name {
+            color: #ffc107;
+        }
+    }
+</style>
 
 @code {
     private List<Product>? featuredProducts;
+    private List<Team>? topTeams;
     private System.Threading.Timer? _timer;
     private int _currentImageIndex = 0;
 
-    // --- UPDATED: List expanded to 6 items. Add your new image URLs here. ---
     private List<string> _heroImages = new List<string>
     {
         "https://m.media-amazon.com/images/I/71izjNHcVhL._AC_SL1500_.jpg",
         "https://cdn.nba.com/manage/2025/10/f7f39c27-8107-478a-bab8-f82de7005235.jpg?w=735&h=413",
         "https://www.nflshop.com/content/ws/all/42df8aac-4fc9-453f-a56f-e1a46b4af334__1200X980.jpg",
-        "https://i.pinimg.com/1200x/18/45/7d/18457dd084412fe23d647327f14a6435.jpg", // <-- TODO: ADD YOUR 4TH IMAGE (Example)
-        "https://www.nflshop.com/content/ws/all/a6ff99a0-e81b-4001-90a3-cc41e7dca58c__2400X900.jpg",     // <-- TODO: ADD YOUR 5TH IMAGE (Example)
-        "https://www.nflshop.com/content/ws/all/7047a40b-c1dc-48bd-80d8-8441d6f35292__1200X980.jpg"      // <-- TODO: ADD YOUR 6TH IMAGE (Example)
+        "https://i.pinimg.com/1200x/18/45/7d/18457dd084412fe23d647327f14a6435.jpg",
+        "https://www.nflshop.com/content/ws/all/a6ff99a0-e81b-4001-90a3-cc41e7dca58c__2400X900.jpg",
+        "https://www.nflshop.com/content/ws/all/7047a40b-c1dc-48bd-80d8-8441d6f35292__1200X980.jpg"
     };
 
     private string CurrentImageUrl => _heroImages[_currentImageIndex];
 
     protected override async Task OnInitializedAsync()
     {
+        // Load Teams
+        topTeams = await TeamService.GetHomeDisplayTeamsAsync();
+
         // Load featured products
         featuredProducts = await DbContext.Products
             .Where(p => p.IsFeatured)
-            .OrderByDescending(p => p.ProductId) // Optional: Get the newest featured items
-            .Take(6) // Optional: Limit to 6 featured products
+            .OrderByDescending(p => p.ProductId)
+            .Take(6)
             .ToListAsync();
 
-        // --- UPDATED: Timer now starts automatically on page load ---
-        // It will change the image immediately (0ms delay), then every 3 seconds (3000ms)
         _timer = new System.Threading.Timer(ChangeImage, null, 0, 3000);
     }
 
-    // --- REMOVED StartImageSlider() and StopImageSlider() methods ---
-
-    // This method is called by the timer
     private void ChangeImage(object? state)
     {
         _currentImageIndex++;
@@ -127,12 +222,9 @@
         {
             _currentImageIndex = 0;
         }
-
-        // Tell Blazor to update the UI
         InvokeAsync(StateHasChanged);
     }
 
-    // This stops the timer if you navigate to another page
     public void Dispose()
     {
         _timer?.Dispose();

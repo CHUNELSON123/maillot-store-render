@@ -1,4 +1,11 @@
 ﻿@using MaillotStore.Components.Account.Shared
+@using MaillotStore.Services.Implementations
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Http
+@inject PersistentComponentState ApplicationState
+@inject ReferralService ReferralService
+@inject IHttpContextAccessor HttpContextAccessor
+@implements IDisposable
 
 <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
@@ -13,4 +20,41 @@
 
 @code {
     [Parameter] public IComponentRenderMode? rendermode { get; set; }
+
+    private PersistingComponentStateSubscription _subscription;
+
+    protected override void OnInitialized()
+    {
+        // 1. Listen for the "Persist" event (happens just before the server sends the page)
+        _subscription = ApplicationState.RegisterOnPersisting(PersistReferralCode);
+
+        // 2. Try to recover the code if we are already in Interactive Mode (SignalR)
+        if (ApplicationState.TryTakeFromJson<string>("ReferralCode", out var restoredCode))
+        {
+            ReferralService.SetReferralCode(restoredCode);
+        }
+        else
+        {
+            // 3. If we are on the Server (Initial Load), read the cookie
+            // We force a read here so the service caches it
+            var codeFromCookie = ReferralService.GetReferralCode();
+        }
+    }
+
+    private Task PersistReferralCode()
+    {
+        // 4. Save the code into the State so SignalR can pick it up later
+        var currentCode = ReferralService.GetReferralCode();
+        if (!string.IsNullOrEmpty(currentCode))
+        {
+            ApplicationState.PersistAsJson("ReferralCode", currentCode);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        _subscription.Dispose();
+    }
 }

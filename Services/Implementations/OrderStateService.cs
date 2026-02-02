@@ -1,11 +1,26 @@
 ﻿using MaillotStore.Models;
+using MaillotStore.Services.Interfaces;
 using System;
 
 namespace MaillotStore.Services.Implementations
 {
-    public class OrderStateService
+    public class OrderStateService : IOrderStateService
     {
-        // --- START: Added Staging Logic ---
+        public Order CurrentOrder { get; set; }
+
+        public bool HasOrder => CurrentOrder != null;
+
+        public void SetOrder(Order order)
+        {
+            CurrentOrder = order;
+        }
+
+        public void ResetOrder()
+        {
+            CurrentOrder = null;
+        }
+
+        // --- Staging Logic ---
         private Order? _stagedOrder;
 
         public void StageOrder(Order order)
@@ -16,13 +31,25 @@ namespace MaillotStore.Services.Implementations
         public Order? GetStagedOrder()
         {
             var order = _stagedOrder;
-            _stagedOrder = null; // Important: Clear the order after it's been retrieved
+            _stagedOrder = null;
             return order;
         }
-        // --- END: Added Staging Logic ---
 
-        public event Action? OnOrderPlaced;
+        // --- UPDATED: GLOBAL NOTIFICATION LOGIC ---
 
-        public void NotifyOrderPlaced() => OnOrderPlaced?.Invoke();
+        // 1. We create a STATIC event. "Static" means it is shared by ALL users on the server.
+        private static Action? _globalOrderPlaced;
+
+        // 2. We implement the Interface event using "add/remove".
+        //    When the Dashboard subscribes to this service, we actually subscribe them 
+        //    to the global static event.
+        public event Action? OnOrderPlaced
+        {
+            add => _globalOrderPlaced += value;
+            remove => _globalOrderPlaced -= value;
+        }
+
+        // 3. When triggered, it invokes the global event, notifying everyone.
+        public void NotifyOrderPlaced() => _globalOrderPlaced?.Invoke();
     }
 }

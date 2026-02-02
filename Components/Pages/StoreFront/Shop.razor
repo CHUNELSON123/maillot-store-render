@@ -4,40 +4,80 @@
 @using MaillotStore.Models
 @using MaillotStore.Services
 @using MaillotStore.Services.Implementations
+@using MaillotStore.Services.Interfaces
 @using Microsoft.EntityFrameworkCore
 @rendermode InteractiveServer
 @inject ApplicationDbContext DbContext
 @inject SearchStateService SearchState
+@inject ILeagueService LeagueService
 @implements IDisposable
 
 <PageTitle>Shop</PageTitle>
 
 <div class="container mt-4">
     <div class="row mb-4">
-        <div class="col-md-6">
+        <div class="col-md-5">
             <h2>Shop</h2>
             <p>Browse our collection of authentic football, basketball, and nfl jerseys.</p>
         </div>
-        <div class="col-md-6 d-flex justify-content-end align-items-center">
-            <div class="me-3">
-                <label for="sort-by" class="form-label">Sort by:</label>
+        <div class="col-md-7 d-flex justify-content-end align-items-center flex-wrap gap-2">
+            @* --- SORT BY --- *@
+            <div>
+                <label for="sort-by" class="form-label mb-0 small">Sort by:</label>
                 <select class="form-select" id="sort-by" @onchange="ApplyFiltersAndSorting">
                     <option value="default">Default</option>
                     <option value="price-asc">Price: Low to High</option>
                     <option value="price-desc">Price: High to Low</option>
                 </select>
             </div>
+
+            @* --- CATEGORY FILTER --- *@
             <div>
-                <label for="filter-by" class="form-label">Filter by:</label>
-                <select class="form-select" id="filter-by" @onchange="ApplyFiltersAndSorting">
+                <label for="filter-by" class="form-label mb-0 small">Category:</label>
+                <select class="form-select" id="filter-by" @bind="currentCategoryFilter" @bind:after="() => ApplyFiltersAndSorting()">
                     <option value="all">All</option>
                     <option value="Football">Football</option>
                     <option value="Basketball">Basketball</option>
                     <option value="NFL">NFL</option>
                 </select>
             </div>
+
+            @* --- NEW: LEAGUE FILTER --- *@
+            <div>
+                <label for="league-filter" class="form-label mb-0 small">League:</label>
+                <select class="form-select" id="league-filter" @bind="currentLeagueFilter" @bind:after="() => ApplyFiltersAndSorting()">
+                    <option value="0">All Leagues</option>
+                    @if (leagues != null)
+                    {
+                        @foreach (var league in leagues)
+                        {
+                            <option value="@league.Id">@league.Name</option>
+                        }
+                    }
+                </select>
+            </div>
         </div>
     </div>
+
+    @* --- ACTIVE FILTER INDICATORS (Shows only when needed) --- *@
+    @if (TeamId.HasValue || currentLeagueFilter > 0)
+    {
+        <div class="mb-3 d-flex gap-2">
+            @if (TeamId.HasValue)
+            {
+                <a href="/shop" class="btn btn-sm btn-outline-light d-flex align-items-center">
+                    Clear Team Filter <i class="fas fa-times ms-2"></i>
+                </a>
+            }
+            @if (currentLeagueFilter > 0)
+            {
+                <button class="btn btn-sm btn-outline-light d-flex align-items-center" @onclick="ClearLeagueFilter">
+                    Clear League Filter <i class="fas fa-times ms-2"></i>
+                </button>
+            }
+        </div>
+    }
+
     @if (pagedProducts is not null)
     {
         <div class="row g-4">
@@ -48,48 +88,82 @@
                 </div>
             }
         </div>
+
+        @if (!pagedProducts.Any())
+        {
+            <div class="text-center mt-5">
+                <h4>No products found.</h4>
+                <p>Try adjusting your filters.</p>
+            </div>
+        }
     }
     else
     {
         <p>Loading products...</p>
     }
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center mt-4">
-            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                <a class="page-link" href="javascript:void(0)" @onclick="() => ChangePage(currentPage - 1)">Previous</a>
-            </li>
-            @for (int i = 1; i <= totalPages; i++)
-            {
-                var pageNumber = i;
-                <li class="page-item @(currentPage == pageNumber ? "active" : "")">
-                    <a class="page-link" href="javascript:void(0)" @onclick="() => ChangePage(pageNumber)">@pageNumber</a>
+
+    @if (totalPages > 1)
+    {
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mt-4">
+                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" href="javascript:void(0)" @onclick="() => ChangePage(currentPage - 1)">Previous</a>
                 </li>
-            }
-            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                <a class="page-link" href="javascript:void(0)" @onclick="() => ChangePage(currentPage + 1)">Next</a>
-            </li>
-        </ul>
-    </nav>
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    var pageNumber = i;
+                    <li class="page-item @(currentPage == pageNumber ? "active" : "")">
+                        <a class="page-link" href="javascript:void(0)" @onclick="() => ChangePage(pageNumber)">@pageNumber</a>
+                    </li>
+                }
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link" href="javascript:void(0)" @onclick="() => ChangePage(currentPage + 1)">Next</a>
+                </li>
+            </ul>
+        </nav>
+    }
 </div>
 
 @code {
+    // 1. Capture TeamId from URL (when clicking from menu)
+    [SupplyParameterFromQuery]
+    public int? TeamId { get; set; }
+
     private List<Product>? allProducts;
     private List<Product>? pagedProducts;
     private List<Product>? processedProducts;
+
+    // Dropdown Data
+    private List<League> leagues = new();
+
     private int currentPage = 1;
     private int pageSize = 18;
     private int totalPages;
+
     private string currentSortOrder = "default";
     private string currentCategoryFilter = "all";
+    private int currentLeagueFilter = 0; // Track Dropdown
 
     protected override async Task OnInitializedAsync()
     {
         SearchState.OnSearchTermChanged += OnSearchChanged;
-        allProducts = await DbContext.Products.ToListAsync();
+
+        // Include Team so we can filter by it
+        allProducts = await DbContext.Products.Include(p => p.Team).ToListAsync();
+
+        // Load Leagues for dropdown
+        leagues = await LeagueService.GetAllLeaguesAsync();
+
         if (allProducts is not null)
         {
             ApplyFiltersAndSorting();
         }
+    }
+
+    // 2. React to URL changes (e.g., clicking a new club)
+    protected override void OnParametersSet()
+    {
+        ApplyFiltersAndSorting();
     }
 
     private void OnSearchChanged()
@@ -97,33 +171,52 @@
         ApplyFiltersAndSorting();
     }
 
+    private void ClearLeagueFilter()
+    {
+        currentLeagueFilter = 0;
+        ApplyFiltersAndSorting();
+    }
+
     private void ApplyFiltersAndSorting(ChangeEventArgs? e = null)
     {
         if (e?.Value is not null)
         {
-            var elementId = e.Value.ToString();
             if (e.Value.ToString()!.Contains("price"))
             {
                 currentSortOrder = e.Value.ToString()!;
             }
-            else
-            {
-                currentCategoryFilter = e.Value.ToString()!;
-            }
+            // Logic for other dropdowns is handled by @bind,
+            // but this keeps the sort logic separate if needed
         }
 
         var searchTerm = SearchState.CurrentSearchTerm ?? string.Empty;
+
+        // 1. Base Filter (Search)
         var tempProducts = string.IsNullOrWhiteSpace(searchTerm)
             ? allProducts
             : allProducts?.Where(p =>
                 p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                 (p.Category != null && p.Category.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
 
+        // 2. Category Filter
         if (currentCategoryFilter != "all")
         {
             tempProducts = tempProducts?.Where(p => p.Category == currentCategoryFilter);
         }
 
+        // 3. Team ID Filter (from URL)
+        if (TeamId.HasValue)
+        {
+            tempProducts = tempProducts?.Where(p => p.TeamId == TeamId.Value);
+        }
+
+        // 4. League Filter (from Dropdown)
+        if (currentLeagueFilter > 0)
+        {
+            tempProducts = tempProducts?.Where(p => p.Team != null && p.Team.LeagueId == currentLeagueFilter);
+        }
+
+        // 5. Sorting
         switch (currentSortOrder)
         {
             case "price-asc":
@@ -139,6 +232,7 @@
         if (processedProducts is not null)
         {
             totalPages = (int)Math.Ceiling(processedProducts.Count / (double)pageSize);
+            if (totalPages == 0) totalPages = 1;
         }
 
         currentPage = 1;

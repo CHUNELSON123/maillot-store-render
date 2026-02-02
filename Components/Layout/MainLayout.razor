@@ -1,30 +1,66 @@
 ﻿@using MaillotStore.Services.Implementations
+@using MaillotStore.Services.Interfaces
+@using MaillotStore.Data
 @inherits LayoutComponentBase
-@inject SearchStateService SearchState
+@inject ISearchStateService SearchState
 @inject ReferralService ReferralService
 @inject NavigationManager NavManager
+@inject ILeagueService LeagueService
 
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid align-items-center">
-            @* --- Logo and Brand Name (Always Visible) --- *@
             <a class="navbar-brand d-flex align-items-center" href="">
                 <img src="/Images/maillotstore-logo.jpeg" alt="Maillot Store Logo" class="logo">
                 <span class="brand-text ms-2">Maillot Store</span>
             </a>
 
-            @* --- Desktop Navigation & Search --- *@
+            @* --- DESKTOP MENU (Hidden on Mobile) --- *@
             <div class="collapse navbar-collapse" id="main-nav-desktop">
-                @* --- Search Bar (Desktop) --- *@
                 <div class="search-container mx-auto d-none d-lg-block" style="border-radius: 500px;">
                     <input type="text" class="form-control search-bar" placeholder="Search for jerseys..."
                            @bind="searchTerm" @oninput="PerformSearch" />
                 </div>
 
-                @* --- Desktop Nav Links --- *@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
+
+                    @* --- DESKTOP MEGA MENU --- *@
+                    <li class="nav-item dropdown mega-menu-item">
+                        <a class="nav-link dropdown-toggle" href="#" id="clubDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Club
+                        </a>
+                        <div class="dropdown-menu mega-menu" aria-labelledby="clubDropdown">
+                            <div class="container">
+                                <div class="row justify-content-center">
+                                    @if (leaguesList != null)
+                                    {
+                                        @foreach (var league in leaguesList)
+                                        {
+                                            <div class="col-md-3 mb-4 text-center">
+                                                <h6 class="dropdown-header text-uppercase text-warning fw-bold">
+                                                    @league.Name
+                                                </h6>
+                                                <ul class="list-unstyled">
+                                                    @foreach (var team in league.Teams)
+                                                    {
+                                                        <li>
+                                                            <a class="dropdown-item text-center" href="/shop?teamId=@team.Id">
+                                                                @team.Name
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    @* ------------------------- *@
+
                     <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
                     <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
                     <li class="nav-item"><a class="nav-link" href="/checkout">Checkout</a></li>
@@ -48,57 +84,91 @@
                             </li>
                         </Authorized>
                         <NotAuthorized>
-                            @* @if (!isReferred)
+                            @if (!isReferred)
                             {
                                 <li class="nav-item"><a class="nav-link" href="/Account/Login">Login</a></li>
-                            } *@
+                            }
                         </NotAuthorized>
                     </AuthorizeView>
                 </ul>
             </div>
 
-            @* --- START: NEW MOBILE ICONS CONTAINER --- *@
-            @* This groups the search icon and hamburger button on mobile *@
+            @* --- MOBILE ICONS --- *@
             <div class="mobile-icons-container d-lg-none">
                 <button class="btn btn-link nav-link search-icon-mobile" @onclick="ToggleMobileSearch">
                     <i class="fas fa-search"></i>
                 </button>
-
-                @* --- Mobile Hamburger Button --- *@
                 <button class="navbar-toggler" type="button" @onclick="ToggleNavMenu">
                     <span class="navbar-toggler-icon"></span>
                 </button>
             </div>
-            @* --- END: NEW MOBILE ICONS CONTAINER --- *@
         </div>
     </nav>
 
-    @* --- START: UPDATED Search Bar (Mobile) - Now Toggleable --- *@
     @if (showMobileSearch)
     {
         <div class="search-container-mobile d-lg-none px-3 py-2">
             <input type="text" class="form-control search-bar" placeholder="Search for jerseys..."
                    @bind="searchTerm" @oninput="PerformSearch" />
-            <button class="btn-close" @onclick="ToggleMobileSearch"></button> @* Added a close button *@
+            <button class="btn-close" @onclick="ToggleMobileSearch"></button>
         </div>
     }
-    @* --- END: UPDATED Search Bar (Mobile) --- *@
 </header>
 
-@* Add Overlay Div - This covers the screen when the menu is open *@
 @if (!collapseNavMenu)
 {
     <div class="sidenav-overlay" @onclick="ToggleNavMenu"></div>
 }
 
-@* --- Mobile Sliding Navigation Menu --- *@
+@* --- MOBILE SLIDE-OUT MENU --- *@
 <div class="@NavMenuCssClass">
     <div class="sidenav-content">
         <a href="javascript:void(0)" class="closebtn" @onclick="CloseNavMenu">&times;</a>
 
-        @* --- START OF UPDATE --- *@
         <a class="nav-link" href="/" @onclick="CloseNavMenu">Home</a>
         <a class="nav-link" href="/shop" @onclick="CloseNavMenu">Shop</a>
+
+        @* --- NEW: MOBILE COLLAPSIBLE CLUB MENU --- *@
+        <div class="mobile-club-section">
+            <button class="nav-link btn-reset w-100 text-start d-flex justify-content-between align-items-center"
+                    @onclick="ToggleMobileClubMenu">
+                Clubs
+                <i class="fas fa-chevron-down @(showMobileClubMenu ? "rotate-180" : "")"></i>
+            </button>
+
+            @if (showMobileClubMenu && leaguesList != null)
+            {
+                <div class="mobile-club-dropdown">
+                    @foreach (var league in leaguesList)
+                    {
+                        <div class="mobile-league-item">
+                            @* League Header (Click to expand teams) *@
+                            <button class="league-header btn-reset w-100 text-start"
+                                    @onclick="() => ToggleMobileLeague(league.Id)">
+                                @league.Name
+                                <i class="fas fa-plus small-icon @(expandedLeagueId == league.Id ? "d-none" : "")"></i>
+                                <i class="fas fa-minus small-icon @(expandedLeagueId == league.Id ? "" : "d-none")"></i>
+                            </button>
+
+                            @* Teams List *@
+                            @if (expandedLeagueId == league.Id)
+                            {
+                                <div class="mobile-teams-list">
+                                    @foreach (var team in league.Teams)
+                                    {
+                                        <a href="/shop?teamId=@team.Id" class="mobile-team-link" @onclick="CloseNavMenu">
+                                            @team.Name
+                                        </a>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+        @* ---------------------------------------- *@
+
         <a class="nav-link" href="/about" @onclick="CloseNavMenu">About</a>
         <a class="nav-link" href="/contact" @onclick="CloseNavMenu">Contact</a>
         <a class="nav-link" href="/checkout" @onclick="CloseNavMenu">Checkout</a>
@@ -116,7 +186,6 @@
                 <form action="/Account/Logout" method="post" class="w-100">
                     <AntiforgeryToken />
                     <input type="hidden" name="returnUrl" value="/" />
-                    @* No onclick needed here, form post reloads page *@
                     <button type="submit" class="nav-link btn btn-link text-start w-100" style="padding: 8px 8px 8px 32px;">Logout</button>
                 </form>
             </Authorized>
@@ -127,7 +196,6 @@
                 }
             </NotAuthorized>
         </AuthorizeView>
-        @* --- END OF UPDATE --- *@
     </div>
 </div>
 
@@ -138,41 +206,40 @@
 
 @code {
     private bool collapseNavMenu = true;
-    private bool showMobileSearch = false; // <-- ADD THIS LINE
+    private bool showMobileSearch = false;
     private string searchTerm = string.Empty;
     private bool isReferred;
+    private List<League> leaguesList = new();
+
+    // Mobile Menu State
+    private bool showMobileClubMenu = false;
+    private int expandedLeagueId = 0; // Track which league is open
 
     private string NavMenuCssClass => collapseNavMenu ? "sidenav" : "sidenav open";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         isReferred = ReferralService.IsReferred();
+        leaguesList = await LeagueService.GetAllLeaguesAsync();
     }
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
-        if (showMobileSearch) // Close search if opening nav
-        {
-            showMobileSearch = false;
-        }
+        if (showMobileSearch) showMobileSearch = false;
     }
 
-    // --- START: ADD THIS NEW METHOD ---
     private void ToggleMobileSearch()
     {
         showMobileSearch = !showMobileSearch;
-        if (collapseNavMenu == false) // Close nav if opening search
-        {
-            collapseNavMenu = true;
-        }
+        if (collapseNavMenu == false) collapseNavMenu = true;
     }
-    // --- END: ADD THIS NEW METHOD ---
 
-    // Explicit method to ensure the menu closes
     private void CloseNavMenu()
     {
         collapseNavMenu = true;
+        showMobileClubMenu = false; // Reset sub-menus on close
+        expandedLeagueId = 0;
     }
 
     private void PerformSearch(ChangeEventArgs e)
@@ -184,5 +251,19 @@
         {
             NavManager.NavigateTo("/shop");
         }
+    }
+
+    // --- NEW METHODS FOR MOBILE ACCORDION ---
+    private void ToggleMobileClubMenu()
+    {
+        showMobileClubMenu = !showMobileClubMenu;
+    }
+
+    private void ToggleMobileLeague(int leagueId)
+    {
+        if (expandedLeagueId == leagueId)
+            expandedLeagueId = 0; // Collapse if already open
+        else
+            expandedLeagueId = leagueId; // Expand new one
     }
 }

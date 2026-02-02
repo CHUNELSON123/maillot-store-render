@@ -9,6 +9,12 @@
         <a href="/admin/products" class="@GetNavLinkClass("/admin/products")">
             Products
         </a>
+        <a href="/admin/leagues" class="@GetNavLinkClass("/admin/leagues")">
+            Manage Leagues
+        </a>
+        <a href="/admin/teams" class="@GetNavLinkClass("/admin/teams")">
+            Manage Teams
+        </a>
         <a href="/admin/orders" class="@GetNavLinkClass("/admin/orders")">
             Orders
         </a>
@@ -21,8 +27,7 @@
         <a href="/admin/settings" class="@GetNavLinkClass("/admin/settings")">
             Settings
         </a>
-        
-        @* --- THIS SECTION IS UPDATED --- *@
+
         <form action="/Account/Logout" method="post">
             <AntiforgeryToken />
             <input type="hidden" name="returnUrl" value="/" />
@@ -34,19 +39,16 @@
 @code {
     protected override void OnInitialized()
     {
-        // This tells the component to listen for URL changes
         NavigationManager.LocationChanged += HandleLocationChanged;
     }
 
     private string GetNavLinkClass(string navLink)
     {
-        // Use Contains for a more robust check that handles child pages
         if (NavigationManager.Uri.Contains(navLink, StringComparison.OrdinalIgnoreCase))
         {
             return "nav-link active";
         }
 
-        // Special case for the dashboard link, which might be the root of the admin section
         if (navLink == "/admin/dashboard" && NavigationManager.Uri.EndsWith("/admin"))
         {
             return "nav-link active";
@@ -55,14 +57,12 @@
         return "nav-link";
     }
 
-    // This method is called when the URL changes
-    private void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    // UPDATED SIGNATURE: object? sender
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        // This forces the component to re-render and update the active link
         StateHasChanged();
     }
 
-    // This cleans up the event subscription to prevent memory leaks
     public void Dispose()
     {
         NavigationManager.LocationChanged -= HandleLocationChanged;

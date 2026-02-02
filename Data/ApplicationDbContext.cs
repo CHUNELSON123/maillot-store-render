@@ -17,6 +17,8 @@ namespace MaillotStore.Data
         public DbSet<AdminSetting> AdminSettings { get; set; }
         public DbSet<CommissionSetting> CommissionSettings { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<Team> Teams { get; set; }
+        public DbSet<League> Leagues { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -1,8 +1,8 @@
 using MaillotStore.Components;
 using MaillotStore.Components.Account;
 using MaillotStore.Data;
-using MaillotStore.Services.Interfaces;
 using MaillotStore.Services.Implementations;
+using MaillotStore.Services.Interfaces;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,83 +11,60 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-  .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents();
 
-builder.Services.AddSingleton<OrderStateService>();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
-builder.Services.AddHttpContextAccessor(); // Needed for the service to access cookies
+
+// --- REGISTER YOUR APP SERVICES ---
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IOrderStateService, OrderStateService>();
 builder.Services.AddScoped<ReferralService>();
+builder.Services.AddScoped<StateContainer>();
+builder.Services.AddScoped<SearchStateService>();
+builder.Services.AddScoped<ITeamService, TeamService>();
+builder.Services.AddScoped<ILeagueService, LeagueService>();
+builder.Services.AddScoped<ISearchStateService, SearchStateService>();
+// ----------------------------------
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = IdentityConstants.ApplicationScheme;
     options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 })
-  .AddIdentityCookies();
+    .AddIdentityCookies();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
- options.UseNpgsql(connectionString));
+// ==================================================================================
+// FIX: DATABASE REGISTRATION
+// ==================================================================================
+
+// 1. Register the Factory (Singleton) - This manages the DB connections safely for Blazor
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+// 2. Register the Scoped Context (for Identity/Login) using the Factory
+// This allows the "UserManager" to get a context request-by-request, while Blazor uses the Factory.
+builder.Services.AddScoped<ApplicationDbContext>(p =>
+    p.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
+
+// ==================================================================================
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// --- Enable Roles ---
-builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false) // Allow login without email confirmation
-    .AddRoles<IdentityRole>() // Add role services
+builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
-  .AddSignInManager()
-  .AddDefaultTokenProviders();
+    .AddSignInManager()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<StateContainer>();
-builder.Services.AddSingleton<SearchStateService>();
-builder.Services.AddSingleton<OrderStateService>();
 
 var app = builder.Build();
-
-// --- NEW BLOCK: Seed Roles and Run Migrations on Startup ---
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-
-    // 1. Run Database Migrations FIRST (Creates the tables)
-    try
-    {
-        var dbContext = services.GetRequiredService<ApplicationDbContext>();
-        // This tells Render to update its PostgreSQL database
-        await dbContext.Database.MigrateAsync();
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while migrating the database.");
-    }
-
-    // 2. Seed Roles SECOND (Now that tables exist)
-    try
-    {
-        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-        string[] roleNames = { "Admin", "Influencer" };
-        foreach (var roleName in roleNames)
-        {
-            var roleExist = await roleManager.RoleExistsAsync(roleName);
-            if (!roleExist)
-            {
-                await roleManager.CreateAsync(new IdentityRole(roleName));
-            }
-        }
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while seeding roles.");
-    }
-}
-// --- End of new block ---
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -105,7 +82,7 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
-  .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode();
 
 app.MapAdditionalIdentityEndpoints();
 

@@ -94,3 +94,127 @@ main {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+/* ... (Keep all existing styles) ... */
+
+/* --- MEGA MENU STYLES (Desktop) --- */
+.mega-menu-item .dropdown-toggle::after {
+    content: none !important;
+    display: none !important;
+}
+
+.mega-menu {
+    width: 100%;
+    min-width: 600px;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    margin-top: 0;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    display: none;
+}
+
+.mega-menu-item {
+    position: static !important;
+}
+
+.mega-menu .dropdown-item {
+    color: #ccc;
+    padding: 5px 0;
+    transition: color 0.2s, transform 0.2s;
+}
+
+    .mega-menu .dropdown-item:hover {
+        color: #fff;
+        background-color: transparent;
+        transform: translateX(5px);
+    }
+
+.dropdown-header {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+@media (min-width: 992px) {
+    .mega-menu-item:hover .dropdown-menu {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* --- MOBILE ACCORDION STYLES (New) --- */
+
+.btn-reset {
+    background: none;
+    border: none;
+    padding: 8px 32px; /* Match other nav-links */
+    color: #818181;
+    font-size: 25px;
+    display: block;
+    transition: 0.3s;
+    text-decoration: none;
+}
+
+    .btn-reset:hover {
+        color: #f1f1f1;
+    }
+
+.rotate-180 {
+    transform: rotate(180deg);
+    transition: transform 0.3s;
+}
+
+.mobile-club-dropdown {
+    background-color: #111; /* Slightly darker than sidebar */
+    padding-bottom: 10px;
+}
+
+.league-header {
+    color: #ffc107 !important; /* Gold for Leagues */
+    font-size: 18px; /* Slightly smaller than main links */
+    padding-left: 45px; /* Indent */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.small-icon {
+    font-size: 14px;
+    margin-right: 20px;
+}
+
+.mobile-teams-list {
+    background-color: #000;
+}
+
+.mobile-team-link {
+    display: block;
+    padding: 8px 0 8px 60px; /* Deep indent for teams */
+    color: #aaa;
+    text-decoration: none;
+    font-size: 16px;
+    border-bottom: 1px solid #222;
+}
+
+    .mobile-team-link:hover {
+        color: #fff;
+        background-color: #222;
+    }

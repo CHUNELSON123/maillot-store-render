@@ -1,7 +1,7 @@
 ﻿@page "/influencer-dashboard"
 @using MaillotStore.Data
 @using MaillotStore.Models
-@using MaillotStore.Services
+@using MaillotStore.Services.Interfaces
 @using MaillotStore.Services.Implementations
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
@@ -11,7 +11,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @inject ApplicationDbContext DbContext
-@inject OrderStateService OrderStateService
+@inject IOrderStateService OrderStateService
 @implements IDisposable
 @attribute [Authorize(Roles = "Influencer")]
 
@@ -37,7 +37,7 @@
             <div class="share-links">
                 <span>Share Link Via</span>
                 <a href="@($"https://wa.me/?text={System.Net.WebUtility.UrlEncode(referralLink)}")" target="_blank" class="social-icon"><i class="fab fa-whatsapp"></i></a>
-                
+
             </div>
         </div>
 
@@ -181,13 +181,13 @@ else
             }
         }
 
-        // Load Admin Phone Number (no changes needed here)
-        var adminUsers = await UserManager.GetUsersInRoleAsync("Admin");
-        var adminUser = adminUsers.FirstOrDefault();
-        if (adminUser is not null && !string.IsNullOrEmpty(adminUser.PhoneNumber))
+        // --- FIXED: Load Admin Phone Number from AdminSettings (same as Checkout) ---
+        var adminSetting = await DbContext.AdminSettings.AsNoTracking().FirstOrDefaultAsync(s => s.Key == "AdminWhatsAppNumber");
+        if (adminSetting != null && !string.IsNullOrEmpty(adminSetting.Value))
         {
-            adminPhoneNumber = adminUser.PhoneNumber;
+            adminPhoneNumber = adminSetting.Value;
         }
+        // --------------------------------------------------------------------------
 
         // --- START: NEW LOGIC TO LOAD COMMISSION RATE ---
         // Load the current commission rate setting from the database
@@ -242,7 +242,7 @@ else
         }
         else
         {
-             // Clear data if user has no referral code (or isn't loaded yet)
+            // Clear data if user has no referral code (or isn't loaded yet)
             referralLink = string.Empty;
             referredOrders = new List<Order>();
             totalCommission = 0;
@@ -264,7 +264,7 @@ else
 
     private async Task CopyReferralLink()
     {
-         try
+        try
         {
             await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", referralLink);
             // Optional: You could add a temporary message here saying "Link Copied!"
@@ -272,7 +272,7 @@ else
         catch (JSException ex)
         {
             Console.WriteLine($"Clipboard error: {ex.Message}"); // Log the error for debugging
-             // Optional: Show an error message to the user if copying fails
+                                                                 // Optional: Show an error message to the user if copying fails
         }
     }
 

@@ -4,13 +4,15 @@
 @using MaillotStore.Data
 @using MaillotStore.Models
 @using MaillotStore.ViewModels
-@using MaillotStore.ViewModels
+@using MaillotStore.Services.Interfaces
 @using Microsoft.AspNetCore.Authorization
 @layout AdminLayout
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavigationManager
 @inject IWebHostEnvironment Environment
 @inject ILogger<AddProduct> Logger
+@inject ITeamService TeamService
+@inject ILeagueService LeagueService
 @attribute [Authorize(Roles = "Admin")]
 
 <PageTitle>Add Product</PageTitle>
@@ -48,6 +50,48 @@
                 <ValidationMessage For="@(() => productViewModel.Category)" />
             </div>
 
+            @* --- NEW: JERSEY VERSION DROPDOWN --- *@
+            <div class="form-group">
+                <label for="productVersion">Jersey Version (Optional):</label>
+                <InputSelect id="productVersion" class="form-control-dark" @bind-Value="productViewModel.Version">
+                    <option value="">-- None / Standard --</option>
+                    <option value="Fan Version">Fan Version</option>
+                    <option value="Player Version">Player Version</option>
+                    <option value="Retro">Retro</option>
+                    <option value="Training">Training</option>
+                </InputSelect>
+            </div>
+            @* ------------------------------------ *@
+
+            @* --- LEAGUE FILTER (Helper) --- *@
+            <div class="form-group">
+                <label>Filter Teams by League (Optional Helper):</label>
+                <select class="form-control-dark" @bind="selectedLeagueId">
+                    <option value="0">-- All Leagues --</option>
+                    @if (leagues != null)
+                    {
+                        @foreach (var league in leagues)
+                        {
+                            <option value="@league.Id">@league.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="productTeam">Team (Optional):</label>
+                <InputSelect id="productTeam" class="form-control-dark" @bind-Value="productViewModel.TeamId">
+                    <option value="">-- Select Team --</option>
+                    @if (filteredTeams != null)
+                    {
+                        @foreach (var team in filteredTeams)
+                        {
+                            <option value="@team.Id">@team.Name</option>
+                        }
+                    }
+                </InputSelect>
+            </div>
+
             <div class="form-group">
                 <label for="jerseySeason">Jersey Season:</label>
                 <div class="season-inputs">
@@ -73,7 +117,7 @@
             </div>
 
             <div class="form-group">
-                <label for="productDescription">Description:</label>
+                <label for="productDescription">Description (Optional):</label>
                 <InputTextArea id="productDescription" class="form-control-dark" rows="5" @bind-Value="productViewModel.Description" />
             </div>
 
@@ -81,13 +125,19 @@
                 <label style="font-weight:bold; margin-bottom: 8px; display:block;">Main Product Image</label>
                 <div class="input-row" style="gap: 10px; align-items: center;">
                     <InputText class="form-control-dark" @bind-Value="productViewModel.ImageUrl" placeholder="Paste URL or upload file..." style="flex: 1;" />
-                    
                     <label class="btn-saved" style="cursor: pointer; margin:0; padding: 10px 15px; display:flex; align-items:center;">
-                        @if (isUploadingMain) { <span>Uploading...</span> } else { <span>Upload</span> }
+                        @if (isUploadingMain)
+                        {
+                            <span>Uploading...</span>
+                        }
+                        else
+                        {
+
+                            <span>Upload</span>
+                        }
                         <InputFile OnChange="LoadMainImage" hidden accept=".jpg,.jpeg,.png,.webp" />
                     </label>
                 </div>
-
                 @if (!string.IsNullOrEmpty(productViewModel.ImageUrl))
                 {
                     <div style="margin-top: 10px; border: 1px solid #444; padding: 5px; border-radius: 4px; display: inline-block;">
@@ -98,7 +148,6 @@
 
             <div class="form-group">
                 <label style="font-weight:bold; margin-bottom: 8px; display:block;">Gallery Images (Unlimited)</label>
-                
                 <div style="margin-bottom: 10px;">
                     <label class="btn-saved" style="cursor: pointer; margin-right: 10px;">
                         + Upload Multiple Images
@@ -118,22 +167,18 @@
                 {
                     <div class="input-row" style="margin-bottom: 10px; align-items: center;">
                         <span style="color: #fff; margin-right: 10px;">Img:</span>
-                        
                         <InputText class="form-control-dark" @bind-Value="image.ImageUrl" placeholder="Image URL" style="flex: 1;" />
-
                         @if (!string.IsNullOrEmpty(image.ImageUrl))
                         {
                             <div style="width: 50px; height: 38px; margin: 0 10px; overflow: hidden; border: 1px solid #555;">
                                 <img src="@image.ImageUrl" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'" />
                             </div>
                         }
-
-                        <button type="button" class="btn-cancel" style="background-color: #dc3545; border:none;" @onclick="() => RemoveGalleryImage(image)">
-                            X
-                        </button>
+                        <button type="button" class="btn-cancel" style="background-color: #dc3545; border:none;" @onclick="() => RemoveGalleryImage(image)">X</button>
                     </div>
                 }
             </div>
+
             <div class="form-group featured-group">
                 <label>Featured:</label>
                 <div class="featured-options">
@@ -161,12 +206,24 @@
 @code {
     private ProductViewModel productViewModel = new();
     private List<string> SeasonYears { get; set; } = new();
-    private const long MaxFileSize = 1024 * 1024 * 10; // 10MB limit
+
+    // Data Loading
+    private List<Team> allTeams = new();
+    private List<League> leagues = new();
+    private int selectedLeagueId = 0;
+
+    private IEnumerable<Team> filteredTeams =>
+        selectedLeagueId == 0 ? allTeams : allTeams.Where(t => t.LeagueId == selectedLeagueId);
+
+    private const long MaxFileSize = 1024 * 1024 * 10;
     private bool isUploadingMain = false;
     private bool isUploadingGallery = false;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        leagues = await LeagueService.GetAllLeaguesAsync();
+        allTeams = await TeamService.GetAllTeamsAsync();
+
         int startYear = 2014;
         int currentYear = DateTime.Now.Year;
         for (int year = startYear; year <= currentYear; year++)
@@ -176,25 +233,12 @@
         SeasonYears.Reverse();
     }
 
-    // --- UPLOAD LOGIC ---
-
     private async Task LoadMainImage(InputFileChangeEventArgs e)
     {
         isUploadingMain = true;
-        try
-        {
-            // Upload to "Images/products" to keep your structure
-            var url = await UploadFileAsync(e.File);
-            productViewModel.ImageUrl = url; 
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error uploading main image");
-        }
-        finally
-        {
-            isUploadingMain = false;
-        }
+        try { productViewModel.ImageUrl = await UploadFileAsync(e.File); }
+        catch (Exception ex) { Logger.LogError(ex, "Error uploading main image"); }
+        finally { isUploadingMain = false; }
     }
 
     private async Task LoadGalleryImages(InputFileChangeEventArgs e)
@@ -202,21 +246,14 @@
         isUploadingGallery = true;
         try
         {
-            // Allow up to 10 images at once
             foreach (var file in e.GetMultipleFiles(10))
             {
                 var url = await UploadFileAsync(file);
                 productViewModel.Gallery.Add(new ProductImage { ImageUrl = url });
             }
         }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error uploading gallery images");
-        }
-        finally
-        {
-            isUploadingGallery = false;
-        }
+        catch (Exception ex) { Logger.LogError(ex, "Error uploading gallery images"); }
+        finally { isUploadingGallery = false; }
     }
 
     private async Task<string> UploadFileAsync(IBrowserFile file)
@@ -224,48 +261,39 @@
         var fileExtension = Path.GetExtension(file.Name);
         var trustedFileName = $"{Guid.NewGuid()}{fileExtension}";
         var uploadPath = Path.Combine(Environment.WebRootPath, "Images", "products");
-        
         Directory.CreateDirectory(uploadPath);
         var filePath = Path.Combine(uploadPath, trustedFileName);
-
         await using FileStream fs = new(filePath, FileMode.Create);
         await file.OpenReadStream(MaxFileSize).CopyToAsync(fs);
-
         return $"/Images/products/{trustedFileName}";
     }
 
-    private void AddEmptyGallerySlot()
-    {
-        productViewModel.Gallery.Add(new ProductImage());
-    }
-
-    private void RemoveGalleryImage(ProductImage image)
-    {
-        productViewModel.Gallery.Remove(image);
-    }
-
-    // --- SUBMIT LOGIC ---
+    private void AddEmptyGallerySlot() => productViewModel.Gallery.Add(new ProductImage());
+    private void RemoveGalleryImage(ProductImage image) => productViewModel.Gallery.Remove(image);
 
     private async Task HandleValidSubmit()
     {
         var newProduct = new Product
         {
-            Name = productViewModel.Name,
+            Name = productViewModel.Name ?? string.Empty,
             Price = productViewModel.Price,
-            Category = productViewModel.Category,
+            Category = productViewModel.Category ?? string.Empty,
             Stock = productViewModel.Stock,
-            Description = productViewModel.Description,
+            Description = productViewModel.Description ?? string.Empty,
             IsFeatured = productViewModel.IsFeatured,
-            ImageUrl = productViewModel.ImageUrl, // Main Image
-            
-            // Format Season
+            ImageUrl = productViewModel.ImageUrl ?? string.Empty,
+            TeamId = productViewModel.TeamId,
+            Size = "S,M,L,XL,XXL",
+
+            // --- SAVE VERSION ---
+            Version = productViewModel.Version,
+            // --------------------
+
             Season = !string.IsNullOrEmpty(productViewModel.SeasonType)
-                       ? $"{productViewModel.SeasonType}{(!string.IsNullOrEmpty(productViewModel.SeasonYear) ? $" ({productViewModel.SeasonYear})" : "")}"
-                       : null
+                        ? $"{productViewModel.SeasonType}{(!string.IsNullOrEmpty(productViewModel.SeasonYear) ? $" ({productViewModel.SeasonYear})" : "")}"
+                        : null
         };
 
-        // Add Gallery Images
-        // Remove empty ones
         var cleanGallery = productViewModel.Gallery.Where(i => !string.IsNullOrWhiteSpace(i.ImageUrl)).ToList();
         newProduct.Gallery = cleanGallery;
 

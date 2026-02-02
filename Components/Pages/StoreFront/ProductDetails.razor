@@ -4,11 +4,13 @@
 @using MaillotStore.Models
 @using MaillotStore.Services
 @using MaillotStore.Services.Implementations
+@using MaillotStore.Services.Interfaces
 @using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavigationManager
 @inject StateContainer StateContainer
 @inject IJSRuntime JSRuntime
+@inject IOrderStateService OrderStateService
 @implements IDisposable
 
 <HeadContent>
@@ -36,11 +38,11 @@
         <div class="row">
             <div class="col-lg-6 mb-4 mb-lg-0">
                 <div class="pd-gallery-container">
-                    
+
                     <div class="pd-main-image-wrapper" @onclick="OpenLightbox" style="cursor: zoom-in;">
                         <img src="@currentImageUrl" class="main-img-display" alt="Main image of @product.Name">
                     </div>
-                    
+
                     <div class="thumbnails-carousel-wrapper">
                         <button class="thumb-nav-btn prev" @onclick="() => ScrollThumbnails(-1)" type="button">
                             <i class="fas fa-chevron-left"></i>
@@ -50,9 +52,9 @@
                             @* 1. Main Image Thumbnail *@
                             @if (!string.IsNullOrEmpty(product.ImageUrl))
                             {
-                                <img src="@product.ImageUrl" 
-                                     class="img-thumbnail thumb-item @(currentImageUrl == product.ImageUrl ? "active" : "")" 
-                                     alt="Main Thumbnail" 
+                                <img src="@product.ImageUrl"
+                                     class="img-thumbnail thumb-item @(currentImageUrl == product.ImageUrl ? "active" : "")"
+                                     alt="Main Thumbnail"
                                      @onclick="() => ManualImageSelect(product.ImageUrl)">
                             }
 
@@ -61,9 +63,9 @@
                             {
                                 foreach (var img in product.Gallery)
                                 {
-                                    <img src="@img.ImageUrl" 
-                                         class="img-thumbnail thumb-item @(currentImageUrl == img.ImageUrl ? "active" : "")" 
-                                         alt="Gallery Image" 
+                                    <img src="@img.ImageUrl"
+                                         class="img-thumbnail thumb-item @(currentImageUrl == img.ImageUrl ? "active" : "")"
+                                         alt="Gallery Image"
                                          @onclick="() => ManualImageSelect(img.ImageUrl)">
                                 }
                             }
@@ -78,14 +80,25 @@
 
             <div class="col-lg-6">
                 <div class="pd-info-container">
-                    <h1 class="pd-name">@product.Name</h1>
+                    @* --- UPDATED: Added Badge inside H1 to preserve layout --- *@
+                    <h1 class="pd-name">
+                        @product.Name
+                        @if (!string.IsNullOrEmpty(product.Version))
+                        {
+                            <span class="version-pill @GetVersionClass(product.Version)" style="font-size: 0.4em; vertical-align: middle; margin-left: 10px;">
+                                @product.Version
+                            </span>
+                        }
+                    </h1>
+                    @* --------------------------------------------------------- *@
+
                     <h2 class="pd-price">FCFA @product.Price.ToString("N0")</h2>
-                    
+
                     @if (!string.IsNullOrWhiteSpace(product.Season) && product.Season.Trim() != "()")
                     {
                         <p class="pd-season">@product.Season</p>
                     }
-                    
+
                     <hr class="pd-divider" />
                     <div class="pd-description">
                         <p>@product.Description</p>
@@ -140,7 +153,7 @@
         </div>
 
         <hr class="my-5" />
-        
+
         <section class="related-products">
             <h2 class="mb-4">You may also like</h2>
             @if (relatedProducts.Any())
@@ -188,7 +201,7 @@
 
     private Product? product;
     private List<Product> relatedProducts = new();
-    
+
     private string? currentImageUrl;
     private List<string> allImageUrls = new();
     private int currentImageIndex = 0;
@@ -198,11 +211,11 @@
     private string customName = string.Empty;
     private int? customNumber;
     private string? selectedSize;
-    private int? quantity;
+    private int? quantity = 1;
     private List<string> availableSizes = new() { "S", "M", "L", "XL", "XXL" };
     private string? statusMessage;
     private string statusMessageClass = "alert-warning";
-    
+
     private ElementReference _thumbnailsContainer;
 
     protected override async Task OnParametersSetAsync()
@@ -244,7 +257,7 @@
     private void StartRotationTimer()
     {
         _timer?.Dispose();
-        if (allImageUrls.Count > 1) 
+        if (allImageUrls.Count > 1)
         {
             _timer = new System.Threading.Timer(RotateImageCallback, null, 5000, 5000);
         }
@@ -257,7 +270,7 @@
 
     private void RotateImageCallback(object? state)
     {
-        if (allImageUrls.Count > 0 && !isLightboxOpen) 
+        if (allImageUrls.Count > 0 && !isLightboxOpen)
         {
             currentImageIndex = (currentImageIndex + 1) % allImageUrls.Count;
             currentImageUrl = allImageUrls[currentImageIndex];
@@ -349,7 +362,28 @@
 
         if (product != null)
         {
-            await StateContainer.AddToCart(product, quantity.Value, selectedSize, string.IsNullOrWhiteSpace(customName) ? null : customName, customNumber);
+            // 1. Create a "Buy Now" specific order
+            var buyNowOrder = new Order();
+            buyNowOrder.OrderItems = new List<OrderItem>
+            {
+                new OrderItem
+                {
+                    Product = product,
+                    ProductId = product.ProductId,
+                    // REMOVED: ProductName = product.Name,
+                    Price = product.Price,
+                    Quantity = quantity ?? 1,
+                    Size = selectedSize,
+                    CustomName = string.IsNullOrWhiteSpace(customName) ? null : customName,
+                    CustomNumber = customNumber
+                    // REMOVED: ImageUrl = product.ImageUrl
+                }
+            };
+
+            // 2. Stage it (so it doesn't mix with the main cart)
+            OrderStateService.StageOrder(buyNowOrder);
+
+            // 3. Go to checkout (Checkout will prioritize the staged order)
             NavigationManager.NavigateTo("/checkout");
         }
     }
@@ -357,6 +391,15 @@
     public void Dispose()
     {
         _timer?.Dispose();
+    }
+
+    // --- NEW: VERSION HELPER ---
+    private string GetVersionClass(string version)
+    {
+        if (version.Contains("Player", StringComparison.OrdinalIgnoreCase)) return "badge-player";
+        if (version.Contains("Retro", StringComparison.OrdinalIgnoreCase)) return "badge-retro";
+        if (version.Contains("Training", StringComparison.OrdinalIgnoreCase)) return "badge-training";
+        return "badge-fan";
     }
 }
 
@@ -380,13 +423,13 @@
         justify-content: center;
         overflow: hidden;
         margin-bottom: 15px;
-        padding: 5px; 
+        padding: 5px;
         transition: transform 0.2s;
     }
-    
-    .pd-main-image-wrapper:hover {
-        transform: scale(1.01);
-    }
+
+        .pd-main-image-wrapper:hover {
+            transform: scale(1.01);
+        }
 
     .main-img-display {
         width: 100%;
@@ -409,15 +452,15 @@
         gap: 10px;
         overflow-x: auto;
         scroll-behavior: smooth;
-        scrollbar-width: none; 
+        scrollbar-width: none;
         -ms-overflow-style: none;
         white-space: nowrap;
         flex: 1;
     }
 
-    .pd-thumbnail-scroll-container::-webkit-scrollbar {
-        display: none;
-    }
+        .pd-thumbnail-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
 
     .thumb-item {
         width: 80px;
@@ -431,8 +474,14 @@
         transition: opacity 0.3s;
     }
 
-    .thumb-item:hover { opacity: 0.8; }
-    .thumb-item.active { border-color: #007bff; opacity: 1; }
+        .thumb-item:hover {
+            opacity: 0.8;
+        }
+
+        .thumb-item.active {
+            border-color: #007bff;
+            opacity: 1;
+        }
 
     .thumb-nav-btn {
         background-color: rgba(255, 255, 255, 0.1);
@@ -449,7 +498,9 @@
         flex-shrink: 0;
     }
 
-    .thumb-nav-btn:hover { background-color: rgba(255, 255, 255, 0.3); }
+        .thumb-nav-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
 
     /* --- LIGHTBOX STYLES --- */
     .lightbox-overlay {
@@ -475,13 +526,13 @@
         align-items: center;
     }
 
-    .lightbox-content img {
-        max-width: 100%;
-        max-height: 90vh;
-        object-fit: contain;
-        border-radius: 4px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
 
     /* Lightbox Navigation Buttons */
     .lightbox-nav {
@@ -504,9 +555,17 @@
         transition: background 0.3s;
     }
 
-    .lightbox-nav:hover { background: rgba(255, 255, 255, 0.3); }
-    .lightbox-nav.prev { left: 20px; }
-    .lightbox-nav.next { right: 20px; }
+        .lightbox-nav:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .lightbox-nav.prev {
+            left: 20px;
+        }
+
+        .lightbox-nav.next {
+            right: 20px;
+        }
 
     .lightbox-close {
         position: absolute;
@@ -523,31 +582,34 @@
     }
 
     @@keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
     }
 
     /* =========================================
-       RESPONSIVE ADJUSTMENTS (MOBILE)
-       ========================================= */
+                RESPONSIVE ADJUSTMENTS (MOBILE)
+                ========================================= */
     @@media (max-width: 768px) {
         /* Reduce Main Image Height for Mobile */
         .pd-main-image-wrapper {
-            height: 300px; 
+            height: 300px;
         }
-
         /* Smaller Thumbnails */
         .thumb-item {
             width: 50px;
             height: 50px;
         }
-        
+
         .thumb-nav-btn {
             width: 30px;
             height: 30px;
             font-size: 0.8rem;
         }
-
         /* Adjust Lightbox for Mobile Touch */
         .lightbox-content {
             max-width: 95%;
@@ -561,15 +623,19 @@
             padding: 0;
             background: rgba(255, 255, 255, 0.2); /* Make buttons slightly more visible */
         }
-        
-        /* Push buttons closer to edge on mobile */
-        .lightbox-nav.prev { left: 5px; }
-        .lightbox-nav.next { right: 5px; }
-        
-        .lightbox-close { 
-            top: 10px; 
-            right: 10px; 
-            font-size: 2.5rem; 
+            /* Push buttons closer to edge on mobile */
+            .lightbox-nav.prev {
+                left: 5px;
+            }
+
+            .lightbox-nav.next {
+                right: 5px;
+            }
+
+        .lightbox-close {
+            top: 10px;
+            right: 10px;
+            font-size: 2.5rem;
         }
     }
 </style>

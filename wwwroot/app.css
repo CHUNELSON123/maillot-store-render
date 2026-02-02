@@ -224,40 +224,49 @@ header {
             margin-bottom: 2.5rem; /* A bit more space before the button */
         }
 
-    /* === START OF CORRECTED CODE === */
-
-    /* 1. All rules are now separate (not nested) */
+    /* === FIXED MOBILE PRODUCT CARD (Auto Height) === */
     .product-card {
-        min-height: 340px;
-        background-color: #000000; /* Fix: Re-add black background */
+        min-height: auto;
+        height: auto !important; /* Allow card to grow */
+        background-color: #000000;
+        display: flex;
+        flex-direction: column; /* Stack vertically */
     }
 
         .product-card .product-image-container {
-            flex-basis: 60%; /* This is the 60% you asked for */
-            flex-shrink: 0;
-            height: 60%;
+            width: 100%;
+            aspect-ratio: 1 / 1; /* Keep image square */
+            flex-basis: auto;
+            height: auto;
         }
 
         .product-card .card-img-top {
-            aspect-ratio: unset; /* Remove the desktop rule */
-            height: 100%; /* Fill the 60% container */
-            object-fit: cover; /* Keep the image looking good */
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .product-card .card-body {
-            flex-basis: 40%; /* This is the 40% you asked for */
-            flex-shrink: 0;
-            height: 40%;
-            padding: 0.75rem; /* Adjust padding to fit */
+            width: 100%;
+            flex-basis: auto;
+            height: auto; /* Grows to fit content */
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* 2. Fix: Re-add white text color for price/season */
+        /* Ensure buttons are visible and stacked */
+        .product-card .d-grid {
+            margin-top: auto;
+            gap: 0.5rem;
+        }
+
         .product-card .card-season,
         .product-card .card-price {
             color: #ffffff;
         }
+    /* === END FIXED MOBILE PRODUCT CARD === */
 
-    /* 3. Fix: Re-add colors for "Why Choose Us" section */
     .feature-card {
         background-color: #000000;
         color: #ffffff;
@@ -266,8 +275,6 @@ header {
         .feature-card h3 {
             color: #ffffff;
         }
-
-    /* === END OF CORRECTED CODE === */
 
     .cta-button {
         padding: 10px 24px; /* Slightly smaller button */
@@ -299,7 +306,7 @@ header {
 }
 
 /* =================================
-   PRODUCT CARD SECTION
+   PRODUCT CARD SECTION (Desktop)
    ================================= */
 .product-card {
     background-color: #000000;
@@ -307,21 +314,21 @@ header {
     border-radius: 5px;
     overflow: hidden;
     text-align: left;
-    display: flex; /* <-- ADD THIS */
-    flex-direction: column; /* <-- ADD THIS */
+    display: flex;
+    flex-direction: column;
 }
 
     .product-card .card-img-top {
         width: 100%;
-        aspect-ratio: 1 / 1; /* This creates a perfect square that scales */
+        aspect-ratio: 1 / 1;
         object-fit: cover;
     }
 
     .product-card .card-body {
         padding: 1rem;
-        display: flex; /* <-- ADD THIS */
-        flex-direction: column; /* <-- ADD THIS */
-        flex-grow: 1; /* <-- ADD THIS */
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
     }
 
         .product-card .card-body .d-grid {
@@ -385,10 +392,10 @@ header {
     position: relative;
     padding: 2rem 0;
     border: 1px solid #ffffff;
-    background-image: url('/Images/influencer-bg.jpg'); /* <-- REPLACE WITH YOUR IMAGE */
+    background-image: url('/Images/influencer-bg.jpg');
     background-size: cover;
     background-position: center;
-    background-attachment: fixed; /* Creates a nice parallax effect */
+    background-attachment: fixed;
     color: #ffffff;
     margin: 50px;
     border-radius: 5px;
@@ -405,7 +412,6 @@ header {
         background-color: rgba(0, 0, 0, 0.7);
     }
 
-    /* Ensures content is on top of the overlay */
     .influencer-cta .container {
         position: relative;
         z-index: 2;
@@ -1184,9 +1190,11 @@ textarea.form-control {
     margin: 0.5rem 0;
 }
 
-/*Product share button*/
+/*Product share button & Badge Container*/
+/* KEY FIX: Ensure container is relative so absolute badge stays inside */
 .product-image-container {
-    position: relative; /* This is crucial */
+    position: relative !important;
+    overflow: hidden; /* Keeps corner rounded */
 }
 
 .product-share-icon-button {
@@ -1450,4 +1458,49 @@ textarea.form-control {
     }
 }
 
-/* --- END: NEW STYLES FOR MOBILE NAVBAR --- */
+/* --- PRODUCT CARD BADGE --- */
+.version-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    z-index: 10; /* FIX: Increased Z-Index to stay on top */
+    pointer-events: none; /* Let clicks pass through to the image */
+}
+
+/* --- DETAILS PAGE PILL --- */
+.version-pill {
+    display: inline-block;
+    padding: 2px 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    border-radius: 20px;
+    vertical-align: middle;
+}
+
+/* --- BADGE COLORS --- */
+.badge-player {
+    background: linear-gradient(45deg, #d4af37, #f7e6ad); /* Gold */
+    color: #000;
+    border: 1px solid #b8860b;
+}
+
+.badge-fan {
+    background: linear-gradient(45deg, #007bff, #00c6ff); /* Blue */
+}
+
+.badge-retro {
+    background: linear-gradient(45deg, #ff7e5f, #feb47b); /* Orange/Vintage */
+}
+
+.badge-training {
+    background: linear-gradient(45deg, #56ab2f, #a8e063); /* Green */
+}
