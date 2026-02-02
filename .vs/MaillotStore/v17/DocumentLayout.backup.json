@@ -286,8 +286,7 @@
               "RelativeToolTip": "Services\\Implementations\\ReferralService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAEgAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-27T15:18:49.15Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-27T15:18:49.15Z"
             },
             {
               "$type": "Document",
@@ -299,8 +298,7 @@
               "RelativeToolTip": "Components\\Routes.razor",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAADsAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-31T10:57:18.382Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-31T10:57:18.382Z"
             },
             {
               "$type": "Document",
@@ -336,8 +334,7 @@
               "RelativeToolTip": "wwwroot\\css\\Products.css",
               "ViewState": "AgIAAC4BAAAAAAAAAAAAwEABAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-12-13T16:08:56.221Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-13T16:08:56.221Z"
             },
             {
               "$type": "Document",
@@ -362,8 +359,7 @@
               "RelativeToolTip": "Components\\Pages\\StoreFront\\InfluencerDashboard.razor",
               "ViewState": "AgIAAAUBAAAAAAAAAAAgwBABAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-10-03T20:02:24.31Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-03T20:02:24.31Z"
             },
             {
               "$type": "Document",
@@ -1011,6 +1007,10 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-10-04T16:26:15.872Z"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
             }
           ]
         },
