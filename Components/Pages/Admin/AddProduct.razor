@@ -23,6 +23,15 @@
         <button class="back-btn" @onclick='() => NavigationManager.NavigateTo("/admin/products")'>Back</button>
     </div>
 
+    @* --- NEW: Error Message Display (Only shows if there is an error) --- *@
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" style="color: white; background-color: #dc3545; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+            @errorMessage
+        </div>
+    }
+    @* ------------------------------------------------------------------ *@
+
     <div class="add-product-form-body">
         <EditForm Model="@productViewModel" OnValidSubmit="HandleValidSubmit" enctype="multipart/form-data">
             <DataAnnotationsValidator />
@@ -50,7 +59,6 @@
                 <ValidationMessage For="@(() => productViewModel.Category)" />
             </div>
 
-            @* --- NEW: JERSEY VERSION DROPDOWN --- *@
             <div class="form-group">
                 <label for="productVersion">Jersey Version (Optional):</label>
                 <InputSelect id="productVersion" class="form-control-dark" @bind-Value="productViewModel.Version">
@@ -61,9 +69,7 @@
                     <option value="Training">Training</option>
                 </InputSelect>
             </div>
-            @* ------------------------------------ *@
 
-            @* --- LEAGUE FILTER (Helper) --- *@
             <div class="form-group">
                 <label>Filter Teams by League (Optional Helper):</label>
                 <select class="form-control-dark" @bind="selectedLeagueId">
@@ -132,7 +138,6 @@
                         }
                         else
                         {
-
                             <span>Upload</span>
                         }
                         <InputFile OnChange="LoadMainImage" hidden accept=".jpg,.jpeg,.png,.webp" />
@@ -212,9 +217,13 @@
     private List<League> leagues = new();
     private int selectedLeagueId = 0;
 
+    // --- NEW: Error Message Helper ---
+    private string errorMessage = string.Empty;
+
     private IEnumerable<Team> filteredTeams =>
         selectedLeagueId == 0 ? allTeams : allTeams.Where(t => t.LeagueId == selectedLeagueId);
 
+    // Keep strict limit on server side safety
     private const long MaxFileSize = 1024 * 1024 * 10;
     private bool isUploadingMain = false;
     private bool isUploadingGallery = false;
@@ -236,14 +245,26 @@
     private async Task LoadMainImage(InputFileChangeEventArgs e)
     {
         isUploadingMain = true;
-        try { productViewModel.ImageUrl = await UploadFileAsync(e.File); }
-        catch (Exception ex) { Logger.LogError(ex, "Error uploading main image"); }
-        finally { isUploadingMain = false; }
+        errorMessage = string.Empty; // Reset error on new attempt
+        try
+        {
+            productViewModel.ImageUrl = await UploadFileAsync(e.File);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error uploading main image");
+            errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isUploadingMain = false;
+        }
     }
 
     private async Task LoadGalleryImages(InputFileChangeEventArgs e)
     {
         isUploadingGallery = true;
+        errorMessage = string.Empty;
         try
         {
             foreach (var file in e.GetMultipleFiles(10))
@@ -252,19 +273,35 @@
                 productViewModel.Gallery.Add(new ProductImage { ImageUrl = url });
             }
         }
-        catch (Exception ex) { Logger.LogError(ex, "Error uploading gallery images"); }
-        finally { isUploadingGallery = false; }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error uploading gallery images");
+            errorMessage = $"Gallery Error: {ex.Message}";
+        }
+        finally
+        {
+            isUploadingGallery = false;
+        }
     }
 
     private async Task<string> UploadFileAsync(IBrowserFile file)
     {
-        var fileExtension = Path.GetExtension(file.Name);
-        var trustedFileName = $"{Guid.NewGuid()}{fileExtension}";
+        // --- NEW: Resize the image BEFORE uploading ---
+        // 1. Request a compressed JPEG version (max 1000px width/height)
+        // This converts your 1.6MB file to ~150KB instantly in the browser.
+        var resizedImage = await file.RequestImageFileAsync("image/jpeg", 1000, 1000);
+
+        // 2. Use .jpg extension since we converted it
+        var trustedFileName = $"{Guid.NewGuid()}.jpg";
+
         var uploadPath = Path.Combine(Environment.WebRootPath, "Images", "products");
         Directory.CreateDirectory(uploadPath);
         var filePath = Path.Combine(uploadPath, trustedFileName);
+
+        // 3. Stream the small, resized file to the server
         await using FileStream fs = new(filePath, FileMode.Create);
-        await file.OpenReadStream(MaxFileSize).CopyToAsync(fs);
+        await resizedImage.OpenReadStream(MaxFileSize).CopyToAsync(fs);
+
         return $"/Images/products/{trustedFileName}";
     }
 
@@ -284,11 +321,7 @@
             ImageUrl = productViewModel.ImageUrl ?? string.Empty,
             TeamId = productViewModel.TeamId,
             Size = "S,M,L,XL,XXL",
-
-            // --- SAVE VERSION ---
             Version = productViewModel.Version,
-            // --------------------
-
             Season = !string.IsNullOrEmpty(productViewModel.SeasonType)
                         ? $"{productViewModel.SeasonType}{(!string.IsNullOrEmpty(productViewModel.SeasonYear) ? $" ({productViewModel.SeasonYear})" : "")}"
                         : null
