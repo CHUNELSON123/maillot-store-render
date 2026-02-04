@@ -40,5 +40,9 @@ namespace MaillotStore.Models
 
         [ForeignKey("TeamId")]
         public Team? Team { get; set; }
+        public int? LeagueId { get; set; }
+
+        [ForeignKey("LeagueId")]
+        public League? League { get; set; }
     }
 }

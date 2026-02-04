@@ -15,11 +15,12 @@
                 <span class="brand-text ms-2">Maillot Store</span>
             </a>
 
-            @* --- DESKTOP MENU (Hidden on Mobile) --- *@
+            @* --- DESKTOP MENU --- *@
             <div class="collapse navbar-collapse" id="main-nav-desktop">
                 <div class="search-container mx-auto d-none d-lg-block" style="border-radius: 500px;">
+                    @* FIX: Use 'value' instead of '@bind' to allow instant typing *@
                     <input type="text" class="form-control search-bar" placeholder="Search for jerseys..."
-                           @bind="searchTerm" @oninput="PerformSearch" />
+                           value="@searchTerm" @oninput="PerformSearch" />
                 </div>
 
                 <ul class="navbar-nav ms-auto">
@@ -59,7 +60,6 @@
                             </div>
                         </div>
                     </li>
-                    @* ------------------------- *@
 
                     <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
                     <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
@@ -108,8 +108,9 @@
     @if (showMobileSearch)
     {
         <div class="search-container-mobile d-lg-none px-3 py-2">
+            @* FIX: Applied 'value' fix here too *@
             <input type="text" class="form-control search-bar" placeholder="Search for jerseys..."
-                   @bind="searchTerm" @oninput="PerformSearch" />
+                   value="@searchTerm" @oninput="PerformSearch" />
             <button class="btn-close" @onclick="ToggleMobileSearch"></button>
         </div>
     }
@@ -128,7 +129,7 @@
         <a class="nav-link" href="/" @onclick="CloseNavMenu">Home</a>
         <a class="nav-link" href="/shop" @onclick="CloseNavMenu">Shop</a>
 
-        @* --- NEW: MOBILE COLLAPSIBLE CLUB MENU --- *@
+        @* --- MOBILE COLLAPSIBLE CLUB MENU --- *@
         <div class="mobile-club-section">
             <button class="nav-link btn-reset w-100 text-start d-flex justify-content-between align-items-center"
                     @onclick="ToggleMobileClubMenu">
@@ -142,7 +143,6 @@
                     @foreach (var league in leaguesList)
                     {
                         <div class="mobile-league-item">
-                            @* League Header (Click to expand teams) *@
                             <button class="league-header btn-reset w-100 text-start"
                                     @onclick="() => ToggleMobileLeague(league.Id)">
                                 @league.Name
@@ -150,7 +150,6 @@
                                 <i class="fas fa-minus small-icon @(expandedLeagueId == league.Id ? "" : "d-none")"></i>
                             </button>
 
-                            @* Teams List *@
                             @if (expandedLeagueId == league.Id)
                             {
                                 <div class="mobile-teams-list">
@@ -167,7 +166,6 @@
                 </div>
             }
         </div>
-        @* ---------------------------------------- *@
 
         <a class="nav-link" href="/about" @onclick="CloseNavMenu">About</a>
         <a class="nav-link" href="/contact" @onclick="CloseNavMenu">Contact</a>
@@ -210,10 +208,8 @@
     private string searchTerm = string.Empty;
     private bool isReferred;
     private List<League> leaguesList = new();
-
-    // Mobile Menu State
     private bool showMobileClubMenu = false;
-    private int expandedLeagueId = 0; // Track which league is open
+    private int expandedLeagueId = 0;
 
     private string NavMenuCssClass => collapseNavMenu ? "sidenav" : "sidenav open";
 
@@ -238,13 +234,15 @@
     private void CloseNavMenu()
     {
         collapseNavMenu = true;
-        showMobileClubMenu = false; // Reset sub-menus on close
+        showMobileClubMenu = false;
         expandedLeagueId = 0;
     }
 
     private void PerformSearch(ChangeEventArgs e)
     {
+        // Update the value manually since we removed @bind
         searchTerm = e.Value?.ToString() ?? string.Empty;
+
         SearchState.SetSearchTerm(searchTerm);
 
         if (!NavManager.Uri.EndsWith("/shop", StringComparison.OrdinalIgnoreCase))
@@ -253,7 +251,6 @@
         }
     }
 
-    // --- NEW METHODS FOR MOBILE ACCORDION ---
     private void ToggleMobileClubMenu()
     {
         showMobileClubMenu = !showMobileClubMenu;
@@ -262,8 +259,8 @@
     private void ToggleMobileLeague(int leagueId)
     {
         if (expandedLeagueId == leagueId)
-            expandedLeagueId = 0; // Collapse if already open
+            expandedLeagueId = 0;
         else
-            expandedLeagueId = leagueId; // Expand new one
+            expandedLeagueId = leagueId;
     }
 }

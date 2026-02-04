@@ -42,7 +42,7 @@
                 </select>
             </div>
 
-            @* --- NEW: LEAGUE FILTER --- *@
+            @* --- LEAGUE FILTER --- *@
             <div>
                 <label for="league-filter" class="form-label mb-0 small">League:</label>
                 <select class="form-select" id="league-filter" @bind="currentLeagueFilter" @bind:after="() => ApplyFiltersAndSorting()">
@@ -59,7 +59,7 @@
         </div>
     </div>
 
-    @* --- ACTIVE FILTER INDICATORS (Shows only when needed) --- *@
+    @* --- ACTIVE FILTER INDICATORS --- *@
     @if (TeamId.HasValue || currentLeagueFilter > 0)
     {
         <div class="mb-3 d-flex gap-2">
@@ -148,8 +148,11 @@
     {
         SearchState.OnSearchTermChanged += OnSearchChanged;
 
-        // Include Team so we can filter by it
-        allProducts = await DbContext.Products.Include(p => p.Team).ToListAsync();
+        // FIXED: Include BOTH Team and League so we have all data loaded
+        allProducts = await DbContext.Products
+            .Include(p => p.Team)
+            .Include(p => p.League)
+            .ToListAsync();
 
         // Load Leagues for dropdown
         leagues = await LeagueService.GetAllLeaguesAsync();
@@ -185,8 +188,6 @@
             {
                 currentSortOrder = e.Value.ToString()!;
             }
-            // Logic for other dropdowns is handled by @bind,
-            // but this keeps the sort logic separate if needed
         }
 
         var searchTerm = SearchState.CurrentSearchTerm ?? string.Empty;
@@ -210,10 +211,13 @@
             tempProducts = tempProducts?.Where(p => p.TeamId == TeamId.Value);
         }
 
-        // 4. League Filter (from Dropdown)
+        // 4. League Filter (from Dropdown) -- FIXED LOGIC HERE --
         if (currentLeagueFilter > 0)
         {
-            tempProducts = tempProducts?.Where(p => p.Team != null && p.Team.LeagueId == currentLeagueFilter);
+            tempProducts = tempProducts?.Where(p =>
+                (p.LeagueId == currentLeagueFilter) ||  // Check direct product league
+                (p.Team != null && p.Team.LeagueId == currentLeagueFilter) // Check team league
+            );
         }
 
         // 5. Sorting

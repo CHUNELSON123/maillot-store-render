@@ -37,5 +37,6 @@ namespace MaillotStore.ViewModels
         public List<ProductImage> Gallery { get; set; } = new();
         public string? Version { get; set; }
         public int? TeamId { get; set; }
+        public int? LeagueId { get; set; }
     }
 }

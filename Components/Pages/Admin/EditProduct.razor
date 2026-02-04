@@ -14,7 +14,6 @@
 @inject ILogger<EditProduct> Logger
 @inject ITeamService TeamService
 @inject ILeagueService LeagueService
-@* --- NEW: Inject Cloudinary Service --- *@
 @inject MaillotStore.Services.Implementations.CloudinaryService CloudinaryService
 @attribute [Authorize(Roles = "Admin")]
 
@@ -36,6 +35,7 @@
             <EditForm Model="@productViewModel" OnValidSubmit="HandleUpdateSubmit" enctype="multipart/form-data">
                 <DataAnnotationsValidator />
 
+                @* --- BASIC FIELDS --- *@
                 <div class="form-group">
                     <label for="productName">Product Name:</label>
                     <InputText id="productName" class="form-control-dark" @bind-Value="productViewModel.Name" />
@@ -70,10 +70,12 @@
                     </InputSelect>
                 </div>
 
+                @* --- NEW: LEAGUE SELECTION (Saves directly to Product) --- *@
                 <div class="form-group">
-                    <label>Filter Teams by League (Optional Helper):</label>
-                    <select class="form-control-dark" @bind="selectedLeagueId">
-                        <option value="0">-- All Leagues --</option>
+                    <label>League (Optional):</label>
+                    @* We use InputSelect linked to ViewModel.LeagueId *@
+                    <InputSelect class="form-control-dark" Value="@productViewModel.LeagueId" ValueExpression="@(() => productViewModel.LeagueId)" ValueChanged="@((int? value) => OnLeagueChanged(value))">
+                        <option value="">-- Select League --</option>
                         @if (leagues != null)
                         {
                             @foreach (var league in leagues)
@@ -81,7 +83,7 @@
                                 <option value="@league.Id">@league.Name</option>
                             }
                         }
-                    </select>
+                    </InputSelect>
                 </div>
 
                 <div class="form-group">
@@ -98,6 +100,7 @@
                     </InputSelect>
                 </div>
 
+                @* --- REST OF THE FORM --- *@
                 <div class="form-group">
                     <label for="jerseySeason">Jersey Season:</label>
                     <div class="season-inputs">
@@ -127,6 +130,7 @@
                     <InputTextArea id="productDescription" class="form-control-dark" rows="5" @bind-Value="productViewModel.Description" />
                 </div>
 
+                @* --- IMAGE UPLOAD SECTIONS --- *@
                 <div class="form-group">
                     <label style="font-weight:bold; margin-bottom: 8px; display:block;">Main Product Image</label>
                     <div class="input-row" style="gap: 10px; align-items: center;">
@@ -163,7 +167,6 @@
                             + Add URL Manually
                         </button>
                     </div>
-
                     @if (isUploadingGallery)
                     {
                         <p><em>Uploading images...</em></p>
@@ -184,6 +187,7 @@
                         </div>
                     }
                 </div>
+
                 <div class="form-group featured-group">
                     <label>Featured:</label>
                     <div class="featured-options">
@@ -216,10 +220,12 @@
 
     private List<Team> allTeams = new();
     private List<League> leagues = new();
-    private int selectedLeagueId = 0;
 
+    // We filter teams based on the selected LeagueId in the ViewModel
     private IEnumerable<Team> filteredTeams =>
-        selectedLeagueId == 0 ? allTeams : allTeams.Where(t => t.LeagueId == selectedLeagueId);
+        (productViewModel?.LeagueId == null || productViewModel.LeagueId == 0)
+        ? allTeams
+        : allTeams.Where(t => t.LeagueId == productViewModel.LeagueId);
 
     private bool isUploadingMain = false;
     private bool isUploadingGallery = false;
@@ -239,6 +245,7 @@
 
         var product = await DbContext.Products
             .Include(p => p.Gallery)
+            .Include(p => p.Team) // Include Team to get League if needed
             .FirstOrDefaultAsync(p => p.ProductId == ProductId);
 
         if (product != null)
@@ -254,14 +261,11 @@
                 ImageUrl = product.ImageUrl,
                 Gallery = product.Gallery.ToList(),
                 TeamId = product.TeamId,
-                Version = product.Version
-            };
+                Version = product.Version,
 
-            if (product.TeamId.HasValue)
-            {
-                var existingTeam = allTeams.FirstOrDefault(t => t.Id == product.TeamId.Value);
-                if (existingTeam != null) selectedLeagueId = existingTeam.LeagueId;
-            }
+                // --- LOAD LEAGUE: Prioritize direct LeagueId, fallback to Team's League ---
+                LeagueId = product.LeagueId ?? product.Team?.LeagueId
+            };
 
             if (!string.IsNullOrEmpty(product.Season) && product.Season.Contains(" (") && product.Season.EndsWith(")"))
             {
@@ -279,6 +283,24 @@
         }
     }
 
+    // --- LOGIC: When League Changes ---
+    private void OnLeagueChanged(int? newLeagueId)
+    {
+        if (productViewModel != null)
+        {
+            productViewModel.LeagueId = newLeagueId;
+            // Clear Team if it doesn't match the new League
+            if (productViewModel.TeamId.HasValue)
+            {
+                var currentTeam = allTeams.FirstOrDefault(t => t.Id == productViewModel.TeamId.Value);
+                if (currentTeam != null && currentTeam.LeagueId != newLeagueId)
+                {
+                    productViewModel.TeamId = null;
+                }
+            }
+        }
+    }
+
     private async Task LoadMainImage(InputFileChangeEventArgs e)
     {
         isUploadingMain = true;
@@ -291,9 +313,12 @@
         isUploadingGallery = true;
         try
         {
-            foreach (var file in e.GetMultipleFiles(10))
+            var files = e.GetMultipleFiles(10);
+            var tasks = files.Select(file => UploadFileAsync(file));
+            var uploadedUrls = await Task.WhenAll(tasks);
+
+            foreach (var url in uploadedUrls)
             {
-                var url = await UploadFileAsync(file);
                 productViewModel.Gallery.Add(new ProductImage { ImageUrl = url, ProductId = ProductId });
             }
         }
@@ -302,14 +327,8 @@
 
     private async Task<string> UploadFileAsync(IBrowserFile file)
     {
-        // --- UPDATED: Use CloudinaryService ---
         var url = await CloudinaryService.UploadImageAsync(file);
-
-        if (string.IsNullOrEmpty(url))
-        {
-            throw new Exception("Image upload failed. Please check your internet connection.");
-        }
-
+        if (string.IsNullOrEmpty(url)) throw new Exception("Upload failed.");
         return url;
     }
 
@@ -334,9 +353,13 @@
         productToUpdate.TeamId = productViewModel.TeamId;
         productToUpdate.Version = productViewModel.Version;
 
+        // --- SAVE LEAGUE ID ---
+        productToUpdate.LeagueId = productViewModel.LeagueId;
+        // ----------------------
+
         productToUpdate.Season = !string.IsNullOrEmpty(productViewModel.SeasonType)
-                                 ? $"{productViewModel.SeasonType}{(!string.IsNullOrEmpty(productViewModel.SeasonYear) ? $" ({productViewModel.SeasonYear})" : "")}"
-                                 : null;
+             ? $"{productViewModel.SeasonType}{(!string.IsNullOrEmpty(productViewModel.SeasonYear) ? $" ({productViewModel.SeasonYear})" : "")}"
+             : null;
 
         var validIds = productViewModel.Gallery.Where(g => g.Id != 0).Select(g => g.Id).ToList();
         var toRemove = productToUpdate.Gallery.Where(g => !validIds.Contains(g.Id)).ToList();

@@ -24,10 +24,16 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IOrderStateService, OrderStateService>();
 builder.Services.AddScoped<ReferralService>();
 builder.Services.AddScoped<StateContainer>();
+
+// FIX: Register the concrete service first
 builder.Services.AddScoped<SearchStateService>();
+
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<ILeagueService, LeagueService>();
-builder.Services.AddScoped<ISearchStateService, SearchStateService>();
+
+// FIX: Point the Interface to the SAME instance as the concrete service
+builder.Services.AddScoped<ISearchStateService>(sp => sp.GetRequiredService<SearchStateService>());
+
 builder.Services.AddScoped<MaillotStore.Services.Implementations.CloudinaryService>();
 // ----------------------------------
 
