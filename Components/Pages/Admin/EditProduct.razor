@@ -14,6 +14,8 @@
 @inject ILogger<EditProduct> Logger
 @inject ITeamService TeamService
 @inject ILeagueService LeagueService
+@* --- NEW: Inject Cloudinary Service --- *@
+@inject MaillotStore.Services.Implementations.CloudinaryService CloudinaryService
 @attribute [Authorize(Roles = "Admin")]
 
 <PageTitle>Edit Product</PageTitle>
@@ -57,7 +59,6 @@
                     <ValidationMessage For="@(() => productViewModel.Category)" />
                 </div>
 
-                @* --- NEW: JERSEY VERSION --- *@
                 <div class="form-group">
                     <label for="productVersion">Jersey Version (Optional):</label>
                     <InputSelect id="productVersion" class="form-control-dark" @bind-Value="productViewModel.Version">
@@ -68,9 +69,7 @@
                         <option value="Training">Training</option>
                     </InputSelect>
                 </div>
-                @* --------------------------- *@
 
-                @* --- LEAGUE FILTER --- *@
                 <div class="form-group">
                     <label>Filter Teams by League (Optional Helper):</label>
                     <select class="form-control-dark" @bind="selectedLeagueId">
@@ -222,7 +221,6 @@
     private IEnumerable<Team> filteredTeams =>
         selectedLeagueId == 0 ? allTeams : allTeams.Where(t => t.LeagueId == selectedLeagueId);
 
-    private const long MaxFileSize = 1024 * 1024 * 10;
     private bool isUploadingMain = false;
     private bool isUploadingGallery = false;
 
@@ -256,10 +254,7 @@
                 ImageUrl = product.ImageUrl,
                 Gallery = product.Gallery.ToList(),
                 TeamId = product.TeamId,
-
-                // --- LOAD VERSION ---
                 Version = product.Version
-                // --------------------
             };
 
             if (product.TeamId.HasValue)
@@ -307,14 +302,15 @@
 
     private async Task<string> UploadFileAsync(IBrowserFile file)
     {
-        var fileExtension = Path.GetExtension(file.Name);
-        var trustedFileName = $"{Guid.NewGuid()}{fileExtension}";
-        var uploadPath = Path.Combine(Environment.WebRootPath, "Images", "products");
-        Directory.CreateDirectory(uploadPath);
-        var filePath = Path.Combine(uploadPath, trustedFileName);
-        await using FileStream fs = new(filePath, FileMode.Create);
-        await file.OpenReadStream(MaxFileSize).CopyToAsync(fs);
-        return $"/Images/products/{trustedFileName}";
+        // --- UPDATED: Use CloudinaryService ---
+        var url = await CloudinaryService.UploadImageAsync(file);
+
+        if (string.IsNullOrEmpty(url))
+        {
+            throw new Exception("Image upload failed. Please check your internet connection.");
+        }
+
+        return url;
     }
 
     private void AddEmptyGallerySlot() => productViewModel.Gallery.Add(new ProductImage());
@@ -336,10 +332,7 @@
         productToUpdate.IsFeatured = productViewModel.IsFeatured;
         productToUpdate.ImageUrl = productViewModel.ImageUrl;
         productToUpdate.TeamId = productViewModel.TeamId;
-
-        // --- SAVE VERSION ---
         productToUpdate.Version = productViewModel.Version;
-        // --------------------
 
         productToUpdate.Season = !string.IsNullOrEmpty(productViewModel.SeasonType)
                                  ? $"{productViewModel.SeasonType}{(!string.IsNullOrEmpty(productViewModel.SeasonYear) ? $" ({productViewModel.SeasonYear})" : "")}"

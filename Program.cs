@@ -28,6 +28,7 @@ builder.Services.AddScoped<SearchStateService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<ILeagueService, LeagueService>();
 builder.Services.AddScoped<ISearchStateService, SearchStateService>();
+builder.Services.AddScoped<MaillotStore.Services.Implementations.CloudinaryService>();
 // ----------------------------------
 
 builder.Services.AddAuthentication(options =>

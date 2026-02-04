@@ -4,6 +4,8 @@
 @inject ITeamService TeamService
 @inject ILeagueService LeagueService
 @inject IWebHostEnvironment Environment
+@* --- NEW: Inject Cloudinary Service --- *@
+@inject MaillotStore.Services.Implementations.CloudinaryService CloudinaryService
 @layout MaillotStore.Components.Layout.AdminLayout
 @attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
 
@@ -43,7 +45,6 @@
                             }
                             <h5 class="card-title">@team.Name</h5>
 
-                            @* Show League Name if available *@
                             <p class="text-muted small">
                                 @(team.League != null ? team.League.Name : "No League")
                             </p>
@@ -82,7 +83,6 @@
                             <InputText @bind-Value="editingTeam.Name" class="form-control" />
                         </div>
 
-                        @* --- NEW: LEAGUE DROPDOWN --- *@
                         <div class="mb-3">
                             <label class="form-label">League</label>
                             <InputSelect @bind-Value="editingTeam.LeagueId" class="form-select">
@@ -96,7 +96,6 @@
                                 }
                             </InputSelect>
                         </div>
-                        @* ---------------------------- *@
 
                         <div class="mb-3">
                             <label class="form-label">Team Logo</label>
@@ -118,7 +117,7 @@
 
 @code {
     private List<Team> teams;
-    private List<League> leagues; // List to hold leagues
+    private List<League> leagues;
     private Team editingTeam = new();
     private bool showModal = false;
     private IBrowserFile? uploadedFile;
@@ -131,7 +130,6 @@
 
     private async Task LoadData()
     {
-        // Load both teams and leagues
         teams = await TeamService.GetAllTeamsAsync();
         leagues = await LeagueService.GetAllLeaguesAsync();
     }
@@ -152,7 +150,7 @@
             Name = team.Name,
             LogoUrl = team.LogoUrl,
             DisplayOnHome = team.DisplayOnHome,
-            LeagueId = team.LeagueId // Load existing LeagueId
+            LeagueId = team.LeagueId
         };
         uploadedFile = null;
         errorMessage = null;
@@ -174,14 +172,12 @@
     {
         try
         {
-            // Validate League Selection
             if (editingTeam.LeagueId == 0)
             {
                 errorMessage = "Please select a league for this team.";
                 return;
             }
 
-            // Duplicate Check
             bool duplicateExists = teams.Any(t =>
                 t.Name.Trim().Equals(editingTeam.Name.Trim(), StringComparison.OrdinalIgnoreCase)
                 && t.Id != editingTeam.Id);
@@ -194,18 +190,17 @@
 
             if (uploadedFile != null)
             {
-                var folderPath = Path.Combine(Environment.WebRootPath, "images", "teams");
-                Directory.CreateDirectory(folderPath);
-
-                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(uploadedFile.Name)}";
-                var filePath = Path.Combine(folderPath, fileName);
-
-                await using (var stream = new FileStream(filePath, FileMode.Create))
+                // --- UPDATED: Upload to Cloudinary ---
+                var cloudUrl = await CloudinaryService.UploadImageAsync(uploadedFile);
+                if (!string.IsNullOrEmpty(cloudUrl))
                 {
-                    await uploadedFile.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024).CopyToAsync(stream);
+                    editingTeam.LogoUrl = cloudUrl;
                 }
-
-                editingTeam.LogoUrl = $"/images/teams/{fileName}";
+                else
+                {
+                    errorMessage = "Failed to upload team logo.";
+                    return;
+                }
             }
 
             if (editingTeam.LogoUrl == null) editingTeam.LogoUrl = string.Empty;
@@ -219,7 +214,7 @@
                 await TeamService.UpdateTeamAsync(editingTeam);
             }
 
-            await LoadData(); // Reload both to refresh View
+            await LoadData();
             CloseModal();
         }
         catch (Exception ex)

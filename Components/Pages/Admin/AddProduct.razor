@@ -13,6 +13,8 @@
 @inject ILogger<AddProduct> Logger
 @inject ITeamService TeamService
 @inject ILeagueService LeagueService
+@* --- NEW: Inject Cloudinary Service --- *@
+@inject MaillotStore.Services.Implementations.CloudinaryService CloudinaryService
 @attribute [Authorize(Roles = "Admin")]
 
 <PageTitle>Add Product</PageTitle>
@@ -23,14 +25,13 @@
         <button class="back-btn" @onclick='() => NavigationManager.NavigateTo("/admin/products")'>Back</button>
     </div>
 
-    @* --- NEW: Error Message Display (Only shows if there is an error) --- *@
+    @* --- Error Message Display --- *@
     @if (!string.IsNullOrEmpty(errorMessage))
     {
         <div class="alert alert-danger" style="color: white; background-color: #dc3545; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
             @errorMessage
         </div>
     }
-    @* ------------------------------------------------------------------ *@
 
     <div class="add-product-form-body">
         <EditForm Model="@productViewModel" OnValidSubmit="HandleValidSubmit" enctype="multipart/form-data">
@@ -212,19 +213,14 @@
     private ProductViewModel productViewModel = new();
     private List<string> SeasonYears { get; set; } = new();
 
-    // Data Loading
     private List<Team> allTeams = new();
     private List<League> leagues = new();
     private int selectedLeagueId = 0;
-
-    // --- NEW: Error Message Helper ---
     private string errorMessage = string.Empty;
 
     private IEnumerable<Team> filteredTeams =>
         selectedLeagueId == 0 ? allTeams : allTeams.Where(t => t.LeagueId == selectedLeagueId);
 
-    // Keep strict limit on server side safety
-    private const long MaxFileSize = 1024 * 1024 * 10;
     private bool isUploadingMain = false;
     private bool isUploadingGallery = false;
 
@@ -245,7 +241,7 @@
     private async Task LoadMainImage(InputFileChangeEventArgs e)
     {
         isUploadingMain = true;
-        errorMessage = string.Empty; // Reset error on new attempt
+        errorMessage = string.Empty;
         try
         {
             productViewModel.ImageUrl = await UploadFileAsync(e.File);
@@ -286,23 +282,16 @@
 
     private async Task<string> UploadFileAsync(IBrowserFile file)
     {
-        // --- NEW: Resize the image BEFORE uploading ---
-        // 1. Request a compressed JPEG version (max 1000px width/height)
-        // This converts your 1.6MB file to ~150KB instantly in the browser.
-        var resizedImage = await file.RequestImageFileAsync("image/jpeg", 1000, 1000);
+        // --- UPDATED: Use CloudinaryService ---
+        // This handles resizing, compression, and saving to the cloud automatically.
+        var url = await CloudinaryService.UploadImageAsync(file);
 
-        // 2. Use .jpg extension since we converted it
-        var trustedFileName = $"{Guid.NewGuid()}.jpg";
+        if (string.IsNullOrEmpty(url))
+        {
+            throw new Exception("Image upload failed. Please check your internet connection.");
+        }
 
-        var uploadPath = Path.Combine(Environment.WebRootPath, "Images", "products");
-        Directory.CreateDirectory(uploadPath);
-        var filePath = Path.Combine(uploadPath, trustedFileName);
-
-        // 3. Stream the small, resized file to the server
-        await using FileStream fs = new(filePath, FileMode.Create);
-        await resizedImage.OpenReadStream(MaxFileSize).CopyToAsync(fs);
-
-        return $"/Images/products/{trustedFileName}";
+        return url;
     }
 
     private void AddEmptyGallerySlot() => productViewModel.Gallery.Add(new ProductImage());
