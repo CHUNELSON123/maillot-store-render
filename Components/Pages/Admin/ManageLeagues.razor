@@ -42,19 +42,28 @@
 
 @if (showModal)
 {
-    <div class="modal show d-block" style="background: rgba(0,0,0,0.5);" tabindex="-1">
+    @* 1. Dark background behind the modal *@
+    <div class="modal show d-block" style="background: rgba(0,0,0,0.8);" tabindex="-1">
         <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
+            @* 2. Dark Modal Window *@
+            <div class="modal-content" style="background-color: #1a1a1a; color: white; border: 1px solid #444;">
+                <div class="modal-header" style="border-bottom: 1px solid #444;">
                     <h5 class="modal-title">@(editingLeague.Id == 0 ? "Add League" : "Edit League")</h5>
-                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                    @* 3. White Close Button *@
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
                 </div>
                 <div class="modal-body">
                     <EditForm Model="editingLeague" OnValidSubmit="SaveLeague">
                         <DataAnnotationsValidator />
                         <div class="mb-3">
-                            <label class="form-label">League Name</label>
-                            <InputText @bind-Value="editingLeague.Name" class="form-control" placeholder="e.g. Premier League" />
+                            <label class="form-label" style="color: #ccc;">League Name</label>
+
+                            @* 4. FORCED DARK INPUT STYLE *@
+                            <InputText @bind-Value="editingLeague.Name"
+                                       class="form-control"
+                                       style="background-color: #333; color: white; border: 1px solid #555;"
+                                       placeholder="e.g. Premier League" />
+
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Save</button>
                     </EditForm>
