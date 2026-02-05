@@ -209,7 +209,7 @@
         featuredProducts = await DbContext.Products
             .Where(p => p.IsFeatured)
             .OrderByDescending(p => p.ProductId)
-            .Take(6)
+            .Take(18)
             .ToListAsync();
 
         _timer = new System.Threading.Timer(ChangeImage, null, 0, 3000);
