@@ -114,7 +114,7 @@
     /* --- MOBILE DEFAULT (iPhone 6s / Small Screens) --- */
     .teams-wrapper {
         display: flex;
-        flex-wrap: wrap; /* FIX: Allow items to wrap to next line so none are cut off */
+        flex-wrap: wrap; /* Allow items to wrap */
         justify-content: center; /* Center items in the grid */
         gap: 20px 15px; /* Vertical gap 20px, Horizontal 15px */
         padding: 10px 10px;
@@ -143,45 +143,41 @@
         font-size: 0.8rem;
         color: inherit;
         transition: color 0.3s;
-        /* --- UPDATED: Allow text wrapping for long names --- */
+        /* --- Allow text wrapping for long names --- */
         white-space: normal;
         line-height: 1.1;
-        /* Removed overflow: hidden; and text-overflow: ellipsis; */
     }
 
     /* --- DESKTOP BREAKPOINT --- */
-@media (min-width: 992px) {
-        .teams-wrapper
+    @@media (min-width: 992px) {  
+        .teams-wrapper {
+            /* Keep centered layout but with larger gaps */
+            gap: 40px 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-    {
-        /* Keep centered layout but with larger gaps */
-        gap: 40px 25px;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
+        .team-item {
+            width: 120px;
+        }
 
-    .team-item {
-        width: 120px;
-    }
+        .logo-wrapper img {
+            height: 120px;
+            max-width: 120px;
+        }
 
-    .logo-wrapper img {
-        height: 120px;
-        max-width: 120px;
-    }
+        .team-name {
+            font-size: 1rem;
+            white-space: normal;
+        }
+        /* Hover Effects */
+        .team-item:hover .logo-wrapper img {
+            transform: scale(1.15);
+        }
 
-    .team-name {
-        font-size: 1rem;
-        white-space: normal;
-    }
-    /* Hover Effects */
-    .team-item:hover .logo-wrapper img {
-        transform: scale(1.15);
-    }
-
-    .team-item:hover .team-name {
-        color: #ffc107;
-    }
-
+        .team-item:hover .team-name {
+            color: #ffc107;
+        }
     }
 </style>
 
