@@ -150,35 +150,38 @@
     }
 
     /* --- DESKTOP BREAKPOINT --- */
-    @@media (min-width: 992px) {
-        .teams-wrapper {
-            /* Keep centered layout but with larger gaps */
-            gap: 40px 25px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+@media (min-width: 992px) {
+        .teams-wrapper
 
-        .team-item {
-            width: 120px;
-        }
+    {
+        /* Keep centered layout but with larger gaps */
+        gap: 40px 25px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
 
-        .logo-wrapper img {
-            height: 120px;
-            max-width: 120px;
-        }
+    .team-item {
+        width: 120px;
+    }
 
-        .team-name {
-            font-size: 1rem;
-            white-space: normal;
-        }
-        /* Hover Effects */
-        .team-item:hover .logo-wrapper img {
-            transform: scale(1.15);
-        }
+    .logo-wrapper img {
+        height: 120px;
+        max-width: 120px;
+    }
 
-        .team-item:hover .team-name {
-            color: #ffc107;
-        }
+    .team-name {
+        font-size: 1rem;
+        white-space: normal;
+    }
+    /* Hover Effects */
+    .team-item:hover .logo-wrapper img {
+        transform: scale(1.15);
+    }
+
+    .team-item:hover .team-name {
+        color: #ffc107;
+    }
+
     }
 </style>
 
@@ -202,10 +205,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Load Teams
-        topTeams = await TeamService.GetHomeDisplayTeamsAsync();
+        // Load Teams (Limit to 14)
+        topTeams = (await TeamService.GetHomeDisplayTeamsAsync())
+                    .Take(14)
+                    .ToList();
 
-        // Load featured products
+        // Load featured products (Limit to 18)
         featuredProducts = await DbContext.Products
             .Where(p => p.IsFeatured)
             .OrderByDescending(p => p.ProductId)
