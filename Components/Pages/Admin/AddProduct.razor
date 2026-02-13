@@ -13,7 +13,6 @@
 @inject ILogger<AddProduct> Logger
 @inject ITeamService TeamService
 @inject ILeagueService LeagueService
-@* --- NEW: Inject Cloudinary Service --- *@
 @inject MaillotStore.Services.Implementations.CloudinaryService CloudinaryService
 @attribute [Authorize(Roles = "Admin")]
 
@@ -25,7 +24,6 @@
         <button class="back-btn" @onclick='() => NavigationManager.NavigateTo("/admin/products")'>Back</button>
     </div>
 
-    @* --- Error Message Display --- *@
     @if (!string.IsNullOrEmpty(errorMessage))
     {
         <div class="alert alert-danger" style="color: white; background-color: #dc3545; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
@@ -43,10 +41,19 @@
                 <ValidationMessage For="@(() => productViewModel.Name)" />
             </div>
 
-            <div class="form-group">
-                <label for="productPrice">Price:</label>
-                <InputNumber id="productPrice" class="form-control-dark" @bind-Value="productViewModel.Price" />
-                <ValidationMessage For="@(() => productViewModel.Price)" />
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <label for="productPrice">Regular Price (XAF):</label>
+                    <InputNumber id="productPrice" class="form-control-dark" @bind-Value="productViewModel.Price" />
+                    <ValidationMessage For="@(() => productViewModel.Price)" />
+                </div>
+
+                @* --- NEW: Promo Price Field --- *@
+                <div class="col-md-6">
+                    <label for="promoPrice" style="color: #0d6efd;">Promo Price (Optional):</label>
+                    <InputNumber id="promoPrice" class="form-control-dark" @bind-Value="productViewModel.PromoPrice" placeholder="Leave empty for no specific sale" />
+                    <small style="color: #aaa;">Overrides Team/League discounts if set.</small>
+                </div>
             </div>
 
             <div class="form-group">
@@ -201,6 +208,23 @@
                 </div>
             </div>
 
+            <div class="form-group featured-group">
+                <label>On Sale Flag:</label>
+                <div class="featured-options">
+                    <InputRadioGroup @bind-Value="productViewModel.IsOnSale">
+                        <div class="form-check">
+                            <InputRadio class="form-check-input" id="saleYes" Value="true" />
+                            <label class="form-check-label" for="saleYes">Yes</label>
+                        </div>
+                        <div class="form-check">
+                            <InputRadio class="form-check-input" id="saleNo" Value="false" />
+                            <label class="form-check-label" for="saleNo">No</label>
+                        </div>
+                    </InputRadioGroup>
+                </div>
+                <small style="color:#aaa;">(This just adds the "SALE" badge, but doesn't change price unless you set Promo Price)</small>
+            </div>
+
             <div class="form-actions">
                 <button type="submit" class="btn-saved" disabled="@(isUploadingMain || isUploadingGallery)">Save</button>
                 <button type="button" class="btn-cancel" @onclick='() => NavigationManager.NavigateTo("/admin/products")'>Cancel</button>
@@ -282,15 +306,8 @@
 
     private async Task<string> UploadFileAsync(IBrowserFile file)
     {
-        // --- UPDATED: Use CloudinaryService ---
-        // This handles resizing, compression, and saving to the cloud automatically.
         var url = await CloudinaryService.UploadImageAsync(file);
-
-        if (string.IsNullOrEmpty(url))
-        {
-            throw new Exception("Image upload failed. Please check your internet connection.");
-        }
-
+        if (string.IsNullOrEmpty(url)) throw new Exception("Image upload failed.");
         return url;
     }
 
@@ -303,6 +320,10 @@
         {
             Name = productViewModel.Name ?? string.Empty,
             Price = productViewModel.Price,
+            // --- NEW: Save Promo Price ---
+            PromoPrice = productViewModel.PromoPrice,
+            IsOnSale = productViewModel.IsOnSale,
+            // -----------------------------
             Category = productViewModel.Category ?? string.Empty,
             Stock = productViewModel.Stock,
             Description = productViewModel.Description ?? string.Empty,
@@ -311,10 +332,22 @@
             TeamId = productViewModel.TeamId,
             Size = "S,M,L,XL,XXL",
             Version = productViewModel.Version,
+            // IMPORTANT: If user selected a team, we should try to inherit the team's league automatically
+            LeagueId = (productViewModel.TeamId != null && productViewModel.TeamId > 0)
+                        ? allTeams.FirstOrDefault(t => t.Id == productViewModel.TeamId)?.LeagueId
+                        : null,
+
             Season = !string.IsNullOrEmpty(productViewModel.SeasonType)
                         ? $"{productViewModel.SeasonType}{(!string.IsNullOrEmpty(productViewModel.SeasonYear) ? $" ({productViewModel.SeasonYear})" : "")}"
                         : null
         };
+
+        // If user didn't pick a team but picked a League in the filter, that logic is separate.
+        // For now, products link to Leagues via Teams usually, but if you want direct League link:
+        if (newProduct.LeagueId == null && selectedLeagueId > 0)
+        {
+            newProduct.LeagueId = selectedLeagueId;
+        }
 
         var cleanGallery = productViewModel.Gallery.Where(i => !string.IsNullOrWhiteSpace(i.ImageUrl)).ToList();
         newProduct.Gallery = cleanGallery;

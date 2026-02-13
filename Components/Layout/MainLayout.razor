@@ -1,11 +1,14 @@
 ﻿@using MaillotStore.Services.Implementations
 @using MaillotStore.Services.Interfaces
 @using MaillotStore.Data
+@using MaillotStore.Components.Shared
 @inherits LayoutComponentBase
 @inject ISearchStateService SearchState
 @inject ReferralService ReferralService
 @inject NavigationManager NavManager
 @inject ILeagueService LeagueService
+@inject IJSRuntime JSRuntime
+@inject ICartService CartService
 
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark">
@@ -18,7 +21,6 @@
             @* --- DESKTOP MENU --- *@
             <div class="collapse navbar-collapse" id="main-nav-desktop">
                 <div class="search-container mx-auto d-none d-lg-block" style="border-radius: 500px;">
-                    @* FIX: Use 'value' instead of '@bind' to allow instant typing *@
                     <input type="text" class="form-control search-bar" placeholder="Search for jerseys..."
                            value="@searchTerm" @oninput="PerformSearch" />
                 </div>
@@ -84,6 +86,7 @@
                             </li>
                         </Authorized>
                         <NotAuthorized>
+                            @* Only show Login if the user is NOT referred *@
                             @if (!isReferred)
                             {
                                 <li class="nav-item"><a class="nav-link" href="/Account/Login">Login</a></li>
@@ -108,7 +111,6 @@
     @if (showMobileSearch)
     {
         <div class="search-container-mobile d-lg-none px-3 py-2">
-            @* FIX: Applied 'value' fix here too *@
             <input type="text" class="form-control search-bar" placeholder="Search for jerseys..."
                    value="@searchTerm" @oninput="PerformSearch" />
             <button class="btn-close" @onclick="ToggleMobileSearch"></button>
@@ -202,6 +204,8 @@
 </main>
 <Footer />
 
+<MaillotStore.Components.Pages.StoreFront.CookieBanner />
+
 @code {
     private bool collapseNavMenu = true;
     private bool showMobileSearch = false;
@@ -217,6 +221,53 @@
     {
         isReferred = ReferralService.IsReferred();
         leaguesList = await LeagueService.GetAllLeaguesAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // --- 1. GUEST CART LOGIC (Isolated Try/Catch) ---
+            try
+            {
+                var guestId = await JSRuntime.InvokeAsync<string>("cookieHelper.getCookie", "GuestId");
+
+                if (string.IsNullOrEmpty(guestId))
+                {
+                    guestId = Guid.NewGuid().ToString();
+                    await JSRuntime.InvokeVoidAsync("cookieHelper.setCookie", "GuestId", guestId, 30);
+                }
+                CartService.SetGuestId(guestId);
+            }
+            catch (Exception)
+            {
+                // Fallback if JS fails
+                CartService.SetGuestId(Guid.NewGuid().ToString());
+            }
+
+            // --- 2. REFERRAL RECOVERY LOGIC (Isolated Try/Catch) ---
+            try
+            {
+                // Only check if we don't already have the code in memory
+                if (!ReferralService.IsReferred())
+                {
+                    // This cookie name MUST match the one in ReferralService.cs
+                    var cookieRefCode = await JSRuntime.InvokeAsync<string>("cookieHelper.getCookie", "MaillotStoreReferralCode");
+
+                    if (!string.IsNullOrEmpty(cookieRefCode))
+                    {
+                        // Found it! Restore the session
+                        ReferralService.SetReferralCode(cookieRefCode);
+                        isReferred = true;
+                        StateHasChanged(); // Update UI to remove "Login" button if needed
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore errors here; referral just won't be recovered
+            }
+        }
     }
 
     private void ToggleNavMenu()
@@ -240,9 +291,7 @@
 
     private void PerformSearch(ChangeEventArgs e)
     {
-        // Update the value manually since we removed @bind
         searchTerm = e.Value?.ToString() ?? string.Empty;
-
         SearchState.SetSearchTerm(searchTerm);
 
         if (!NavManager.Uri.EndsWith("/shop", StringComparison.OrdinalIgnoreCase))

@@ -6,11 +6,13 @@
 @using MaillotStore.Services.Implementations
 @using MaillotStore.Services.Interfaces
 @using Microsoft.EntityFrameworkCore
-@inject ApplicationDbContext DbContext
 @inject NavigationManager NavigationManager
 @inject StateContainer StateContainer
 @inject IJSRuntime JSRuntime
 @inject IOrderStateService OrderStateService
+@inject ICartService CartService
+@* --- FIX: Inject ProductService --- *@
+@inject IProductService ProductService
 @implements IDisposable
 
 <HeadContent>
@@ -38,7 +40,6 @@
         <div class="row">
             <div class="col-lg-6 mb-4 mb-lg-0">
                 <div class="pd-gallery-container">
-
                     <div class="pd-main-image-wrapper" @onclick="OpenLightbox" style="cursor: zoom-in;">
                         <img src="@currentImageUrl" class="main-img-display" alt="Main image of @product.Name">
                     </div>
@@ -49,7 +50,6 @@
                         </button>
 
                         <div class="pd-thumbnail-scroll-container" @ref="_thumbnailsContainer">
-                            @* 1. Main Image Thumbnail *@
                             @if (!string.IsNullOrEmpty(product.ImageUrl))
                             {
                                 <img src="@product.ImageUrl"
@@ -58,7 +58,6 @@
                                      @onclick="() => ManualImageSelect(product.ImageUrl)">
                             }
 
-                            @* 2. Gallery Images *@
                             @if (product.Gallery != null)
                             {
                                 foreach (var img in product.Gallery)
@@ -80,7 +79,6 @@
 
             <div class="col-lg-6">
                 <div class="pd-info-container">
-                    @* --- UPDATED: Added Badge inside H1 to preserve layout --- *@
                     <h1 class="pd-name">
                         @product.Name
                         @if (!string.IsNullOrEmpty(product.Version))
@@ -90,9 +88,19 @@
                             </span>
                         }
                     </h1>
-                    @* --------------------------------------------------------- *@
 
-                    <h2 class="pd-price">FCFA @product.Price.ToString("N0")</h2>
+                    @* --- PRICE DISPLAY --- *@
+                    @if (product.HasActiveDiscount)
+                    {
+                        <div class="mb-2">
+                            <h3 class="text-muted text-decoration-line-through d-inline me-3">FCFA @product.Price.ToString("N0")</h3>
+                            <h2 class="pd-price d-inline text-danger">FCFA @product.EffectivePrice.ToString("N0")</h2>
+                        </div>
+                    }
+                    else
+                    {
+                        <h2 class="pd-price">FCFA @product.Price.ToString("N0")</h2>
+                    }
 
                     @if (!string.IsNullOrWhiteSpace(product.Season) && product.Season.Trim() != "()")
                     {
@@ -175,22 +183,18 @@
     }
 </div>
 
-@* --- LIGHTBOX MODAL --- *@
 @if (isLightboxOpen && !string.IsNullOrEmpty(currentImageUrl))
 {
     <div class="lightbox-overlay" @onclick="CloseLightbox">
         <button class="lightbox-nav prev" @onclick="PrevLightboxImage" @onclick:stopPropagation>
             <i class="fas fa-chevron-left"></i>
         </button>
-
         <div class="lightbox-content" @onclick:stopPropagation>
             <img src="@currentImageUrl" alt="Zoomed Product Image" />
         </div>
-
         <button class="lightbox-nav next" @onclick="NextLightboxImage" @onclick:stopPropagation>
             <i class="fas fa-chevron-right"></i>
         </button>
-
         <button class="lightbox-close" @onclick="CloseLightbox">&times;</button>
     </div>
 }
@@ -201,13 +205,11 @@
 
     private Product? product;
     private List<Product> relatedProducts = new();
-
     private string? currentImageUrl;
     private List<string> allImageUrls = new();
     private int currentImageIndex = 0;
     private System.Threading.Timer? _timer;
     private bool isLightboxOpen = false;
-
     private string customName = string.Empty;
     private int? customNumber;
     private string? selectedSize;
@@ -215,14 +217,12 @@
     private List<string> availableSizes = new() { "S", "M", "L", "XL", "XXL" };
     private string? statusMessage;
     private string statusMessageClass = "alert-warning";
-
     private ElementReference _thumbnailsContainer;
 
     protected override async Task OnParametersSetAsync()
     {
-        product = await DbContext.Products
-            .Include(p => p.Gallery)
-            .FirstOrDefaultAsync(p => p.ProductId == ProductId);
+        // --- FIX: Use Service for FRESH data ---
+        product = await ProductService.GetProductByIdAsync(ProductId);
 
         if (product != null)
         {
@@ -248,10 +248,9 @@
     private async Task LoadRelatedProducts()
     {
         if (product is null) return;
-        var candidates = await DbContext.Products
-            .Where(p => p.Category == product.Category && p.ProductId != ProductId)
-            .ToListAsync();
-        relatedProducts = candidates.Take(3).ToList();
+        // --- FIX: Use Service for related products ---
+        var all = await ProductService.GetProductsByCategoryAsync(product.Category);
+        relatedProducts = all.Where(p => p.ProductId != ProductId).Take(3).ToList();
     }
 
     private void StartRotationTimer()
@@ -287,13 +286,11 @@
     }
 
     private void SetMainImage(string? imageUrl) => ManualImageSelect(imageUrl);
-
     private async Task ScrollThumbnails(int direction)
     {
         await JSRuntime.InvokeVoidAsync("scrollGallery", _thumbnailsContainer, direction * 150);
     }
 
-    // --- LIGHTBOX NAVIGATION ---
     private void OpenLightbox()
     {
         isLightboxOpen = true;
@@ -324,7 +321,6 @@
         }
     }
 
-    // --- CART METHODS ---
     private bool ValidateInput()
     {
         statusMessage = null;
@@ -348,10 +344,9 @@
     private async Task AddToCart()
     {
         if (!ValidateInput()) return;
-
         if (product != null)
         {
-            await StateContainer.AddToCart(product, quantity.Value, selectedSize, string.IsNullOrWhiteSpace(customName) ? null : customName, customNumber);
+            CartService.AddToCart(product, quantity.Value, selectedSize, string.IsNullOrWhiteSpace(customName) ? null : customName, customNumber);
             NavigationManager.NavigateTo("/checkout");
         }
     }
@@ -359,10 +354,8 @@
     private async Task OrderNow()
     {
         if (!ValidateInput()) return;
-
         if (product != null)
         {
-            // 1. Create a "Buy Now" specific order
             var buyNowOrder = new Order();
             buyNowOrder.OrderItems = new List<OrderItem>
             {
@@ -370,20 +363,14 @@
                 {
                     Product = product,
                     ProductId = product.ProductId,
-                    // REMOVED: ProductName = product.Name,
-                    Price = product.Price,
+                    Price = product.EffectivePrice,
                     Quantity = quantity ?? 1,
                     Size = selectedSize,
                     CustomName = string.IsNullOrWhiteSpace(customName) ? null : customName,
                     CustomNumber = customNumber
-                    // REMOVED: ImageUrl = product.ImageUrl
                 }
             };
-
-            // 2. Stage it (so it doesn't mix with the main cart)
             OrderStateService.StageOrder(buyNowOrder);
-
-            // 3. Go to checkout (Checkout will prioritize the staged order)
             NavigationManager.NavigateTo("/checkout");
         }
     }
@@ -393,7 +380,6 @@
         _timer?.Dispose();
     }
 
-    // --- NEW: VERSION HELPER ---
     private string GetVersionClass(string version)
     {
         if (version.Contains("Player", StringComparison.OrdinalIgnoreCase)) return "badge-player";
@@ -412,7 +398,6 @@
 </script>
 
 <style>
-    /* Main Image Frame - FIXED HEIGHT & WHITE BACKGROUND */
     .pd-main-image-wrapper {
         width: 100%;
         height: 500px;
@@ -437,7 +422,6 @@
         object-fit: contain;
     }
 
-    /* Carousel Wrapper */
     .thumbnails-carousel-wrapper {
         display: flex;
         align-items: center;
@@ -502,7 +486,6 @@
             background-color: rgba(255, 255, 255, 0.3);
         }
 
-    /* --- LIGHTBOX STYLES --- */
     .lightbox-overlay {
         position: fixed;
         top: 0;
@@ -534,7 +517,6 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
 
-    /* Lightbox Navigation Buttons */
     .lightbox-nav {
         position: absolute;
         top: 50%;
@@ -591,15 +573,11 @@
         }
     }
 
-    /* =========================================
-                RESPONSIVE ADJUSTMENTS (MOBILE)
-                ========================================= */
     @@media (max-width: 768px) {
-        /* Reduce Main Image Height for Mobile */
         .pd-main-image-wrapper {
             height: 300px;
         }
-        /* Smaller Thumbnails */
+
         .thumb-item {
             width: 50px;
             height: 50px;
@@ -610,7 +588,7 @@
             height: 30px;
             font-size: 0.8rem;
         }
-        /* Adjust Lightbox for Mobile Touch */
+
         .lightbox-content {
             max-width: 95%;
             max-height: 80vh;
@@ -621,9 +599,9 @@
             height: 40px;
             font-size: 1.2rem;
             padding: 0;
-            background: rgba(255, 255, 255, 0.2); /* Make buttons slightly more visible */
+            background: rgba(255, 255, 255, 0.2);
         }
-            /* Push buttons closer to edge on mobile */
+
             .lightbox-nav.prev {
                 left: 5px;
             }

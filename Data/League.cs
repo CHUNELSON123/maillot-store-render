@@ -8,9 +8,12 @@ namespace MaillotStore.Data
         public int Id { get; set; }
 
         [Required]
-        public string Name { get; set; } = string.Empty; // e.g. "Premier League"
+        public string Name { get; set; }
 
-        // This allows us to easily get all teams belonging to this league
         public List<Team> Teams { get; set; } = new();
+
+        // --- NEW: League Level Discount ---
+        public int DiscountPercentage { get; set; } = 0;
+        public bool IsDiscountActive { get; set; } = false;
     }
 }

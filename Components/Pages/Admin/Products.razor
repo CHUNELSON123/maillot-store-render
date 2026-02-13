@@ -2,10 +2,12 @@
 @using MaillotStore.Components.Layout
 @using MaillotStore.Models
 @using MaillotStore.Data
+@using MaillotStore.Services.Interfaces
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @layout AdminLayout
-@inject ApplicationDbContext DbContext
+@inject IProductService ProductService
+@inject ILeagueService LeagueService
 @inject NavigationManager NavigationManager
 @attribute [Authorize(Roles = "Admin")]
 
@@ -21,13 +23,57 @@
         </a>
     </div>
 
+    @* --- FILTER SECTION --- *@
+    <div class="filter-section p-3 mb-3" style="background-color: #1a1a1a; border-radius: 8px; border: 1px solid #444;">
+        <div class="row g-3">
+            @* 1. Search by Name *@
+            <div class="col-md-4">
+                <input type="text" class="form-control form-control-sm form-control-dark" placeholder="Search by Jersey Name..."
+                       @bind="searchTerm" @bind:event="oninput" @onkeyup="FilterProducts" />
+            </div>
+
+            @* 2. Filter by League *@
+            <div class="col-md-3">
+                <select class="form-select form-select-sm form-control-dark" @bind="selectedLeagueId" @bind:after="FilterProducts">
+                    <option value="0">-- All Leagues --</option>
+                    @if (leagues != null)
+                    {
+                        @foreach (var league in leagues)
+                        {
+                            <option value="@league.Id">@league.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            @* 3. Filter by Price Range *@
+            <div class="col-md-2">
+                <input type="number" class="form-control form-control-sm form-control-dark" placeholder="Min Price"
+                       @bind="minPrice" @bind:after="FilterProducts" />
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control form-control-sm form-control-dark" placeholder="Max Price"
+                       @bind="maxPrice" @bind:after="FilterProducts" />
+            </div>
+
+            @* 4. Reset Button *@
+            <div class="col-md-1 d-grid">
+                <button class="btn btn-sm btn-secondary" @onclick="ResetFilters">Reset</button>
+            </div>
+        </div>
+    </div>
+
     <div class="product-table-container">
         <table class="table">
             <thead>
                 <tr>
                     <th>S/N</th>
                     <th>Product Name</th>
-                    <th>Price</th>
+                    <th>League</th>
+                    <th style="cursor:pointer" @onclick="TogglePriceSort">
+                        Price (XAF) <i class="fas fa-sort"></i>
+                    </th>
+                    <th>Promo</th>
                     <th>Stock</th>
                     <th>Action</th>
                 </tr>
@@ -39,12 +85,54 @@
                     {
                         <tr>
                             <td>@((currentPage - 1) * pageSize + index + 1)</td>
-                            <td>@TruncateName(product.Name, 30)</td>
-                            <td>FCFA @product.Price.ToString("N0") XAF</td>
-                            <td>@product.Stock</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                    {
+                                        <img src="@product.ImageUrl" style="width: 30px; height: 30px; object-fit:cover; margin-right: 10px; border-radius: 4px;" />
+                                    }
+                                    <div>
+                                        @TruncateName(product.Name, 30)
+                                        @if (product.IsOnSale)
+                                        {
+                                            <span class="badge bg-warning text-dark ms-1" style="font-size:0.6rem;">SALE</span>
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                @(product.League?.Name ?? product.Team?.League?.Name ?? "-")
+                            </td>
+                            <td>@product.Price.ToString("N0")</td>
+
+                            @* --- Promo Price Status --- *@
+                            <td>
+                                @if (product.PromoPrice.HasValue && product.PromoPrice.Value > 0)
+                                {
+                                    <span class="text-success fw-bold">@product.PromoPrice.Value.ToString("N0")</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (product.Stock < 5)
+                                {
+                                    <span class="text-danger fw-bold">@product.Stock</span>
+                                }
+                                else
+                                {
+                                    @product.Stock
+                                }
+                            </td>
                             <td class="action-buttons">
-                                <button class="edit-btn" @onclick='() => NavigationManager.NavigateTo($"/admin/edit-product/{product.ProductId}")'>Edit</button>
-                                <button class="delete-btn" @onclick="() => DeleteProduct(product.ProductId)">Delete</button>
+                                @* --- FIX: Added d-flex and flex-nowrap to force side-by-side alignment --- *@
+                                <div class="d-flex flex-nowrap gap-2">
+                                    <button class="edit-btn" @onclick='() => NavigationManager.NavigateTo($"/admin/edit-product/{product.ProductId}")'>Edit</button>
+                                    <button class="delete-btn" @onclick="() => DeleteProduct(product.ProductId)">Delete</button>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -52,7 +140,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="5" class="text-center">No products found.</td>
+                        <td colspan="7" class="text-center py-4">No products match your search.</td>
                     </tr>
                 }
             </tbody>
@@ -60,37 +148,113 @@
     </div>
 
     @* --- PAGINATION --- *@
-    <div class="pagination">
-        @for (int i = 1; i <= totalPages; i++)
-        {
-            var pageNumber = i;
-            <button class="@(pageNumber == currentPage ? "active" : "")" @onclick="() => ChangePage(pageNumber)">@pageNumber</button>
-        }
-    </div>
+    @if (totalPages > 1)
+    {
+        <div class="pagination">
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                var pageNumber = i;
+                <button class="@(pageNumber == currentPage ? "active" : "")" @onclick="() => ChangePage(pageNumber)">@pageNumber</button>
+            }
+        </div>
+    }
 </div>
 
 @code {
     private List<Product> allProducts = new();
+    private List<Product> filteredProducts = new();
     private List<Product> pagedProducts = new();
+
+    private List<League> leagues = new();
+
+    // Filter States
+    private string searchTerm = "";
+    private int selectedLeagueId = 0;
+    private decimal? minPrice;
+    private decimal? maxPrice;
+    private bool sortPriceDesc = false;
+
     private int currentPage = 1;
     private int pageSize = 20;
     private int totalPages;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadProducts();
+        await LoadData();
     }
 
-    private async Task LoadProducts()
+    private async Task LoadData()
     {
-        allProducts = await DbContext.Products.OrderBy(p => p.Name).ToListAsync();
-        totalPages = (int)Math.Ceiling(allProducts.Count / (double)pageSize);
+        leagues = await LeagueService.GetAllLeaguesAsync();
+        allProducts = await ProductService.GetProductsAsync();
+        FilterProducts();
+    }
+
+    private void FilterProducts()
+    {
+        var query = allProducts.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                     (p.Team?.Name?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false));
+        }
+
+        if (selectedLeagueId > 0)
+        {
+            query = query.Where(p => p.LeagueId == selectedLeagueId || p.Team?.LeagueId == selectedLeagueId);
+        }
+
+        if (minPrice.HasValue)
+        {
+            query = query.Where(p => p.Price >= minPrice.Value);
+        }
+        if (maxPrice.HasValue)
+        {
+            query = query.Where(p => p.Price <= maxPrice.Value);
+        }
+
+        if (sortPriceDesc)
+        {
+            query = query.OrderByDescending(p => p.Price);
+        }
+        else
+        {
+            query = query.OrderByDescending(p => p.ProductId);
+        }
+
+        filteredProducts = query.ToList();
+
+        currentPage = 1;
+        CalculatePagination();
+    }
+
+    private void TogglePriceSort()
+    {
+        sortPriceDesc = !sortPriceDesc;
+        FilterProducts();
+    }
+
+    private void ResetFilters()
+    {
+        searchTerm = "";
+        selectedLeagueId = 0;
+        minPrice = null;
+        maxPrice = null;
+        sortPriceDesc = false;
+        FilterProducts();
+    }
+
+    private void CalculatePagination()
+    {
+        totalPages = (int)Math.Ceiling(filteredProducts.Count / (double)pageSize);
+        if (totalPages == 0) totalPages = 1;
         UpdatePagedProducts();
     }
 
     private void UpdatePagedProducts()
     {
-        pagedProducts = allProducts
+        pagedProducts = filteredProducts
             .Skip((currentPage - 1) * pageSize)
             .Take(pageSize)
             .ToList();
@@ -98,37 +262,22 @@
 
     private void ChangePage(int pageNumber)
     {
-        if (pageNumber < 1 || pageNumber > totalPages)
-        {
-            return;
-        }
+        if (pageNumber < 1 || pageNumber > totalPages) return;
         currentPage = pageNumber;
         UpdatePagedProducts();
     }
 
     private async Task DeleteProduct(int productId)
     {
-        var product = await DbContext.Products.FindAsync(productId);
-        if (product != null)
-        {
-            DbContext.Products.Remove(product);
-            await DbContext.SaveChangesAsync();
-            await LoadProducts(); // Reload all products to refresh the list and pagination
-        }
+        // In a real app, adding a JS confirmation here is recommended
+        await ProductService.DeleteProductAsync(productId);
+        await LoadData();
     }
 
     private string TruncateName(string name, int maxLength)
     {
-        if (string.IsNullOrEmpty(name))
-        {
-            return string.Empty;
-        }
-
-        if (name.Length <= maxLength)
-        {
-            return name;
-        }
-
+        if (string.IsNullOrEmpty(name)) return string.Empty;
+        if (name.Length <= maxLength) return name;
         return name.Substring(0, maxLength) + "...";
     }
 }

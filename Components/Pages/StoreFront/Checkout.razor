@@ -16,6 +16,9 @@
 @inject IOrderStateService OrderStateService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<ApplicationUser> UserManager
+@* --- ADDED: Inject CartService to talk to DB --- *@
+@inject ICartService CartService
+@* --------------------------------------------- *@
 @implements IDisposable
 @rendermode InteractiveServer
 
@@ -25,7 +28,7 @@
     <div class="checkout-container">
         <h1 class="text-center mb-4">Check Out</h1>
 
-        @* --- ORDER SUMMARY (Unchanged) --- *@
+        @* --- ORDER SUMMARY --- *@
         <div class="order-summary mb-5">
             <h2 class="mb-3">Your Order Summary</h2>
 
@@ -108,7 +111,6 @@
                 <input type="text" class="form-control form-control-dark" placeholder="Phone Number (Required)" @bind="customerPhone">
             </div>
             <div class="mb-3">
-                @* UPDATED: Placeholder to Required *@
                 <input type="text" class="form-control form-control-dark" placeholder="Delivery Address (Required)" @bind="customerAddress">
             </div>
             <div class="mb-3">
@@ -118,7 +120,6 @@
 
         @* --- CHECKOUT BUTTON --- *@
         <div class="d-grid gap-2 mt-4">
-            @* UPDATED: Added customerAddress to the check so button is disabled if empty *@
             <button class="btn btn-lg btn-success"
                     disabled="@(!orderItems.Any() || string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(customerPhone) || string.IsNullOrWhiteSpace(customerAddress))"
                     @onclick="CheckoutViaWhatsApp">
@@ -146,28 +147,42 @@
             var stagedItem = OrderStateService.GetStagedOrder();
             if (stagedItem != null && stagedItem.OrderItems != null && stagedItem.OrderItems.Any())
             {
+                // This is a "Buy Now" direct purchase
                 orderItems = stagedItem.OrderItems.ToList();
             }
             else
             {
-                await StateContainer.LoadState();
-                orderItems = StateContainer.CartItems;
+                // Load directly from CartService (Database)
+                // This might be empty initially if the cookie hasn't loaded yet
+                orderItems = CartService.GetCartItems();
             }
-            StateContainer.OnChange += StateHasChanged;
+
+            // --- FIXED: Subscribe to the specific handler ---
+            CartService.OnChange += HandleCartChanged;
+            // ------------------------------------------------
+
             StateHasChanged();
         }
     }
 
+    // --- NEW METHOD: Handles the delayed cookie load ---
+    private void HandleCartChanged()
+    {
+        // When the cookie finally loads, or the cart updates, re-fetch from DB
+        orderItems = CartService.GetCartItems();
+        InvokeAsync(StateHasChanged);
+    }
+    // --------------------------------------------------
+
     private async Task CheckoutViaWhatsApp()
     {
-        // 1. Validation (Include Address)
         var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to place this order?");
         if (!confirmed) return;
 
         if (!orderItems.Any() ||
             string.IsNullOrWhiteSpace(customerName) ||
             string.IsNullOrWhiteSpace(customerPhone) ||
-            string.IsNullOrWhiteSpace(customerAddress)) // Check Address
+            string.IsNullOrWhiteSpace(customerAddress))
         {
             return;
         }
@@ -202,7 +217,6 @@
 
         decimal orderCommission = 0;
         string referralCode = ReferralService.GetReferralCode();
-
         if (string.IsNullOrEmpty(referralCode))
         {
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -225,7 +239,7 @@
         {
             CustomerName = customerName,
             CustomerPhone = customerPhone,
-            CustomerAddress = customerAddress, // Required now
+            CustomerAddress = customerAddress,
             OrderDate = DateTime.UtcNow,
             OrderItems = orderItemsForDb,
             TotalAmount = Subtotal,
@@ -235,7 +249,6 @@
             OptionalMessage = string.IsNullOrWhiteSpace(optionalMessage) ? "" : optionalMessage,
             IsVisibleToInfluencer = hasReferralCode
         };
-
         DbContext.Orders.Add(order);
         await DbContext.SaveChangesAsync();
         OrderStateService.NotifyOrderPlaced();
@@ -265,7 +278,6 @@
             if (item.CustomNumber.HasValue) messageBuilder.Append($" - Number: {item.CustomNumber}");
 
             messageBuilder.AppendLine($" – FCFA {item.Price.ToString("N0")} XAF");
-
             string productUrl = $"{NavigationManager.BaseUri}product/{item.Product.ProductId}";
             messageBuilder.AppendLine($"    Link: {productUrl}");
 
@@ -290,17 +302,38 @@
         string whatsappUrl = $"https://wa.me/{adminPhoneNumber}?text={Uri.EscapeDataString(messageBuilder.ToString())}";
 
         await JSRuntime.InvokeVoidAsync("open", whatsappUrl, "_blank");
-        await StateContainer.ClearCart();
+
+        // Clear the Database Cart
+        CartService.ClearCart();
+
         NavigationManager.NavigateTo("/shop");
     }
 
-    private async Task RemoveFromCart(OrderItem item) => await StateContainer.RemoveFromCart(item);
-    private async Task UpdateQuantity(OrderItem item, int quantity) => await StateContainer.UpdateCartItemQuantity(item, quantity);
-    private async Task UpdateSize(OrderItem item, ChangeEventArgs e)
+    private void RemoveFromCart(OrderItem item)
     {
-        var newSize = e.Value?.ToString();
-        if (!string.IsNullOrEmpty(newSize)) await StateContainer.UpdateCartItemSize(item, newSize);
+        CartService.RemoveFromCart(item);
+        // Note: We don't need to manually update orderItems here because RemoveFromCart fires OnChange,
+        // which triggers HandleCartChanged automatically.
     }
 
-    public void Dispose() => StateContainer.OnChange -= StateHasChanged;
+    private void UpdateQuantity(OrderItem item, int quantity)
+    {
+        CartService.UpdateQuantity(item, quantity);
+    }
+
+    private void UpdateSize(OrderItem item, ChangeEventArgs e)
+    {
+        var newSize = e.Value?.ToString();
+        if (!string.IsNullOrEmpty(newSize))
+        {
+            CartService.UpdateSize(item, newSize);
+        }
+    }
+
+    public void Dispose()
+    {
+        // --- FIXED: Unsubscribe from the correct handler ---
+        CartService.OnChange -= HandleCartChanged;
+        // -------------------------------------------------
+    }
 }

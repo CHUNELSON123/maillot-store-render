@@ -31,13 +31,14 @@
         // 2. Try to recover the code if we are already in Interactive Mode (SignalR)
         if (ApplicationState.TryTakeFromJson<string>("ReferralCode", out var restoredCode))
         {
+            // We found the code saved from the server render!
             ReferralService.SetReferralCode(restoredCode);
         }
         else
         {
-            // 3. If we are on the Server (Initial Load), read the cookie
-            // We force a read here so the service caches it
-            var codeFromCookie = ReferralService.GetReferralCode();
+            // 3. If we are on the Server (Initial Load), force a read to ensure the service has the data
+            // (The service might have been populated by App.razor, or we try to get it here)
+            var current = ReferralService.GetReferralCode();
         }
     }
 
