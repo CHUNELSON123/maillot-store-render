@@ -5,16 +5,15 @@
 @using MaillotStore.Data
 @using MaillotStore.Services.Interfaces
 @using Microsoft.EntityFrameworkCore
-@inject ApplicationDbContext DbContext
+@* --- FIX: Inject ProductService --- *@
+@inject IProductService ProductService
 @inject ITeamService TeamService
 @implements IDisposable
 
 <PageTitle>Home</PageTitle>
 
 @* --- HERO BANNER --- *@
-<div class="hero-banner"
-     style="background-image: url(@CurrentImageUrl)">
-
+<div class="hero-banner" style="background-image: url(@CurrentImageUrl)">
     <div class="hero-content">
         <h2>Official Jerseys. Unbeatable Style.</h2>
         <p>Discover premium football jerseys at Maillot Store. Wear your passion and support your team in style.</p>
@@ -109,7 +108,6 @@
     </div>
 </section>
 
-@* --- CSS STYLES --- *@
 <style>
     /* --- MOBILE DEFAULT (iPhone 6s / Small Screens) --- */
     .teams-wrapper {
@@ -149,7 +147,7 @@
     }
 
     /* --- DESKTOP BREAKPOINT --- */
-    @@media (min-width: 992px) {  
+    @@media (min-width: 992px) {
         .teams-wrapper {
             /* Keep centered layout but with larger gaps */
             gap: 40px 25px;
@@ -196,22 +194,16 @@
         "https://www.nflshop.com/content/ws/all/a6ff99a0-e81b-4001-90a3-cc41e7dca58c__2400X900.jpg",
         "https://www.nflshop.com/content/ws/all/7047a40b-c1dc-48bd-80d8-8441d6f35292__1200X980.jpg"
     };
-
     private string CurrentImageUrl => _heroImages[_currentImageIndex];
 
     protected override async Task OnInitializedAsync()
     {
-        // Load Teams (Limit to 14)
         topTeams = (await TeamService.GetHomeDisplayTeamsAsync())
                     .Take(14)
                     .ToList();
 
-        // Load featured products (Limit to 18)
-        featuredProducts = await DbContext.Products
-            .Where(p => p.IsFeatured)
-            .OrderByDescending(p => p.ProductId)
-            .Take(18)
-            .ToListAsync();
+        // --- FIX: Use ProductService to get fresh featured items ---
+        featuredProducts = await ProductService.GetFeaturedProductsAsync();
 
         _timer = new System.Threading.Timer(ChangeImage, null, 0, 3000);
     }

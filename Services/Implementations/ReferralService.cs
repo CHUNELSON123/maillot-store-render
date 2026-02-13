@@ -15,7 +15,7 @@ namespace MaillotStore.Services.Implementations
             _httpContextAccessor = httpContextAccessor;
         }
 
-        // --- 1. SETTER: Called by Routes.razor to "hydrate" the service ---
+        // --- 1. SETTER: Called by Routes.razor or App.razor to "hydrate" the service ---
         public void SetReferralCode(string code)
         {
             if (!string.IsNullOrEmpty(code))
@@ -27,7 +27,7 @@ namespace MaillotStore.Services.Implementations
         // --- 2. GETTER: Used by Checkout and other pages ---
         public string? GetReferralCode()
         {
-            // If we already have the code in memory, return it (Best for SignalR)
+            // If we already have the code in memory, return it
             if (!string.IsNullOrEmpty(_currentReferralCode))
             {
                 return _currentReferralCode;
@@ -55,13 +55,20 @@ namespace MaillotStore.Services.Implementations
             {
                 _currentReferralCode = refCode;
 
+                // --- FIX: Determine if we are on HTTPS ---
+                bool isSecure = _httpContextAccessor.HttpContext?.Request.IsHttps ?? false;
+
                 var cookieOptions = new CookieOptions
                 {
                     Expires = DateTime.Now.AddDays(30),
-                    HttpOnly = true,
-                    Secure = true,
-                    IsEssential = true
+                    HttpOnly = false, // Must be false for JS to read it if needed
+                    // --- FIXED: Only set Secure if we are actually using HTTPS ---
+                    Secure = isSecure,
+                    // -------------------------------------------------------------
+                    IsEssential = true,
+                    SameSite = SameSiteMode.Lax
                 };
+
                 // We use checking to prevent crashing if Response is not available
                 if (_httpContextAccessor.HttpContext != null)
                 {

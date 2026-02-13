@@ -13,5 +13,8 @@ namespace MaillotStore.Services.Interfaces
         void UpdateQuantity(OrderItem item, int quantity);
         void UpdateSize(OrderItem item, string size);
         void ClearCart();
+
+        // --- ADDED: Method to set the Guest Cookie ID ---
+        void SetGuestId(string guestId);
     }
 }

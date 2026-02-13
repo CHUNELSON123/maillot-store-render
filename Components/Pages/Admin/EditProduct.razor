@@ -35,17 +35,24 @@
             <EditForm Model="@productViewModel" OnValidSubmit="HandleUpdateSubmit" enctype="multipart/form-data">
                 <DataAnnotationsValidator />
 
-                @* --- BASIC FIELDS --- *@
                 <div class="form-group">
                     <label for="productName">Product Name:</label>
                     <InputText id="productName" class="form-control-dark" @bind-Value="productViewModel.Name" />
                     <ValidationMessage For="@(() => productViewModel.Name)" />
                 </div>
 
-                <div class="form-group">
-                    <label for="productPrice">Price:</label>
-                    <InputNumber id="productPrice" class="form-control-dark" @bind-Value="productViewModel.Price" />
-                    <ValidationMessage For="@(() => productViewModel.Price)" />
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label for="productPrice">Regular Price (XAF):</label>
+                        <InputNumber id="productPrice" class="form-control-dark" @bind-Value="productViewModel.Price" />
+                        <ValidationMessage For="@(() => productViewModel.Price)" />
+                    </div>
+
+                    @* --- NEW: Promo Price Field --- *@
+                    <div class="col-md-6">
+                        <label for="promoPrice" style="color: #0d6efd;">Promo Price (Optional):</label>
+                        <InputNumber id="promoPrice" class="form-control-dark" @bind-Value="productViewModel.PromoPrice" placeholder="Empty = No sale" />
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -70,10 +77,9 @@
                     </InputSelect>
                 </div>
 
-                @* --- NEW: LEAGUE SELECTION (Saves directly to Product) --- *@
+                @* --- LEAGUE SELECTION --- *@
                 <div class="form-group">
                     <label>League (Optional):</label>
-                    @* We use InputSelect linked to ViewModel.LeagueId *@
                     <InputSelect class="form-control-dark" Value="@productViewModel.LeagueId" ValueExpression="@(() => productViewModel.LeagueId)" ValueChanged="@((int? value) => OnLeagueChanged(value))">
                         <option value="">-- Select League --</option>
                         @if (leagues != null)
@@ -100,7 +106,6 @@
                     </InputSelect>
                 </div>
 
-                @* --- REST OF THE FORM --- *@
                 <div class="form-group">
                     <label for="jerseySeason">Jersey Season:</label>
                     <div class="season-inputs">
@@ -142,7 +147,6 @@
                             }
                             else
                             {
-
                                 <span>Upload</span>
                             }
                             <InputFile OnChange="LoadMainImage" hidden accept=".jpg,.jpeg,.png,.webp" />
@@ -171,7 +175,6 @@
                     {
                         <p><em>Uploading images...</em></p>
                     }
-
                     @foreach (var image in productViewModel.Gallery)
                     {
                         <div class="input-row" style="margin-bottom: 10px; align-items: center;">
@@ -204,6 +207,22 @@
                     </div>
                 </div>
 
+                <div class="form-group featured-group">
+                    <label>On Sale Flag:</label>
+                    <div class="featured-options">
+                        <InputRadioGroup @bind-Value="productViewModel.IsOnSale">
+                            <div class="form-check">
+                                <InputRadio class="form-check-input" id="saleYes" Value="true" />
+                                <label class="form-check-label" for="saleYes">Yes</label>
+                            </div>
+                            <div class="form-check">
+                                <InputRadio class="form-check-input" id="saleNo" Value="false" />
+                                <label class="form-check-label" for="saleNo">No</label>
+                            </div>
+                        </InputRadioGroup>
+                    </div>
+                </div>
+
                 <div class="form-actions">
                     <button type="submit" class="btn-saved" disabled="@(isUploadingMain || isUploadingGallery)">Update</button>
                     <button type="button" class="btn-cancel" @onclick='() => NavigationManager.NavigateTo("/admin/products")'>Cancel</button>
@@ -217,11 +236,9 @@
     [Parameter] public int ProductId { get; set; }
     private ProductViewModel? productViewModel;
     private List<string> SeasonYears { get; set; } = new();
-
     private List<Team> allTeams = new();
     private List<League> leagues = new();
 
-    // We filter teams based on the selected LeagueId in the ViewModel
     private IEnumerable<Team> filteredTeams =>
         (productViewModel?.LeagueId == null || productViewModel.LeagueId == 0)
         ? allTeams
@@ -245,7 +262,7 @@
 
         var product = await DbContext.Products
             .Include(p => p.Gallery)
-            .Include(p => p.Team) // Include Team to get League if needed
+            .Include(p => p.Team)
             .FirstOrDefaultAsync(p => p.ProductId == ProductId);
 
         if (product != null)
@@ -254,6 +271,10 @@
             {
                 Name = product.Name,
                 Price = product.Price,
+                // --- NEW: Load Promo Price ---
+                PromoPrice = product.PromoPrice,
+                IsOnSale = product.IsOnSale,
+                // -----------------------------
                 Category = product.Category,
                 Stock = product.Stock,
                 Description = product.Description,
@@ -262,8 +283,6 @@
                 Gallery = product.Gallery.ToList(),
                 TeamId = product.TeamId,
                 Version = product.Version,
-
-                // --- LOAD LEAGUE: Prioritize direct LeagueId, fallback to Team's League ---
                 LeagueId = product.LeagueId ?? product.Team?.LeagueId
             };
 
@@ -283,13 +302,11 @@
         }
     }
 
-    // --- LOGIC: When League Changes ---
     private void OnLeagueChanged(int? newLeagueId)
     {
         if (productViewModel != null)
         {
             productViewModel.LeagueId = newLeagueId;
-            // Clear Team if it doesn't match the new League
             if (productViewModel.TeamId.HasValue)
             {
                 var currentTeam = allTeams.FirstOrDefault(t => t.Id == productViewModel.TeamId.Value);
@@ -316,7 +333,6 @@
             var files = e.GetMultipleFiles(10);
             var tasks = files.Select(file => UploadFileAsync(file));
             var uploadedUrls = await Task.WhenAll(tasks);
-
             foreach (var url in uploadedUrls)
             {
                 productViewModel.Gallery.Add(new ProductImage { ImageUrl = url, ProductId = ProductId });
@@ -345,6 +361,10 @@
 
         productToUpdate.Name = productViewModel.Name;
         productToUpdate.Price = productViewModel.Price;
+        // --- NEW: Update Promo Price ---
+        productToUpdate.PromoPrice = productViewModel.PromoPrice;
+        productToUpdate.IsOnSale = productViewModel.IsOnSale;
+        // -------------------------------
         productToUpdate.Category = productViewModel.Category;
         productToUpdate.Stock = productViewModel.Stock;
         productToUpdate.Description = productViewModel.Description;
@@ -352,10 +372,7 @@
         productToUpdate.ImageUrl = productViewModel.ImageUrl;
         productToUpdate.TeamId = productViewModel.TeamId;
         productToUpdate.Version = productViewModel.Version;
-
-        // --- SAVE LEAGUE ID ---
         productToUpdate.LeagueId = productViewModel.LeagueId;
-        // ----------------------
 
         productToUpdate.Season = !string.IsNullOrEmpty(productViewModel.SeasonType)
              ? $"{productViewModel.SeasonType}{(!string.IsNullOrEmpty(productViewModel.SeasonYear) ? $" ({productViewModel.SeasonYear})" : "")}"

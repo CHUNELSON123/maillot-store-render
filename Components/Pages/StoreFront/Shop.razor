@@ -7,7 +7,8 @@
 @using MaillotStore.Services.Interfaces
 @using Microsoft.EntityFrameworkCore
 @rendermode InteractiveServer
-@inject ApplicationDbContext DbContext
+@* --- FIX: Inject Service instead of DbContext --- *@
+@inject IProductService ProductService
 @inject SearchStateService SearchState
 @inject ILeagueService LeagueService
 @implements IDisposable
@@ -21,6 +22,7 @@
             <p>Browse our collection of authentic football, basketball, and nfl jerseys.</p>
         </div>
         <div class="col-md-7 d-flex justify-content-end align-items-center flex-wrap gap-2">
+
             @* --- SORT BY --- *@
             <div>
                 <label for="sort-by" class="form-label mb-0 small">Sort by:</label>
@@ -135,7 +137,6 @@
 
     // Dropdown Data
     private List<League> leagues = new();
-
     private int currentPage = 1;
     private int pageSize = 18;
     private int totalPages;
@@ -148,11 +149,8 @@
     {
         SearchState.OnSearchTermChanged += OnSearchChanged;
 
-        // FIXED: Include BOTH Team and League so we have all data loaded
-        allProducts = await DbContext.Products
-            .Include(p => p.Team)
-            .Include(p => p.League)
-            .ToListAsync();
+        // --- FIX: Use ProductService to get FRESH data ---
+        allProducts = await ProductService.GetProductsAsync();
 
         // Load Leagues for dropdown
         leagues = await LeagueService.GetAllLeaguesAsync();
@@ -211,7 +209,7 @@
             tempProducts = tempProducts?.Where(p => p.TeamId == TeamId.Value);
         }
 
-        // 4. League Filter (from Dropdown) -- FIXED LOGIC HERE --
+        // 4. League Filter (from Dropdown)
         if (currentLeagueFilter > 0)
         {
             tempProducts = tempProducts?.Where(p =>

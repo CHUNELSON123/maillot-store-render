@@ -25,9 +25,17 @@
             @foreach (var league in leagues)
             {
                 <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
+                    @* --- FIX: Added dark background style so text is visible --- *@
+                    <div class="card shadow-sm" style="background-color: #1a1a1a; border: 1px solid #444; color: white; @(league.IsDiscountActive ? "border-color: #28a745;" : "")">
                         <div class="card-body d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">@league.Name</h5>
+                            <div>
+                                <h5 class="card-title mb-0">@league.Name</h5>
+                                @* Show Sale Badge if active *@
+                                @if (league.IsDiscountActive)
+                                {
+                                    <small class="text-success fw-bold" style="display:block; font-size: 0.8rem;">SALE: -@league.DiscountPercentage%</small>
+                                }
+                            </div>
                             <div>
                                 <button class="btn btn-sm btn-outline-primary me-2" @onclick="() => EditLeague(league)">Edit</button>
                                 <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteLeague(league.Id)">Delete</button>
@@ -42,14 +50,11 @@
 
 @if (showModal)
 {
-    @* 1. Dark background behind the modal *@
     <div class="modal show d-block" style="background: rgba(0,0,0,0.8);" tabindex="-1">
         <div class="modal-dialog">
-            @* 2. Dark Modal Window *@
             <div class="modal-content" style="background-color: #1a1a1a; color: white; border: 1px solid #444;">
                 <div class="modal-header" style="border-bottom: 1px solid #444;">
                     <h5 class="modal-title">@(editingLeague.Id == 0 ? "Add League" : "Edit League")</h5>
-                    @* 3. White Close Button *@
                     <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
                 </div>
                 <div class="modal-body">
@@ -57,14 +62,26 @@
                         <DataAnnotationsValidator />
                         <div class="mb-3">
                             <label class="form-label" style="color: #ccc;">League Name</label>
-
-                            @* 4. FORCED DARK INPUT STYLE *@
-                            <InputText @bind-Value="editingLeague.Name"
-                                       class="form-control"
-                                       style="background-color: #333; color: white; border: 1px solid #555;"
-                                       placeholder="e.g. Premier League" />
-
+                            <InputText @bind-Value="editingLeague.Name" class="form-control" style="background-color: #333; color: white; border: 1px solid #555;" />
                         </div>
+
+                        @* --- DISCOUNT SECTION --- *@
+                        <div style="background-color: #2a2a2a; padding: 10px; border-radius: 5px; border: 1px solid #555; margin-bottom: 15px;">
+                            <label style="color: #0d6efd; font-weight: bold; margin-bottom: 5px;">League-Wide Sale</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <label class="small text-muted">Discount %</label>
+                                    <InputNumber @bind-Value="editingLeague.DiscountPercentage" class="form-control" style="background-color: #333; color: white; border: 1px solid #555;" />
+                                </div>
+                                <div class="col-6 d-flex align-items-end pb-2">
+                                    <div class="form-check">
+                                        <InputCheckbox @bind-Value="editingLeague.IsDiscountActive" class="form-check-input" id="leagueSaleActive" />
+                                        <label class="form-check-label text-white" for="leagueSaleActive">Activate</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <button type="submit" class="btn btn-primary w-100">Save</button>
                     </EditForm>
                 </div>
@@ -96,7 +113,13 @@
 
     private void EditLeague(League league)
     {
-        editingLeague = new League { Id = league.Id, Name = league.Name };
+        editingLeague = new League
+        {
+            Id = league.Id,
+            Name = league.Name,
+            DiscountPercentage = league.DiscountPercentage,
+            IsDiscountActive = league.IsDiscountActive
+        };
         showModal = true;
     }
 

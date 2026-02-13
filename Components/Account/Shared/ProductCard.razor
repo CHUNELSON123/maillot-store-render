@@ -2,23 +2,32 @@
 @using MaillotStore.Models
 @using MaillotStore.Services
 @using MaillotStore.Services.Implementations
-@inject StateContainer StateContainer
+@using MaillotStore.Services.Interfaces
+@inject ICartService CartService
 @inject NavigationManager NavigationManager
 
 <div class="product-card">
-    <div class="product-image-container">
+    <div class="product-image-container" style="position: relative;">
         <a href="/product/@Product.ProductId">
             <img src="@Product.ImageUrl" class="card-img-top" alt="@Product.Name">
         </a>
 
-        @* --- NEW: VERSION BADGE --- *@
+        @* --- VERSION BADGE (Top-Right) --- *@
         @if (!string.IsNullOrEmpty(Product.Version))
         {
             <div class="version-badge @GetVersionClass(Product.Version)">
                 @Product.Version
             </div>
         }
-        @* -------------------------- *@
+
+        @* --- SALE BADGE (Moved to Top-Left) --- *@
+        @if (Product.HasActiveDiscount || Product.IsOnSale)
+        {
+            @* Changed 'end-0' to 'start-0' to move it to the left *@
+            <div class="position-absolute top-0 start-0 m-2 badge bg-danger" style="z-index: 10;">
+                SALE
+            </div>
+        }
 
         <AuthorizeView Roles="Influencer">
             <button @onclick="ToggleShareModal" class="product-share-icon-button">
@@ -29,7 +38,23 @@
 
     <div class="card-body">
         <h5 class="card-title">@Product.Name</h5>
-        <p class="card-price">@($"FCFA {Product.Price:N0}")</p>
+
+        @* --- PRICE DISPLAY --- *@
+        @if (Product.HasActiveDiscount)
+        {
+            <div class="price-container">
+                <span class="text-muted text-decoration-line-through me-2" style="font-size: 0.9em;">
+                    @($"FCFA {Product.Price:N0}")
+                </span>
+                <span class="text-danger fw-bold">
+                    @($"FCFA {Product.EffectivePrice:N0}")
+                </span>
+            </div>
+        }
+        else
+        {
+            <p class="card-price">@($"FCFA {Product.Price:N0}")</p>
+        }
 
         @if (!string.IsNullOrWhiteSpace(Product.Season) && Product.Season.Trim() != "()")
         {
@@ -64,19 +89,20 @@
         isShareModalVisible = !isShareModalVisible;
     }
 
-    private async Task AddToCartAndNavigate(Product product)
+    private void AddToCartAndNavigate(Product product)
     {
         var defaultSize = product.Size?.Split(',').FirstOrDefault()?.Trim() ?? "M";
-        await StateContainer.AddToCart(product, 1, defaultSize, null, null);
+
+        CartService.AddToCart(product, 1, defaultSize, null, null);
+
         NavigationManager.NavigateTo("/checkout");
     }
 
-    // Helper to style the badge based on version name
     private string GetVersionClass(string version)
     {
         if (version.Contains("Player", StringComparison.OrdinalIgnoreCase)) return "badge-player";
         if (version.Contains("Retro", StringComparison.OrdinalIgnoreCase)) return "badge-retro";
         if (version.Contains("Training", StringComparison.OrdinalIgnoreCase)) return "badge-training";
-        return "badge-fan"; // Default
+        return "badge-fan";
     }
 }

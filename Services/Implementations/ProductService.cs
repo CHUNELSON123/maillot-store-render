@@ -7,71 +7,103 @@ namespace MaillotStore.Services.Implementations
 {
     public class ProductService : IProductService
     {
-        private readonly ApplicationDbContext _context;
+        // --- FIX: Use Factory to ensure fresh data every time ---
+        private readonly IDbContextFactory<ApplicationDbContext> _factory;
 
-        public ProductService(ApplicationDbContext context)
+        public ProductService(IDbContextFactory<ApplicationDbContext> factory)
         {
-            _context = context;
+            _factory = factory;
         }
 
         public async Task<List<Product>> GetProductsAsync()
         {
-            return await _context.Products.Include(p => p.Team).ToListAsync();
+            using var context = _factory.CreateDbContext();
+            return await context.Products
+                .AsNoTracking()
+                .Include(p => p.Team)
+                .Include(p => p.League)
+                .ToListAsync();
         }
 
         public async Task<Product?> GetProductByIdAsync(int id)
         {
-            return await _context.Products
+            using var context = _factory.CreateDbContext();
+            return await context.Products
+                .AsNoTracking()
                 .Include(p => p.Team)
+                .Include(p => p.League)
+                .Include(p => p.Gallery) // Necessary for Details page
                 .FirstOrDefaultAsync(p => p.ProductId == id);
         }
 
         public async Task<List<Product>> GetFeaturedProductsAsync()
         {
-            return await _context.Products.Include(p => p.Team).Take(6).ToListAsync();
+            using var context = _factory.CreateDbContext();
+            return await context.Products
+                .AsNoTracking()
+                .Include(p => p.Team)
+                .Include(p => p.League)
+                .Where(p => p.IsFeatured)
+                .OrderByDescending(p => p.ProductId)
+                .Take(18) // Updated to 18 to match your Home Page layout
+                .ToListAsync();
         }
 
         public async Task<List<Product>> GetOnSaleProductsAsync()
         {
-            return await _context.Products.Include(p => p.Team).Where(p => p.IsOnSale).ToListAsync();
+            using var context = _factory.CreateDbContext();
+            return await context.Products
+                .AsNoTracking()
+                .Include(p => p.Team)
+                .Include(p => p.League)
+                .Where(p => p.IsOnSale)
+                .ToListAsync();
         }
 
         public async Task<List<Product>> GetProductsByCategoryAsync(string category)
         {
-            return await _context.Products
+            using var context = _factory.CreateDbContext();
+            return await context.Products
+                .AsNoTracking()
                 .Include(p => p.Team)
+                .Include(p => p.League)
                 .Where(p => p.Category == category)
                 .ToListAsync();
         }
 
-        // --- NEW: Filter by Team ID ---
         public async Task<List<Product>> GetProductsByTeamIdAsync(int teamId)
         {
-            return await _context.Products
+            using var context = _factory.CreateDbContext();
+            return await context.Products
+                .AsNoTracking()
                 .Include(p => p.Team)
+                .Include(p => p.League)
                 .Where(p => p.TeamId == teamId)
                 .ToListAsync();
         }
 
         public async Task AddProductAsync(Product product)
         {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            using var context = _factory.CreateDbContext();
+            context.Products.Add(product);
+            await context.SaveChangesAsync();
         }
 
         public async Task UpdateProductAsync(Product product)
         {
-            _context.Products.Update(product);
-            await _context.SaveChangesAsync();
+            using var context = _factory.CreateDbContext();
+            context.Products.Update(product);
+            await context.SaveChangesAsync();
         }
 
         public async Task DeleteProductAsync(int id)
         {
-            var product = await _context.Products.FindAsync(id);
+            using var context = _factory.CreateDbContext();
+            var product = await context.Products.FindAsync(id);
             if (product != null)
             {
-                _context.Products.Remove(product);
-                await _context.SaveChangesAsync();
+                context.Products.Remove(product);
+                await context.SaveChangesAsync();
             }
         }
 
@@ -79,8 +111,11 @@ namespace MaillotStore.Services.Implementations
         {
             if (string.IsNullOrWhiteSpace(query)) return new List<Product>();
 
-            return await _context.Products
+            using var context = _factory.CreateDbContext();
+            return await context.Products
+                .AsNoTracking()
                 .Include(p => p.Team)
+                .Include(p => p.League)
                 .Where(p => p.Name.ToLower().Contains(query.ToLower()) ||
                             p.Description.ToLower().Contains(query.ToLower()) ||
                             (p.Team != null && p.Team.Name.ToLower().Contains(query.ToLower())))

@@ -16,6 +16,10 @@ namespace MaillotStore.ViewModels
         [Range(0.01, 1000000)]
         public decimal Price { get; set; }
 
+        // --- NEW: Promo Price (Optional) ---
+        public decimal? PromoPrice { get; set; }
+        // -----------------------------------
+
         [Required]
         public string Category { get; set; } = string.Empty;
 

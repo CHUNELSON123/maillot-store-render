@@ -1,0 +1,94 @@
+﻿@inject IJSRuntime JSRuntime
+
+@if (showBanner)
+{
+    <div class="cookie-banner-overlay">
+        <div class="cookie-banner-content">
+            <div class="d-flex align-items-center mb-3 mb-md-0">
+                <i class="fas fa-cookie-bite text-warning fa-2x me-3"></i>
+                <div>
+                    <h5 class="mb-1 fw-bold text-white">We use cookies</h5>
+                    <p class="mb-0 text-white-50 small">
+                        This site uses cookies to save your cart and improve your experience.
+                        By continuing, you agree to our use of cookies.
+                    </p>
+                </div>
+            </div>
+            <button class="btn btn-warning fw-bold px-4 ms-md-3 mt-3 mt-md-0" @onclick="AcceptCookies">
+                Got it!
+            </button>
+        </div>
+    </div>
+}
+
+<style>
+    .cookie-banner-overlay {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 800px;
+        background: rgba(20, 20, 20, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 20px;
+        z-index: 99999;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .cookie-banner-content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* --- FIXED: Double @@ for media query --- */
+    @@media (min-width: 768px) {
+        .cookie-banner-content {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+    }
+
+    /* --- FIXED: Double @@ for keyframes --- */
+    @@keyframes slideUp {
+        from {
+            transform: translate(-50%, 100px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+    }
+</style>
+
+@code {
+    private bool showBanner = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Check if the user has already accepted cookies
+            var consent = await JSRuntime.InvokeAsync<string>("cookieHelper.getCookie", "CookieConsent");
+            if (string.IsNullOrEmpty(consent))
+            {
+                showBanner = true;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task AcceptCookies()
+    {
+        // Save consent for 1 year (365 days)
+        await JSRuntime.InvokeVoidAsync("cookieHelper.setCookie", "CookieConsent", "true", 365);
+        showBanner = false;
+    }
+}

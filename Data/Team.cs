@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema; // Needed for ForeignKey attribute
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MaillotStore.Data
 {
@@ -9,17 +9,19 @@ namespace MaillotStore.Data
         public int Id { get; set; }
 
         [Required]
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; }
 
-        public string LogoUrl { get; set; } = string.Empty;
+        public string? LogoUrl { get; set; }
 
-        public bool DisplayOnHome { get; set; } = true;
+        public bool DisplayOnHome { get; set; } = false;
 
-        // --- NEW: Link to League ---
-        // Every team MUST belong to a league now.
-        public int LeagueId { get; set; }
+        public int? LeagueId { get; set; }
 
         [ForeignKey("LeagueId")]
         public League? League { get; set; }
+
+        // --- NEW: Team Level Discount ---
+        public int DiscountPercentage { get; set; } = 0;
+        public bool IsDiscountActive { get; set; } = false;
     }
 }
