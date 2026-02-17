@@ -20,6 +20,7 @@ namespace MaillotStore.Data
         public DbSet<Team> Teams { get; set; }
         public DbSet<League> Leagues { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<MarketingAsset> MarketingAssets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

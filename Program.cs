@@ -21,6 +21,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuth
 // --- REGISTER YOUR APP SERVICES ---
 // --- FIX: Add HttpContextAccessor explicitly ---
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient<MaillotStore.Services.Implementations.NotchPayService>();
 // ----------------------------------------------
 
 builder.Services.AddScoped<IProductService, ProductService>();
@@ -32,7 +33,7 @@ builder.Services.AddScoped<StateContainer>();
 builder.Services.AddScoped<SearchStateService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<ILeagueService, LeagueService>();
-
+builder.Services.AddScoped<IMarketingService, MarketingService>();
 builder.Services.AddScoped<ISearchStateService>(sp => sp.GetRequiredService<SearchStateService>());
 
 builder.Services.AddScoped<MaillotStore.Services.Implementations.CloudinaryService>();

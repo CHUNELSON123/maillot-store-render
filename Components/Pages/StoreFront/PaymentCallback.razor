@@ -1,0 +1,194 @@
+﻿@page "/payment-callback"
+@using MaillotStore.Data
+@using MaillotStore.Models
+@using MaillotStore.Services.Implementations
+@using Microsoft.EntityFrameworkCore
+@using System.Net
+@using System.Net.Mail
+@using System.Text
+@inject NavigationManager NavigationManager
+@inject NotchPayService NotchPayService
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+@inject IConfiguration Configuration
+@inject ILogger<PaymentCallback> Logger
+
+<div class="container my-5 text-center">
+    @if (isLoading)
+    {
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3 text-white">Verifying your payment...</p>
+    }
+    else if (paymentStatus == "complete")
+    {
+        @* --- SUCCESS CARD (Dark Theme) --- *@
+        <div class="card shadow-sm p-5 bg-dark text-white border-success mx-auto position-relative" style="max-width: 600px;">
+            @* X Button *@
+            <a href="/shop" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" aria-label="Close" style="text-decoration:none;"></a>
+
+            <div class="mb-4 text-success">
+                <i class="fas fa-check-circle fa-5x"></i>
+            </div>
+            <h2 class="mb-3">Payment Successful!</h2>
+            <p>Thank you for your order. We have received your payment.</p>
+            <p><strong>Order Reference:</strong> @reference</p>
+            <div class="mt-4">
+                <a href="/shop" class="btn btn-light btn-lg">Continue Shopping</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        @* --- FAILURE / CANCELLED CARD (Dark Theme) --- *@
+        <div class="card shadow-sm p-5 bg-dark text-white border-danger mx-auto position-relative" style="max-width: 600px;">
+
+            @* X Button (Top Right) *@
+            <a href="/checkout" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" aria-label="Close" style="text-decoration:none;"></a>
+
+            <div class="mb-4 text-danger">
+                @* Make Icon Clickable too *@
+                <a href="/checkout" class="text-danger">
+                    <i class="fas fa-times-circle fa-5x"></i>
+                </a>
+            </div>
+
+            <h2 class="mb-3">Payment Failed</h2>
+            <p>We could not verify your payment. Please try again or contact support.</p>
+
+            <div class="mt-4">
+                <a href="/checkout" class="btn btn-outline-danger">Try Again</a>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public string? reference { get; set; }
+
+    private bool isLoading = true;
+    private string? paymentStatus = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrEmpty(reference))
+        {
+            isLoading = false;
+            return;
+        }
+
+        Logger.LogInformation($"Processing payment callback for reference: {reference}");
+
+        // 1. Get Payment Status String
+        paymentStatus = await NotchPayService.VerifyPaymentAsync(reference);
+
+        Logger.LogInformation($"NotchPay Status: {paymentStatus}");
+
+        if (paymentStatus == "complete")
+        {
+            // --- SUCCESS FLOW ---
+            using var context = DbFactory.CreateDbContext();
+
+            var order = await context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .FirstOrDefaultAsync(o => o.PaymentReference == reference);
+
+            if (order != null)
+            {
+                if (order.PaymentStatus != "Paid")
+                {
+                    order.PaymentStatus = "Paid";
+                    order.Status = "Processing";
+                    await context.SaveChangesAsync();
+
+                    Logger.LogInformation($"Order {order.Id} updated to Paid/Processing.");
+                    await SendAdminEmailAsync(order);
+                }
+            }
+        }
+        else if (paymentStatus == "canceled")
+        {
+            // --- CANCELLED FLOW: Redirect immediately ---
+            Logger.LogInformation($"Payment cancelled (404/canceled) for {reference}. Redirecting to Shop.");
+            NavigationManager.NavigateTo("/shop");
+            return;
+        }
+
+        isLoading = false;
+    }
+
+    private async Task SendAdminEmailAsync(Order order)
+    {
+        try
+        {
+            var smtpSettings = Configuration.GetSection("SmtpSettings");
+            var server = smtpSettings["Server"];
+            var port = int.Parse(smtpSettings["Port"] ?? "587");
+            var username = smtpSettings["Username"];
+            var password = smtpSettings["Password"];
+
+            if (string.IsNullOrEmpty(server) || string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            {
+                return;
+            }
+
+            var sb = new StringBuilder();
+            sb.AppendLine("<h2>New Online Order Received!</h2>");
+            sb.AppendLine($"<p><strong>Order ID:</strong> {order.Id}</p>");
+            sb.AppendLine($"<p><strong>Customer:</strong> {order.CustomerName}</p>");
+            sb.AppendLine($"<p><strong>Phone:</strong> {order.CustomerPhone}</p>");
+            sb.AppendLine($"<p><strong>Address:</strong> {order.CustomerAddress}</p>");
+            sb.AppendLine($"<p><strong>Total Amount:</strong> {order.TotalAmount:N0} XAF</p>");
+            sb.AppendLine("<hr/>");
+            sb.AppendLine("<h3>Items:</h3>");
+            sb.AppendLine("<ul>");
+
+            if (order.OrderItems != null)
+            {
+                foreach (var item in order.OrderItems)
+                {
+                    sb.AppendLine("<li>");
+                    sb.AppendLine($"<strong>{item.Product?.Name}</strong>");
+
+                    var details = new List<string>();
+                    if (!string.IsNullOrEmpty(item.Product?.Season)) details.Add($"Season: {item.Product.Season}");
+                    if (!string.IsNullOrEmpty(item.Product?.Version)) details.Add($"Type: {item.Product.Version}");
+
+                    if (details.Any())
+                    {
+                        sb.AppendLine($"<br/><span style='color:#555; font-size:0.9em;'>{string.Join(" | ", details)}</span>");
+                    }
+
+                    sb.AppendLine($"<br/>Size: {item.Size} | Qty: {item.Quantity}");
+
+                    if (!string.IsNullOrEmpty(item.CustomName))
+                    {
+                        sb.AppendLine($"<br/><em>Custom: {item.CustomName} #{item.CustomNumber}</em>");
+                    }
+                    sb.AppendLine("</li>");
+                }
+            }
+            sb.AppendLine("</ul>");
+
+            using var message = new MailMessage();
+            message.From = new MailAddress(username, "Maillot Store System");
+            message.To.Add("contact@maillotstore.store");
+            message.To.Add("support@maillotstore.store");
+            message.Subject = $"[New Order] #{order.Id} - Paid Online";
+            message.Body = sb.ToString();
+            message.IsBodyHtml = true;
+
+            using var client = new SmtpClient(server, port);
+            client.EnableSsl = true;
+            client.Credentials = new NetworkCredential(username, password);
+
+            await client.SendMailAsync(message);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to send admin notification email.");
+        }
+    }
+}

@@ -11,7 +11,6 @@
 @inject IJSRuntime JSRuntime
 @inject IOrderStateService OrderStateService
 @inject ICartService CartService
-@* --- FIX: Inject ProductService --- *@
 @inject IProductService ProductService
 @implements IDisposable
 
@@ -40,10 +39,24 @@
         <div class="row">
             <div class="col-lg-6 mb-4 mb-lg-0">
                 <div class="pd-gallery-container">
-                    <div class="pd-main-image-wrapper" @onclick="OpenLightbox" style="cursor: zoom-in;">
+
+                    @* --- MAIN IMAGE WRAPPER --- *@
+                    <div class="pd-main-image-wrapper" @onclick="OpenLightbox">
+
+                        @* --- MOBILE ONLY: PREV ARROW --- *@
+                        <button class="mobile-nav-btn prev" @onclick="PrevImage" @onclick:stopPropagation>
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+
                         <img src="@currentImageUrl" class="main-img-display" alt="Main image of @product.Name">
+
+                        @* --- MOBILE ONLY: NEXT ARROW --- *@
+                        <button class="mobile-nav-btn next" @onclick="NextImage" @onclick:stopPropagation>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
                     </div>
 
+                    @* --- DESKTOP ONLY: THUMBNAILS (Hidden on Mobile via CSS) --- *@
                     <div class="thumbnails-carousel-wrapper">
                         <button class="thumb-nav-btn prev" @onclick="() => ScrollThumbnails(-1)" type="button">
                             <i class="fas fa-chevron-left"></i>
@@ -221,7 +234,6 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        // --- FIX: Use Service for FRESH data ---
         product = await ProductService.GetProductByIdAsync(ProductId);
 
         if (product != null)
@@ -248,7 +260,6 @@
     private async Task LoadRelatedProducts()
     {
         if (product is null) return;
-        // --- FIX: Use Service for related products ---
         var all = await ProductService.GetProductsByCategoryAsync(product.Category);
         relatedProducts = all.Where(p => p.ProductId != ProductId).Take(3).ToList();
     }
@@ -285,7 +296,29 @@
         StartRotationTimer();
     }
 
-    private void SetMainImage(string? imageUrl) => ManualImageSelect(imageUrl);
+    // --- NEW: Next/Prev Logic for Mobile Arrows ---
+    private void NextImage()
+    {
+        if (allImageUrls.Count > 0)
+        {
+            currentImageIndex = (currentImageIndex + 1) % allImageUrls.Count;
+            currentImageUrl = allImageUrls[currentImageIndex];
+            // Reset timer so it doesn't jump immediately after user click
+            StartRotationTimer();
+        }
+    }
+
+    private void PrevImage()
+    {
+        if (allImageUrls.Count > 0)
+        {
+            currentImageIndex = (currentImageIndex - 1 + allImageUrls.Count) % allImageUrls.Count;
+            currentImageUrl = allImageUrls[currentImageIndex];
+            StartRotationTimer();
+        }
+    }
+    // ----------------------------------------------
+
     private async Task ScrollThumbnails(int direction)
     {
         await JSRuntime.InvokeVoidAsync("scrollGallery", _thumbnailsContainer, direction * 150);
@@ -305,20 +338,12 @@
 
     private void NextLightboxImage()
     {
-        if (allImageUrls.Count > 0)
-        {
-            currentImageIndex = (currentImageIndex + 1) % allImageUrls.Count;
-            currentImageUrl = allImageUrls[currentImageIndex];
-        }
+        NextImage(); // Re-use logic
     }
 
     private void PrevLightboxImage()
     {
-        if (allImageUrls.Count > 0)
-        {
-            currentImageIndex = (currentImageIndex - 1 + allImageUrls.Count) % allImageUrls.Count;
-            currentImageUrl = allImageUrls[currentImageIndex];
-        }
+        PrevImage(); // Re-use logic
     }
 
     private bool ValidateInput()
@@ -410,6 +435,8 @@
         margin-bottom: 15px;
         padding: 5px;
         transition: transform 0.2s;
+        /* Make relative so arrows can sit on top */
+        position: relative;
     }
 
         .pd-main-image-wrapper:hover {
@@ -422,15 +449,66 @@
         object-fit: contain;
     }
 
-    .thumbnails-carousel-wrapper {
-        display: flex;
+    /* --- MOBILE ARROWS (Hidden by default) --- */
+    .mobile-nav-btn {
+        display: none; /* Hidden on Desktop */
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0,0,0,0.5); /* Semi-transparent black */
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        z-index: 10;
+        cursor: pointer;
         align-items: center;
-        gap: 10px;
-        position: relative;
-        background: #000;
-        padding: 5px 0;
+        justify-content: center;
     }
 
+        .mobile-nav-btn.prev {
+            left: 10px;
+        }
+
+        .mobile-nav-btn.next {
+            right: 10px;
+        }
+
+    /* --- MEDIA QUERIES --- */
+
+    /* DESKTOP (Larger than 768px) */
+    @@media (min-width: 769px) {
+        .thumbnails-carousel-wrapper {
+            display: flex; /* Show Thumbnails */
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            background: #000;
+            padding: 5px 0;
+        }
+
+        .mobile-nav-btn {
+            display: none !important; /* Hide Arrows on Desktop */
+        }
+    }
+
+    /* MOBILE (768px and smaller) */
+    @@media (max-width: 768px) {
+        .thumbnails-carousel-wrapper {
+            display: none !important; /* HIDE Thumbnails on Mobile */
+        }
+
+        .pd-main-image-wrapper {
+            height: 350px; /* Slightly shorter on mobile */
+        }
+
+        .mobile-nav-btn {
+            display: flex; /* SHOW Arrows on Mobile */
+        }
+    }
+
+    /* --- EXISTING STYLES --- */
     .pd-thumbnail-scroll-container {
         display: flex;
         gap: 10px;
@@ -574,10 +652,6 @@
     }
 
     @@media (max-width: 768px) {
-        .pd-main-image-wrapper {
-            height: 300px;
-        }
-
         .thumb-item {
             width: 50px;
             height: 50px;

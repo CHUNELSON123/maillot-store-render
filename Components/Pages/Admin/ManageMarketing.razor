@@ -1,0 +1,154 @@
+﻿@page "/admin/marketing"
+@using MaillotStore.Models
+@using MaillotStore.Services.Interfaces
+@using System.IO
+@layout MaillotStore.Components.Layout.AdminLayout
+@inject IMarketingService MarketingService
+@inject IJSRuntime JSRuntime
+@attribute [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
+
+<PageTitle>Manage Marketing</PageTitle>
+
+<div class="container-fluid">
+    <h2 class="mb-4">Marketing Assets</h2>
+
+    <ul class="nav nav-tabs mb-4 border-bottom-0">
+        <li class="nav-item">
+            <button class="nav-link @(activeTab == "HeroBanner" ? "active bg-primary text-white" : "bg-dark text-muted")"
+                    style="border: 1px solid #444;"
+                    @onclick='() => SwitchTab("HeroBanner")'>
+                Hero Banners
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link @(activeTab == "ShopShowcase" ? "active bg-primary text-white" : "bg-dark text-muted")"
+                    style="border: 1px solid #444;"
+                    @onclick='() => SwitchTab("ShopShowcase")'>
+                Shop Showcase
+            </button>
+        </li>
+    </ul>
+
+    <div class="card p-3 mb-4 shadow-sm" style="background-color: #1a1a1a; border: 1px solid #444; color: white;">
+        <h5>Add New Asset (@activeTab)</h5>
+        <EditForm Model="newAsset" OnValidSubmit="AddAsset">
+            <DataAnnotationsValidator />
+
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Type</label>
+                    @if (activeTab == "HeroBanner")
+                    {
+                        <input type="text" class="form-control form-control-sm bg-dark text-white" value="Image" disabled />
+                    }
+                    else
+                    {
+                        <InputSelect @bind-Value="newAsset.MediaType" class="form-select form-select-sm bg-dark text-white">
+                            <option value="Image">Image</option>
+                            <option value="Video">Video</option>
+                        </InputSelect>
+                    }
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Upload File</label>
+                    <InputFile OnChange="HandleFileSelected" class="form-control form-control-sm bg-dark text-white"
+                               accept="@(activeTab == "HeroBanner" ? "image/*" : "image/*,video/mp4,video/x-m4v,video/*")" />
+                </div>
+
+                <div class="col-md-5">
+                    <label class="form-label">OR Enter URL</label>
+                    <InputText @bind-Value="newAsset.Url" class="form-control form-control-sm bg-dark text-white" placeholder="https://..." />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3" disabled="@isUploading">
+                @(isUploading ? "Uploading..." : "Add Asset")
+            </button>
+        </EditForm>
+    </div>
+
+    <div class="row g-3">
+        @if (assets == null)
+        {
+            <p>Loading...</p>
+        }
+        else if (!assets.Any())
+        {
+            <p>No assets found.</p>
+        }
+        else
+        {
+            @foreach (var asset in assets)
+            {
+                <div class="col-md-4 col-lg-3">
+                    <div class="card h-100" style="background-color: #1a1a1a; border: 1px solid #444;">
+                        <div class="card-img-top" style="height: 150px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000;">
+                            @if (asset.MediaType == "Image")
+                            {
+                                <img src="@asset.Url" style="max-width: 100%; max-height: 100%; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <div class="text-white text-center"><i class="fas fa-video fa-2x mb-2"></i><br>Video</div>
+                            }
+                        </div>
+                        <div class="card-body">
+                            <small class="text-muted d-block text-truncate mb-2">@asset.Url</small>
+                            <button class="btn btn-sm btn-danger w-100" @onclick="() => DeleteAsset(asset.Id)">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    private string activeTab = "HeroBanner";
+    private List<MarketingAsset> assets;
+    private MarketingAsset newAsset = new() { MediaType = "Image" };
+    private IBrowserFile? selectedFile;
+    private bool isUploading = false;
+
+    protected override async Task OnInitializedAsync() => await LoadAssets();
+
+    private async Task SwitchTab(string tab)
+    {
+        activeTab = tab;
+        newAsset = new MarketingAsset { Section = activeTab, MediaType = "Image" };
+        selectedFile = null;
+        await LoadAssets();
+    }
+
+    private async Task LoadAssets() => assets = await MarketingService.GetAssetsBySectionAsync(activeTab);
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+        newAsset.Url = "File Uploaded";
+        var ext = Path.GetExtension(e.File.Name).ToLower();
+        newAsset.MediaType = (ext == ".mp4" || ext == ".mov" || ext == ".webm") ? "Video" : "Image";
+    }
+
+    private async Task AddAsset()
+    {
+        isUploading = true;
+        newAsset.Section = activeTab;
+        if (activeTab == "HeroBanner") newAsset.MediaType = "Image";
+        await MarketingService.AddAssetAsync(newAsset, selectedFile);
+        newAsset = new MarketingAsset { Section = activeTab, MediaType = "Image" };
+        selectedFile = null;
+        isUploading = false;
+        await LoadAssets();
+    }
+
+    private async Task DeleteAsset(int id)
+    {
+        if (await JSRuntime.InvokeAsync<bool>("confirm", "Delete this asset?"))
+        {
+            await MarketingService.DeleteAssetAsync(id);
+            await LoadAssets();
+        }
+    }
+}

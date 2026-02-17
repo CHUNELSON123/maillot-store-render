@@ -20,11 +20,10 @@
             </div>
         }
 
-        @* --- SALE BADGE (Moved to Top-Left) --- *@
+        @* --- SALE BADGE (Top-Left) --- *@
         @if (Product.HasActiveDiscount || Product.IsOnSale)
         {
-            @* Changed 'end-0' to 'start-0' to move it to the left *@
-            <div class="position-absolute top-0 start-0 m-2 badge bg-danger" style="z-index: 10;">
+            <div class="position-absolute top-0 start-0 m-2 badge bg-danger sale-badge-mobile" style="z-index: 10;">
                 SALE
             </div>
         }
@@ -42,8 +41,8 @@
         @* --- PRICE DISPLAY --- *@
         @if (Product.HasActiveDiscount)
         {
-            <div class="price-container">
-                <span class="text-muted text-decoration-line-through me-2" style="font-size: 0.9em;">
+            <div class="price-container d-flex flex-column flex-sm-row align-items-start align-items-sm-center">
+                <span class="text-muted text-decoration-line-through me-sm-2" style="font-size: 0.9em;">
                     @($"FCFA {Product.Price:N0}")
                 </span>
                 <span class="text-danger fw-bold">
@@ -78,6 +77,67 @@
 
 <ShareModal Product="Product" IsVisible="isShareModalVisible" OnClose="ToggleShareModal" />
 
+<style>
+    /* --- MOBILE REFINEMENTS --- */
+    @@media (max-width: 576px) {
+        .price-container {
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+            .price-container span {
+                display: block;
+            }
+        /* Prevent Truncation while staying in corners */
+        .version-badge, .sale-badge-mobile {
+            font-size: 0.62rem !important; /* Slightly smaller to fit full text */
+            padding: 2px 4px !important;
+            white-space: nowrap; /* Keep text on one line */
+            overflow: visible; /* Do not hide text */
+            text-overflow: clip; /* Remove the dots (...) */
+            max-width: none; /* Allow full width */
+        }
+
+        .sale-badge-mobile {
+            margin: 3px !important; /* Push further into corner */
+        }
+
+        .version-badge {
+            top: 3px !important;
+            right: 3px !important;
+        }
+    }
+
+    /* Base Badge Styles */
+    .version-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        z-index: 10;
+        color: white;
+    }
+
+    .badge-player {
+        background-color: #ffc107;
+        color: #000;
+    }
+
+    .badge-retro {
+        background-color: #6c757d;
+    }
+
+    .badge-training {
+        background-color: #17a2b8;
+    }
+
+    .badge-fan {
+        background-color: #007bff;
+    }
+</style>
+
 @code {
     [Parameter]
     public Product Product { get; set; } = new();
@@ -92,9 +152,7 @@
     private void AddToCartAndNavigate(Product product)
     {
         var defaultSize = product.Size?.Split(',').FirstOrDefault()?.Trim() ?? "M";
-
         CartService.AddToCart(product, 1, defaultSize, null, null);
-
         NavigationManager.NavigateTo("/checkout");
     }
 

@@ -5,15 +5,15 @@
 @using MaillotStore.Data
 @using MaillotStore.Services.Interfaces
 @using Microsoft.EntityFrameworkCore
-@* --- FIX: Inject ProductService --- *@
 @inject IProductService ProductService
 @inject ITeamService TeamService
+@inject IMarketingService MarketingService
 @implements IDisposable
 
 <PageTitle>Home</PageTitle>
 
 @* --- HERO BANNER --- *@
-<div class="hero-banner" style="background-image: url(@CurrentImageUrl)">
+<div class="hero-banner" style="background-image: url(@currentHeroUrl); transition: background-image 0.8s ease-in-out;">
     <div class="hero-content">
         <h2>Official Jerseys. Unbeatable Style.</h2>
         <p>Discover premium football jerseys at Maillot Store. Wear your passion and support your team in style.</p>
@@ -31,11 +31,7 @@
     {
         <p class="text-center">Loading teams...</p>
     }
-    else if (!topTeams.Any())
-    {
-        @* Optional: Hide if empty *@
-    }
-    else
+    else if (topTeams.Any())
     {
         <div class="teams-wrapper">
             @foreach (var team in topTeams)
@@ -64,10 +60,6 @@
                 </div>
             }
         </div>
-    }
-    else
-    {
-        <p class="text-center"><em>Loading featured jerseys...</em></p>
     }
 </section>
 
@@ -108,13 +100,158 @@
     </div>
 </section>
 
+@* --- SHOP SHOWCASE SECTION --- *@
+<section class="shop-showcase section-spacer container pb-5">
+    <h2 class="text-center mb-4">Inside Our Shop</h2>
+    @if (showcaseAssets != null && showcaseAssets.Any())
+    {
+        <div class="showcase-grid">
+            @foreach (var asset in showcaseAssets)
+            {
+                <div class="showcase-card" @onclick="() => OpenLightbox(asset)" style="cursor: zoom-in;">
+                    @if (asset.MediaType == "Video")
+                    {
+                        @if (asset.Url.Contains("youtube.com") || asset.Url.Contains("youtu.be"))
+                        {
+                            <div class="ratio ratio-16x9">
+                                <iframe src="@GetEmbedUrl(asset.Url)" title="Shop Video" allowfullscreen style="pointer-events: none;"></iframe>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="ratio ratio-16x9">
+                                <video muted playsinline style="width:100%; height:100%; border-radius: 8px; object-fit: cover;">
+                                    <source src="@asset.Url" type="video/mp4">
+                                </video>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <img src="@asset.Url" alt="Shop Photo" loading="lazy" />
+                    }
+                </div>
+            }
+        </div>
+    }
+</section>
+
+@* --- LIGHTBOX OVERLAY --- *@
+@if (isLightboxOpen && selectedAsset != null)
+{
+    <div class="lightbox-overlay" @onclick="CloseLightbox">
+        <div class="lightbox-content" @onclick:stopPropagation>
+            <button class="lightbox-close" @onclick="CloseLightbox">&times;</button>
+
+            @if (selectedAsset.MediaType == "Video")
+            {
+                @if (selectedAsset.Url.Contains("youtube.com") || selectedAsset.Url.Contains("youtu.be"))
+                {
+                    <div class="ratio ratio-16x9" style="width: 80vw; max-width: 1000px;">
+                        <iframe src="@GetEmbedUrl(selectedAsset.Url, true)" title="Shop Video" allowfullscreen allow="autoplay"></iframe>
+                    </div>
+                }
+                else
+                {
+                    <video controls autoplay playsinline style="max-width: 90vw; max-height: 80vh; border-radius: 8px;">
+                        <source src="@selectedAsset.Url" type="video/mp4">
+                    </video>
+                }
+            }
+            else
+            {
+                <img src="@selectedAsset.Url" alt="Zoomed Shop Photo" style="max-width: 90vw; max-height: 85vh; object-fit: contain; border-radius: 4px;" />
+            }
+        </div>
+    </div>
+}
+
 <style>
-    /* --- MOBILE DEFAULT (iPhone 6s / Small Screens) --- */
+    /* --- LIGHTBOX STYLES --- */
+    .lightbox-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        animation: fadeIn 0.3s;
+    }
+
+    .lightbox-content {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: -50px;
+        right: 0;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 3rem;
+        cursor: pointer;
+    }
+
+    /* --- SHOP SHOWCASE GRID --- */
+    .showcase-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+
+    .showcase-card {
+        border-radius: 8px;
+        overflow: hidden;
+        background: #1a1a1a;
+        transition: transform 0.3s;
+    }
+
+        .showcase-card:hover {
+            transform: scale(1.02);
+        }
+
+        .showcase-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+    @@media (max-width: 992px) {
+        .showcase-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .showcase-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .showcase-card img {
+            height: 180px;
+        }
+
+        .lightbox-close {
+            top: -40px;
+            right: 10px;
+        }
+    }
+
+    /* --- TEAMS STYLES (Your Original) --- */
     .teams-wrapper {
         display: flex;
-        flex-wrap: wrap; /* Allow items to wrap */
-        justify-content: center; /* Center items in the grid */
-        gap: 20px 15px; /* Vertical gap 20px, Horizontal 15px */
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px 15px;
         padding: 10px 10px;
     }
 
@@ -124,7 +261,6 @@
         text-align: center;
         text-decoration: none;
         color: inherit;
-        transition: transform 0.3s ease;
     }
 
     .logo-wrapper img {
@@ -132,7 +268,6 @@
         height: 80px;
         object-fit: contain;
         filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
-        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .team-name {
@@ -140,41 +275,17 @@
         font-weight: bold;
         font-size: 0.8rem;
         color: inherit;
-        transition: color 0.3s;
-        /* --- Allow text wrapping for long names --- */
         white-space: normal;
         line-height: 1.1;
     }
 
-    /* --- DESKTOP BREAKPOINT --- */
-    @@media (min-width: 992px) {
-        .teams-wrapper {
-            /* Keep centered layout but with larger gaps */
-            gap: 40px 25px;
-            max-width: 1200px;
-            margin: 0 auto;
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
         }
 
-        .team-item {
-            width: 120px;
-        }
-
-        .logo-wrapper img {
-            height: 120px;
-            max-width: 120px;
-        }
-
-        .team-name {
-            font-size: 1rem;
-            white-space: normal;
-        }
-        /* Hover Effects */
-        .team-item:hover .logo-wrapper img {
-            transform: scale(1.15);
-        }
-
-        .team-item:hover .team-name {
-            color: #ffc107;
+        to {
+            opacity: 1;
         }
     }
 </style>
@@ -185,41 +296,60 @@
     private System.Threading.Timer? _timer;
     private int _currentImageIndex = 0;
 
-    private List<string> _heroImages = new List<string>
-    {
-        "https://m.media-amazon.com/images/I/71izjNHcVhL._AC_SL1500_.jpg",
-        "https://cdn.nba.com/manage/2025/10/f7f39c27-8107-478a-bab8-f82de7005235.jpg?w=735&h=413",
-        "https://www.nflshop.com/content/ws/all/42df8aac-4fc9-453f-a56f-e1a46b4af334__1200X980.jpg",
-        "https://i.pinimg.com/1200x/18/45/7d/18457dd084412fe23d647327f14a6435.jpg",
-        "https://www.nflshop.com/content/ws/all/a6ff99a0-e81b-4001-90a3-cc41e7dca58c__2400X900.jpg",
-        "https://www.nflshop.com/content/ws/all/7047a40b-c1dc-48bd-80d8-8441d6f35292__1200X980.jpg"
-    };
-    private string CurrentImageUrl => _heroImages[_currentImageIndex];
+    private List<string> _heroImages = new();
+    private string currentHeroUrl => _heroImages.Any() ? _heroImages[_currentImageIndex] : "";
+    private List<MarketingAsset> showcaseAssets;
+
+    // Lightbox State
+    private bool isLightboxOpen = false;
+    private MarketingAsset? selectedAsset;
 
     protected override async Task OnInitializedAsync()
     {
-        topTeams = (await TeamService.GetHomeDisplayTeamsAsync())
-                    .Take(14)
-                    .ToList();
-
-        // --- FIX: Use ProductService to get fresh featured items ---
+        topTeams = (await TeamService.GetHomeDisplayTeamsAsync()).Take(14).ToList();
         featuredProducts = await ProductService.GetFeaturedProductsAsync();
+
+        var banners = await MarketingService.GetAssetsBySectionAsync("HeroBanner");
+        if (banners.Any()) _heroImages = banners.Select(b => b.Url).ToList();
+        else _heroImages.Add("https://m.media-amazon.com/images/I/71izjNHcVhL._AC_SL1500_.jpg");
+
+        showcaseAssets = await MarketingService.GetAssetsBySectionAsync("ShopShowcase");
 
         _timer = new System.Threading.Timer(ChangeImage, null, 0, 3000);
     }
 
     private void ChangeImage(object? state)
     {
-        _currentImageIndex++;
-        if (_currentImageIndex >= _heroImages.Count)
+        if (_heroImages.Count > 1)
         {
-            _currentImageIndex = 0;
+            _currentImageIndex = (_currentImageIndex + 1) % _heroImages.Count;
+            InvokeAsync(StateHasChanged);
         }
-        InvokeAsync(StateHasChanged);
     }
 
-    public void Dispose()
+    private void OpenLightbox(MarketingAsset asset)
     {
-        _timer?.Dispose();
+        selectedAsset = asset;
+        isLightboxOpen = true;
     }
+
+    private void CloseLightbox()
+    {
+        isLightboxOpen = false;
+        selectedAsset = null;
+    }
+
+    private string GetEmbedUrl(string url, bool autoplay = false)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return "";
+        string videoId = "";
+
+        if (url.Contains("youtube.com/watch?v=")) videoId = url.Split("v=")[1].Split("&")[0];
+        else if (url.Contains("youtu.be/")) videoId = url.Split("youtu.be/")[1];
+        else return url;
+
+        return $"https://www.youtube.com/embed/{videoId}{(autoplay ? "?autoplay=1" : "")}";
+    }
+
+    public void Dispose() => _timer?.Dispose();
 }

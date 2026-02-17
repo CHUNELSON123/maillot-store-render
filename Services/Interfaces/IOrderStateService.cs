@@ -11,9 +11,13 @@ namespace MaillotStore.Services.Interfaces
         void SetOrder(Order order);
         void ResetOrder();
 
-        // --- ADDED THESE METHODS ---
+        // --- STAGING METHODS ---
         void StageOrder(Order order);
         Order? GetStagedOrder();
+
+        // --- ADDED: Missing method to fix Checkout error ---
+        void ClearStagedOrder();
+        // --------------------------------------------------
 
         event Action? OnOrderPlaced;
         void NotifyOrderPlaced();

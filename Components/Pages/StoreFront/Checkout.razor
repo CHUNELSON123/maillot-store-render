@@ -16,9 +16,13 @@
 @inject IOrderStateService OrderStateService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<ApplicationUser> UserManager
-@* --- ADDED: Inject CartService to talk to DB --- *@
 @inject ICartService CartService
-@* --------------------------------------------- *@
+@* --- NEW INJECTIONS FOR PAYMENT --- *@
+@inject NotchPayService NotchPayService
+@inject IConfiguration Configuration
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+@inject ILogger<Checkout> Logger
+@* ---------------------------------- *@
 @implements IDisposable
 @rendermode InteractiveServer
 
@@ -116,14 +120,38 @@
             <div class="mb-3">
                 <textarea class="form-control form-control-dark" rows="4" placeholder="Message (Optional)" @bind="optionalMessage"></textarea>
             </div>
+
+            @* --- Payment Method Selection --- *@
+            <h4 class="mt-4 mb-3">Payment Method</h4>
+            <div class="payment-methods mb-4">
+                <div class="form-check p-3 mb-2" style="border: 1px solid #444; border-radius: 5px; background-color: rgba(255,255,255,0.05);">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="payOnline"
+                           checked="@(paymentMethod == "NotchPay")"
+                           @onchange='() => paymentMethod = "NotchPay"'>
+                    <label class="form-check-label text-white" for="payOnline">
+                        <strong>Pay Online (Instant)</strong> <br />
+                        <small class="text-muted">MTN MoMo, Orange Money, Visa</small>
+                    </label>
+                </div>
+
+                <div class="form-check p-3" style="border: 1px solid #444; border-radius: 5px; background-color: rgba(255,255,255,0.05);">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="payCod"
+                           checked="@(paymentMethod == "CashOnDelivery")"
+                           @onchange='() => paymentMethod = "CashOnDelivery"'>
+                    <label class="form-check-label text-white" for="payCod">
+                        <strong>WhatsApp / Cash on Delivery</strong> <br />
+                        <small class="text-muted">Order via WhatsApp and pay later.</small>
+                    </label>
+                </div>
+            </div>
         </div>
 
         @* --- CHECKOUT BUTTON --- *@
         <div class="d-grid gap-2 mt-4">
             <button class="btn btn-lg btn-success"
                     disabled="@(!orderItems.Any() || string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(customerPhone) || string.IsNullOrWhiteSpace(customerAddress))"
-                    @onclick="CheckoutViaWhatsApp">
-                Check Out Via WhatsApp
+                    @onclick="PlaceOrder">
+                @(paymentMethod == "NotchPay" ? $"Pay {Subtotal:N0} FCFA Now" : "Check Out Via WhatsApp")
             </button>
         </div>
     </div>
@@ -138,6 +166,10 @@
     private string customerAddress = string.Empty;
     private string optionalMessage = string.Empty;
 
+    // --- ADDED: Payment Method Variable ---
+    private string paymentMethod = "NotchPay";
+    // --------------------------------------
+
     private List<string> availableSizes = new() { "S", "M", "L", "XL", "XXL" };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -147,34 +179,26 @@
             var stagedItem = OrderStateService.GetStagedOrder();
             if (stagedItem != null && stagedItem.OrderItems != null && stagedItem.OrderItems.Any())
             {
-                // This is a "Buy Now" direct purchase
                 orderItems = stagedItem.OrderItems.ToList();
             }
             else
             {
-                // Load directly from CartService (Database)
-                // This might be empty initially if the cookie hasn't loaded yet
                 orderItems = CartService.GetCartItems();
             }
 
-            // --- FIXED: Subscribe to the specific handler ---
             CartService.OnChange += HandleCartChanged;
-            // ------------------------------------------------
-
             StateHasChanged();
         }
     }
 
-    // --- NEW METHOD: Handles the delayed cookie load ---
     private void HandleCartChanged()
     {
-        // When the cookie finally loads, or the cart updates, re-fetch from DB
         orderItems = CartService.GetCartItems();
         InvokeAsync(StateHasChanged);
     }
-    // --------------------------------------------------
 
-    private async Task CheckoutViaWhatsApp()
+    // --- REFACTORED: Combined Logic for Payment & WhatsApp ---
+    private async Task PlaceOrder()
     {
         var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to place this order?");
         if (!confirmed) return;
@@ -187,16 +211,20 @@
             return;
         }
 
-        // 2. Prepare Items
+        // Use a fresh context for saving the order to avoid conflict
+        using var context = DbFactory.CreateDbContext();
+
+        // 1. Prepare Items for DB
         var orderItemsForDb = new List<OrderItem>();
         foreach (var item in orderItems)
         {
-            var productFromDb = await DbContext.Products.FindAsync(item.Product.ProductId);
+            // Attach to current context to avoid tracking errors
+            var productFromDb = await context.Products.FindAsync(item.Product.ProductId);
             if (productFromDb != null)
             {
                 orderItemsForDb.Add(new OrderItem
                 {
-                    Product = productFromDb,
+                    Product = productFromDb, // Use the instance from THIS context
                     Quantity = item.Quantity,
                     Price = item.Price,
                     Size = item.Size,
@@ -206,13 +234,13 @@
             }
         }
 
-        // 3. Commission Logic
-        var commissionSetting = await DbContext.CommissionSettings.FirstOrDefaultAsync();
+        // 2. Commission Logic
+        var commissionSetting = await context.CommissionSettings.FirstOrDefaultAsync();
         if (commissionSetting == null)
         {
             commissionSetting = new CommissionSetting { CurrentRate = 0.07m };
-            DbContext.CommissionSettings.Add(commissionSetting);
-            await DbContext.SaveChangesAsync();
+            context.CommissionSettings.Add(commissionSetting);
+            await context.SaveChangesAsync();
         }
 
         decimal orderCommission = 0;
@@ -234,7 +262,7 @@
         bool hasReferralCode = !string.IsNullOrEmpty(referralCode);
         if (hasReferralCode) orderCommission = Subtotal * commissionSetting.CurrentRate;
 
-        // 4. Create Order
+        // 3. Create Order
         var order = new Order
         {
             CustomerName = customerName,
@@ -247,73 +275,102 @@
             Status = "Pending",
             CommissionAmount = orderCommission,
             OptionalMessage = string.IsNullOrWhiteSpace(optionalMessage) ? "" : optionalMessage,
-            IsVisibleToInfluencer = hasReferralCode
+            IsVisibleToInfluencer = hasReferralCode,
+
+            // --- PAYMENT FIELDS ---
+            PaymentMethod = paymentMethod,
+            PaymentStatus = "Pending",
+            PaymentReference = $"ORD-{DateTime.Now.Ticks}-{new Random().Next(1000, 9999)}"
         };
-        DbContext.Orders.Add(order);
-        await DbContext.SaveChangesAsync();
+
+        context.Orders.Add(order);
+        await context.SaveChangesAsync();
         OrderStateService.NotifyOrderPlaced();
 
-        // 5. Build WhatsApp Message
-        var messageBuilder = new StringBuilder();
-        messageBuilder.AppendLine("Hello Maillot Store,");
-        messageBuilder.AppendLine();
-        messageBuilder.AppendLine($"An order has been placed (Order ID: {order.Id}):");
-        messageBuilder.AppendLine($"  Name: {customerName}");
-        messageBuilder.AppendLine($"  Phone: {customerPhone}");
-        messageBuilder.AppendLine($"  Address: {customerAddress}");
+        Logger.LogInformation($"Order {order.Id} placed with reference {order.PaymentReference}. Method: {paymentMethod}");
 
-        if (!string.IsNullOrWhiteSpace(optionalMessage))
+        // --- BRANCHING LOGIC ---
+        if (paymentMethod == "NotchPay")
         {
-            messageBuilder.AppendLine($"  Message: {optionalMessage}");
+            // >>> OPTION A: PAY ONLINE <<<
+            var callbackUrl = NavigationManager.ToAbsoluteUri($"/payment-callback?reference={order.PaymentReference}").ToString();
+            var email = "customer@maillotstore.store"; // Fallback email
+
+            Logger.LogInformation($"Initializing NotchPay for {order.PaymentReference} with callback {callbackUrl}");
+
+            var initResponse = await NotchPayService.InitializePaymentAsync(order.TotalAmount, email, order.PaymentReference, callbackUrl);
+
+            if (initResponse != null && !string.IsNullOrEmpty(initResponse.AuthorizationUrl))
+            {
+                CartService.ClearCart();
+                OrderStateService.ClearStagedOrder();
+                Logger.LogInformation($"Redirecting to NotchPay: {initResponse.AuthorizationUrl}");
+                NavigationManager.NavigateTo(initResponse.AuthorizationUrl);
+            }
+            else
+            {
+                Logger.LogError("NotchPay initialization failed: Response was null or AuthURL was empty.");
+                await JSRuntime.InvokeVoidAsync("alert", "Could not initialize payment. Please try again or use WhatsApp.");
+            }
         }
-
-        messageBuilder.AppendLine();
-        messageBuilder.AppendLine("  Order Details:");
-
-        int itemNumber = 1;
-        foreach (var item in orderItems)
+        else
         {
-            messageBuilder.Append($"{itemNumber}. {item.Product.Name} (x{item.Quantity}) - Size: {item.Size}");
-            if (!string.IsNullOrEmpty(item.CustomName)) messageBuilder.Append($" - Name: {item.CustomName}");
-            if (item.CustomNumber.HasValue) messageBuilder.Append($" - Number: {item.CustomNumber}");
+            // >>> OPTION B: WHATSAPP (Original Logic) <<<
 
-            messageBuilder.AppendLine($" – FCFA {item.Price.ToString("N0")} XAF");
-            string productUrl = $"{NavigationManager.BaseUri}product/{item.Product.ProductId}";
-            messageBuilder.AppendLine($"    Link: {productUrl}");
+            // Build WhatsApp Message
+            var messageBuilder = new StringBuilder();
+            messageBuilder.AppendLine("Hello Maillot Store,");
+            messageBuilder.AppendLine();
+            messageBuilder.AppendLine($"An order has been placed (Order ID: {order.Id}):");
+            messageBuilder.AppendLine($"  Name: {customerName}");
+            messageBuilder.AppendLine($"  Phone: {customerPhone}");
+            messageBuilder.AppendLine($"  Address: {customerAddress}");
+            if (!string.IsNullOrWhiteSpace(optionalMessage)) messageBuilder.AppendLine($"  Message: {optionalMessage}");
+            messageBuilder.AppendLine();
+            messageBuilder.AppendLine("  Order Details:");
 
-            itemNumber++;
+            int itemNumber = 1;
+            foreach (var item in orderItems)
+            {
+                messageBuilder.Append($"{itemNumber}. {item.Product.Name} (x{item.Quantity}) - Size: {item.Size}");
+                if (!string.IsNullOrEmpty(item.CustomName)) messageBuilder.Append($" - Name: {item.CustomName}");
+                if (item.CustomNumber.HasValue) messageBuilder.Append($" - Number: {item.CustomNumber}");
+                messageBuilder.AppendLine($" – FCFA {item.Price.ToString("N0")} XAF");
+                string productUrl = $"{NavigationManager.BaseUri}product/{item.Product.ProductId}";
+                messageBuilder.AppendLine($"    Link: {productUrl}");
+                itemNumber++;
+            }
+
+            messageBuilder.AppendLine();
+            messageBuilder.AppendLine($"  Total: FCFA {Subtotal.ToString("N0")} XAF");
+            messageBuilder.AppendLine("Thank you.");
+
+            // Send to WhatsApp
+            var adminSetting = await context.AdminSettings.FirstOrDefaultAsync(s => s.Key == "AdminWhatsAppNumber");
+            if (adminSetting == null || string.IsNullOrWhiteSpace(adminSetting.Value))
+            {
+                Logger.LogError("AdminWhatsAppNumber not found in database settings.");
+                await JSRuntime.InvokeVoidAsync("alert", "Store contact number not configured.");
+                return;
+            }
+
+            var adminPhoneNumber = adminSetting.Value.Replace("+", "").Replace(" ", "");
+            if (!adminPhoneNumber.StartsWith("237")) adminPhoneNumber = "237" + adminPhoneNumber;
+
+            string whatsappUrl = $"https://wa.me/{adminPhoneNumber}?text={Uri.EscapeDataString(messageBuilder.ToString())}";
+
+            await JSRuntime.InvokeVoidAsync("open", whatsappUrl, "_blank");
+
+            // Clear Data
+            CartService.ClearCart();
+            OrderStateService.ClearStagedOrder();
+            NavigationManager.NavigateTo("/shop");
         }
-
-        messageBuilder.AppendLine();
-        messageBuilder.AppendLine($"  Total: FCFA {Subtotal.ToString("N0")} XAF");
-        messageBuilder.AppendLine("Thank you.");
-
-        // 6. Send to WhatsApp
-        var adminSetting = await DbContext.AdminSettings.FirstOrDefaultAsync(s => s.Key == "AdminWhatsAppNumber");
-        if (adminSetting == null || string.IsNullOrWhiteSpace(adminSetting.Value))
-        {
-            await JSRuntime.InvokeVoidAsync("alert", "Store contact number not configured.");
-            return;
-        }
-
-        var adminPhoneNumber = adminSetting.Value.Replace("+", "").Replace(" ", "");
-        if (!adminPhoneNumber.StartsWith("237")) adminPhoneNumber = "237" + adminPhoneNumber;
-
-        string whatsappUrl = $"https://wa.me/{adminPhoneNumber}?text={Uri.EscapeDataString(messageBuilder.ToString())}";
-
-        await JSRuntime.InvokeVoidAsync("open", whatsappUrl, "_blank");
-
-        // Clear the Database Cart
-        CartService.ClearCart();
-
-        NavigationManager.NavigateTo("/shop");
     }
 
     private void RemoveFromCart(OrderItem item)
     {
         CartService.RemoveFromCart(item);
-        // Note: We don't need to manually update orderItems here because RemoveFromCart fires OnChange,
-        // which triggers HandleCartChanged automatically.
     }
 
     private void UpdateQuantity(OrderItem item, int quantity)
@@ -332,8 +389,6 @@
 
     public void Dispose()
     {
-        // --- FIXED: Unsubscribe from the correct handler ---
         CartService.OnChange -= HandleCartChanged;
-        // -------------------------------------------------
     }
 }
