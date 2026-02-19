@@ -67,17 +67,28 @@ namespace MaillotStore.Services.Implementations
                     var root = doc.RootElement;
 
                     string? authUrl = null;
+                    string? notchPayRef = null;
 
+                    // 1. Try to get Authorization URL
                     if (root.TryGetProperty("authorization_url", out var urlProp))
                         authUrl = urlProp.GetString();
                     else if (root.TryGetProperty("transaction", out var transProp) && transProp.TryGetProperty("authorization_url", out var transUrl))
                         authUrl = transUrl.GetString();
-                    else if (root.TryGetProperty("payment", out var payProp) && payProp.TryGetProperty("authorization_url", out var payUrl))
-                        authUrl = payUrl.GetString();
+
+                    // 2. CRITICAL: Capture the REAL NotchPay Reference (trx...)
+                    if (root.TryGetProperty("transaction", out var tr) && tr.TryGetProperty("reference", out var refProp))
+                    {
+                        notchPayRef = refProp.GetString();
+                    }
 
                     if (!string.IsNullOrEmpty(authUrl))
                     {
-                        return new NotchPayInitResponse { AuthorizationUrl = authUrl, Reference = reference };
+                        // Return the NotchPay reference if found, otherwise fallback to the merchant one
+                        return new NotchPayInitResponse
+                        {
+                            AuthorizationUrl = authUrl,
+                            Reference = notchPayRef ?? reference
+                        };
                     }
                 }
 
@@ -97,15 +108,14 @@ namespace MaillotStore.Services.Implementations
 
             try
             {
+                // NotchPay expects the 'trx...' reference here, NOT 'ORD...'
                 var response = await _httpClient.GetAsync($"/payments/{reference}");
 
-                // --- CRITICAL FIX: Handle 404 (Not Found) as a Cancellation ---
                 if (response.StatusCode == HttpStatusCode.NotFound)
                 {
                     _logger.LogWarning($"Payment reference {reference} not found (404). Treating as canceled.");
                     return "canceled";
                 }
-                // -------------------------------------------------------------
 
                 var content = await response.Content.ReadAsStringAsync();
                 _logger.LogInformation($"NotchPay Verify Response ({response.StatusCode}): {content}");

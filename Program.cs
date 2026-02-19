@@ -29,6 +29,7 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IOrderStateService, OrderStateService>();
 builder.Services.AddScoped<ReferralService>();
 builder.Services.AddScoped<StateContainer>();
+builder.Services.AddHttpClient<WhatsAppService>();
 
 builder.Services.AddScoped<SearchStateService>();
 builder.Services.AddScoped<ITeamService, TeamService>();

@@ -26,8 +26,9 @@ namespace MaillotStore.Services.Implementations
         {
             if (_cloudinary == null) throw new Exception("Cloudinary not configured in Render Settings.");
 
-            // 1. Resize locally to speed up upload (Keep your existing resizing logic!)
-            var resizedImage = await file.RequestImageFileAsync("image/jpeg", 1000, 1000);
+            // 1. Resize locally to WebP (Drastically speeds up upload and saves space)
+            // 800x800 is the standard size for storefront images
+            var resizedImage = await file.RequestImageFileAsync("image/webp", 800, 800);
 
             // 2. Read stream
             using var stream = resizedImage.OpenReadStream(20 * 1024 * 1024);
@@ -35,14 +36,24 @@ namespace MaillotStore.Services.Implementations
             // 3. Upload to Cloud
             var uploadParams = new ImageUploadParams()
             {
-                File = new FileDescription(file.Name, stream),
-                Transformation = new Transformation().Quality("auto").FetchFormat("auto")
+                File = new FileDescription(file.Name, stream)
             };
 
             var uploadResult = await _cloudinary.UploadAsync(uploadParams);
 
-            // 4. Return the Cloud URL (This never gets deleted)
-            return uploadResult.SecureUrl.ToString();
+            if (uploadResult.Error != null)
+            {
+                throw new Exception($"Cloudinary Upload Error: {uploadResult.Error.Message}");
+            }
+
+            // 4. Generate the OPTIMIZED Delivery URL
+            // This forces Cloudinary to compress the image on-the-fly when users load your site
+            var optimizedUrl = _cloudinary.Api.UrlImgUp
+                .Secure(true)
+                .Transform(new Transformation().Quality("auto").FetchFormat("auto"))
+                .BuildUrl(uploadResult.PublicId);
+
+            return optimizedUrl;
         }
     }
 }
