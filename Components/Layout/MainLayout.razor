@@ -2,7 +2,9 @@
 @using MaillotStore.Services.Interfaces
 @using MaillotStore.Data
 @using MaillotStore.Components.Shared
+@using System.Timers
 @inherits LayoutComponentBase
+@implements IDisposable
 @inject ISearchStateService SearchState
 @inject ReferralService ReferralService
 @inject NavigationManager NavManager
@@ -20,9 +22,17 @@
 
             @* --- DESKTOP MENU --- *@
             <div class="collapse navbar-collapse" id="main-nav-desktop">
-                <div class="search-container mx-auto d-none d-lg-block" style="border-radius: 500px;">
+
+                @* --- DESKTOP SEARCH BAR WITH "CLEAR" X BUTTON --- *@
+                <div class="search-container mx-auto d-none d-lg-block position-relative" style="border-radius: 500px;">
                     <input type="text" class="form-control search-bar" placeholder="Search for jerseys..."
-                           value="@searchTerm" @oninput="PerformSearch" />
+                           @bind="SearchTerm" @bind:event="oninput" style="padding-right: 35px;" />
+                    @if (!string.IsNullOrEmpty(SearchTerm))
+                    {
+                        <i class="fas fa-times position-absolute"
+                           style="right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: gray;"
+                           @onclick="ClearSearch"></i>
+                    }
                 </div>
 
                 <ul class="navbar-nav ms-auto">
@@ -86,7 +96,6 @@
                             </li>
                         </Authorized>
                         <NotAuthorized>
-                            @* Only show Login if the user is NOT referred *@
                             @if (!isReferred)
                             {
                                 <li class="nav-item"><a class="nav-link" href="/Account/Login">Login</a></li>
@@ -108,12 +117,21 @@
         </div>
     </nav>
 
+    @* --- MOBILE SEARCH BAR --- *@
     @if (showMobileSearch)
     {
-        <div class="search-container-mobile d-lg-none px-3 py-2">
-            <input type="text" class="form-control search-bar" placeholder="Search for jerseys..."
-                   value="@searchTerm" @oninput="PerformSearch" />
-            <button class="btn-close" @onclick="ToggleMobileSearch"></button>
+        <div class="search-container-mobile d-lg-none px-3 py-2 d-flex align-items-center gap-2">
+            <div class="position-relative flex-grow-1">
+                <input type="text" class="form-control search-bar w-100" placeholder="Search for jerseys..."
+                       @bind="SearchTerm" @bind:event="oninput" style="padding-right: 35px;" />
+                @if (!string.IsNullOrEmpty(SearchTerm))
+                {
+                    <i class="fas fa-times position-absolute"
+                       style="right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: gray;"
+                       @onclick="ClearSearch"></i>
+                }
+            </div>
+            <button class="btn-close btn-close-white" @onclick="ToggleMobileSearch"></button>
         </div>
     }
 </header>
@@ -209,11 +227,26 @@
 @code {
     private bool collapseNavMenu = true;
     private bool showMobileSearch = false;
-    private string searchTerm = string.Empty;
     private bool isReferred;
     private List<League> leaguesList = new();
     private bool showMobileClubMenu = false;
     private int expandedLeagueId = 0;
+
+    // --- DEBOUNCE TIMER LOGIC ---
+    private Timer? searchTimer;
+    private string _searchTerm = string.Empty;
+
+    public string SearchTerm
+    {
+        get => _searchTerm;
+        set
+        {
+            _searchTerm = value;
+
+            searchTimer?.Stop();
+            searchTimer?.Start();
+        }
+    }
 
     private string NavMenuCssClass => collapseNavMenu ? "sidenav" : "sidenav open";
 
@@ -221,17 +254,32 @@
     {
         isReferred = ReferralService.IsReferred();
         leaguesList = await LeagueService.GetAllLeaguesAsync();
+
+        searchTimer = new Timer(400);
+        searchTimer.AutoReset = false;
+        searchTimer.Elapsed += ExecuteSearch;
+    }
+
+    private void ExecuteSearch(object? sender, ElapsedEventArgs e)
+    {
+        InvokeAsync(() =>
+        {
+            SearchState.SetSearchTerm(SearchTerm);
+
+            if (!NavManager.Uri.Contains("/shop", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(SearchTerm))
+            {
+                NavManager.NavigateTo("/shop");
+            }
+        });
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            // --- 1. GUEST CART LOGIC (Isolated Try/Catch) ---
             try
             {
                 var guestId = await JSRuntime.InvokeAsync<string>("cookieHelper.getCookie", "GuestId");
-
                 if (string.IsNullOrEmpty(guestId))
                 {
                     guestId = Guid.NewGuid().ToString();
@@ -241,33 +289,33 @@
             }
             catch (Exception)
             {
-                // Fallback if JS fails
                 CartService.SetGuestId(Guid.NewGuid().ToString());
             }
 
-            // --- 2. REFERRAL RECOVERY LOGIC (Isolated Try/Catch) ---
             try
             {
-                // Only check if we don't already have the code in memory
                 if (!ReferralService.IsReferred())
                 {
-                    // This cookie name MUST match the one in ReferralService.cs
                     var cookieRefCode = await JSRuntime.InvokeAsync<string>("cookieHelper.getCookie", "MaillotStoreReferralCode");
-
                     if (!string.IsNullOrEmpty(cookieRefCode))
                     {
-                        // Found it! Restore the session
                         ReferralService.SetReferralCode(cookieRefCode);
                         isReferred = true;
-                        StateHasChanged(); // Update UI to remove "Login" button if needed
+                        StateHasChanged();
                     }
                 }
             }
             catch (Exception)
             {
-                // Ignore errors here; referral just won't be recovered
             }
         }
+    }
+
+    // --- NEW: Method to clear the search instantly ---
+    private void ClearSearch()
+    {
+        SearchTerm = string.Empty;
+        SearchState.SetSearchTerm(string.Empty);
     }
 
     private void ToggleNavMenu()
@@ -280,6 +328,12 @@
     {
         showMobileSearch = !showMobileSearch;
         if (collapseNavMenu == false) collapseNavMenu = true;
+
+        // --- FIX: Clear search if mobile search bar is closed ---
+        if (!showMobileSearch)
+        {
+            ClearSearch();
+        }
     }
 
     private void CloseNavMenu()
@@ -287,17 +341,6 @@
         collapseNavMenu = true;
         showMobileClubMenu = false;
         expandedLeagueId = 0;
-    }
-
-    private void PerformSearch(ChangeEventArgs e)
-    {
-        searchTerm = e.Value?.ToString() ?? string.Empty;
-        SearchState.SetSearchTerm(searchTerm);
-
-        if (!NavManager.Uri.EndsWith("/shop", StringComparison.OrdinalIgnoreCase))
-        {
-            NavManager.NavigateTo("/shop");
-        }
     }
 
     private void ToggleMobileClubMenu()
@@ -311,5 +354,10 @@
             expandedLeagueId = 0;
         else
             expandedLeagueId = leagueId;
+    }
+
+    public void Dispose()
+    {
+        searchTimer?.Dispose();
     }
 }
