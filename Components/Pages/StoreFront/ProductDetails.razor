@@ -1,4 +1,5 @@
 ﻿@page "/product/{ProductId:int}"
+@page "/product/{ProductId:int}/{Slug}"
 @using MaillotStore.Components.Account.Shared
 @using MaillotStore.Data
 @using MaillotStore.Models
@@ -19,9 +20,27 @@
     {
         <meta property="og:title" content="@product.Name" />
         <meta property="og:description" content="@(product.Description ?? "Check out this amazing jersey!")" />
+        <meta name="description" content="@(product.Description ?? "Check out this amazing jersey!")" />
         <meta property="og:image" content="@(NavigationManager.ToAbsoluteUri(product.ImageUrl ?? ""))" />
         <meta property="og:url" content="@(NavigationManager.Uri)" />
         <meta property="og:type" content="website" />
+
+        <script type="application/ld+json">
+            {
+                "@@context": "https://schema.org/",
+                "@@type": "Product",
+                "name": "@product.Name",
+                "image": "@(NavigationManager.ToAbsoluteUri(product.ImageUrl ?? ""))",
+                "description": "@(product.Description ?? product.Name)",
+                "offers": {
+                    "@@type": "Offer",
+                    "url": "@NavigationManager.Uri",
+                    "priceCurrency": "XAF",
+                    "price": "@product.EffectivePrice",
+                    "availability": "@(product.Stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock")"
+                }
+            }
+        </script>
     }
 </HeadContent>
 
@@ -67,7 +86,7 @@
                             {
                                 <img src="@product.ImageUrl"
                                      class="img-thumbnail thumb-item @(currentImageUrl == product.ImageUrl ? "active" : "")"
-                                     alt="Main Thumbnail"
+                                     alt="@product.Name - Main Thumbnail"
                                      @onclick="() => ManualImageSelect(product.ImageUrl)">
                             }
 
@@ -77,7 +96,7 @@
                                 {
                                     <img src="@img.ImageUrl"
                                          class="img-thumbnail thumb-item @(currentImageUrl == img.ImageUrl ? "active" : "")"
-                                         alt="Gallery Image"
+                                         alt="@product.Name - Gallery Image"
                                          @onclick="() => ManualImageSelect(img.ImageUrl)">
                                 }
                             }
@@ -215,6 +234,9 @@
 @code {
     [Parameter]
     public int ProductId { get; set; }
+
+    [Parameter]
+    public string? Slug { get; set; }
 
     private Product? product;
     private List<Product> relatedProducts = new();
