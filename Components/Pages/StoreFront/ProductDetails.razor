@@ -113,12 +113,14 @@
                 <div class="pd-info-container">
                     <h1 class="pd-name">
                         @product.Name
+                        @* --- Temporarily hidden for Google Ads compliance ---
                         @if (!string.IsNullOrEmpty(product.Version))
                         {
                             <span class="version-pill @GetVersionClass(product.Version)" style="font-size: 0.4em; vertical-align: middle; margin-left: 10px;">
                                 @product.Version
                             </span>
                         }
+                        *@
                     </h1>
 
                     @* --- PRICE DISPLAY --- *@

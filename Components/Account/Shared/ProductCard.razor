@@ -13,13 +13,14 @@
             <img src="@Product.ImageUrl" class="card-img-top" alt="@Product.Name">
         </a>
 
-        @* --- VERSION BADGE (Top-Right) --- *@
+        @* --- VERSION BADGE (Top-Right) --- 
         @if (!string.IsNullOrEmpty(Product.Version))
         {
             <div class="version-badge @GetVersionClass(Product.Version)">
                 @Product.Version
             </div>
         }
+        *@
 
         @* --- SALE BADGE (Top-Left) --- *@
         @if (Product.HasActiveDiscount || Product.IsOnSale)
