@@ -12,13 +12,10 @@
     <base href="/" />
 
     <meta property="og:title" content="Maillot Store" />
-    <meta property="og:description" content="The best place to get your football jerseys in Cameroon." />
-    <meta property="og:description" content="The best place to get your football jerseys in Cameroon." />
-    <meta name="description" content="The best place to get your football jerseys in Cameroon." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="@NavigationManager.Uri" />
-
     <meta property="og:image" content="@NavigationManager.ToAbsoluteUri("Images/maillotstore-logo.jpeg")" />
+
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="css/admin.css" />
@@ -92,39 +89,39 @@
 </body>
 
 @code {
-        [CascadingParameter]
-        private HttpContext? HttpContext { get; set; }
+            [CascadingParameter]
+            private HttpContext? HttpContext { get; set; }
 
-        private IComponentRenderMode? RenderModeForPage =>
-                (HttpContext?.Request.Path.StartsWithSegments("/Account") ?? false)
-                ? null
-                : Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer;
+            private IComponentRenderMode? RenderModeForPage =>
+                            (HttpContext?.Request.Path.StartsWithSegments("/Account") ?? false)
+                            ? null
+                            : Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer;
 
-        protected override void OnInitialized()
-        {
-                var uri = new Uri(NavigationManager.Uri);
-                var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
-                var refCode = query["ref"];
+            protected override void OnInitialized()
+            {
+                        var uri = new Uri(NavigationManager.Uri);
+                        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+                        var refCode = query["ref"];
 
-                if (refCode is not null)
-                {
-                        // Case 1: User just clicked an Influencer Link
-                        ReferralService.SetReferralCodeFromQuery(refCode);
-                }
-                else
-                {
-                        // --- FIX: Case 2: User is returning directly (Cookie Recovery) ---
-                        // We read from HttpContext directly because IHttpContextAccessor is unreliable here
-                        // and this allows us to read HttpOnly cookies that JavaScript cannot see.
-                        if (HttpContext is not null &&
-                                HttpContext.Request.Cookies.TryGetValue("MaillotStoreReferralCode", out var cookieCode))
+                        if (refCode is not null)
                         {
-                                if (!string.IsNullOrEmpty(cookieCode))
-                                {
-                                        ReferralService.SetReferralCode(cookieCode);
-                                }
+                                    // Case 1: User just clicked an Influencer Link
+                                    ReferralService.SetReferralCodeFromQuery(refCode);
                         }
-                }
-        }
+                        else
+                        {
+                                    // --- FIX: Case 2: User is returning directly (Cookie Recovery) ---
+                                    // We read from HttpContext directly because IHttpContextAccessor is unreliable here
+                                    // and this allows us to read HttpOnly cookies that JavaScript cannot see.
+                                    if (HttpContext is not null &&
+                                            HttpContext.Request.Cookies.TryGetValue("MaillotStoreReferralCode", out var cookieCode))
+                                    {
+                                                if (!string.IsNullOrEmpty(cookieCode))
+                                                {
+                                                            ReferralService.SetReferralCode(cookieCode);
+                                                }
+                                    }
+                        }
+            }
 }
 </html>
