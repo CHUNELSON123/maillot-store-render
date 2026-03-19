@@ -110,9 +110,23 @@
             <div class="mb-3">
                 <input type="text" class="form-control form-control-dark" placeholder="Name (Required)" @bind="customerName">
             </div>
+
+            @* --- UPDATED PHONE INPUT --- *@
             <div class="mb-3">
-                <input type="text" class="form-control form-control-dark" placeholder="Phone Number (Required)" @bind="customerPhone">
+                <div class="input-group">
+                    <select class="form-select text-white" style="max-width: 160px; background-color: #212529; border-color: #444;" @bind="selectedCountryCode">
+                        @foreach (var country in allCountries)
+                        {
+                            <option value="@country.Code">@country.Flag @country.Code (@country.Name)</option>
+                        }
+                    </select>
+                    <input type="tel" class="form-control form-control-dark" placeholder="Phone Number (Required)"
+                           value="@phoneNumberInput"
+                           @oninput="HandlePhoneInput"
+                           pattern="[0-9]*" inputmode="numeric">
+                </div>
             </div>
+
             <div class="mb-3">
                 <input type="text" class="form-control form-control-dark" placeholder="Delivery Address (Required)" @bind="customerAddress">
             </div>
@@ -148,7 +162,7 @@
         @* --- CHECKOUT BUTTON --- *@
         <div class="d-grid gap-2 mt-4">
             <button class="btn btn-lg btn-success"
-                    disabled="@(!orderItems.Any() || string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(customerPhone) || string.IsNullOrWhiteSpace(customerAddress))"
+                    disabled="@(!orderItems.Any() || string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(phoneNumberInput) || string.IsNullOrWhiteSpace(customerAddress))"
                     @onclick="PlaceOrder">
                 @(paymentMethod == "NotchPay" ? $"Pay {Subtotal:N0} FCFA Now" : "Check Out Via WhatsApp")
             </button>
@@ -161,13 +175,259 @@
     private decimal Subtotal => orderItems.Sum(item => item.Price * item.Quantity);
 
     private string customerName = string.Empty;
-    private string customerPhone = string.Empty;
+    private string selectedCountryCode = "+237"; // Defaults to Cameroon
+    private string phoneNumberInput = string.Empty;
+    private string customerPhone => $"{selectedCountryCode}{phoneNumberInput}";
     private string customerAddress = string.Empty;
     private string optionalMessage = string.Empty;
 
     private string paymentMethod = "NotchPay";
 
     private List<string> availableSizes = new() { "S", "M", "L", "XL", "XXL" };
+
+    // Represents a country and its dialing code
+    private record CountryPhone(string Flag, string Code, string Name);
+
+    // Complete Global Country Phone Code List
+    private List<CountryPhone> allCountries = new()
+    {
+        new("🇨🇲", "+237", "Cameroon"), // Put Cameroon at the top for local convenience
+        new("🇦🇫", "+93", "Afghanistan"),
+        new("🇦🇱", "+355", "Albania"),
+        new("🇩🇿", "+213", "Algeria"),
+        new("🇦🇸", "+1", "American Samoa"),
+        new("🇦🇩", "+376", "Andorra"),
+        new("🇦🇴", "+244", "Angola"),
+        new("🇦🇮", "+1", "Anguilla"),
+        new("🇦🇬", "+1", "Antigua & Barbuda"),
+        new("🇦🇷", "+54", "Argentina"),
+        new("🇦🇲", "+374", "Armenia"),
+        new("🇦🇼", "+297", "Aruba"),
+        new("🇦🇺", "+61", "Australia"),
+        new("🇦🇹", "+43", "Austria"),
+        new("🇦🇿", "+994", "Azerbaijan"),
+        new("🇧🇸", "+1", "Bahamas"),
+        new("🇧🇭", "+973", "Bahrain"),
+        new("🇧🇩", "+880", "Bangladesh"),
+        new("🇧🇧", "+1", "Barbados"),
+        new("🇧🇾", "+375", "Belarus"),
+        new("🇧🇪", "+32", "Belgium"),
+        new("🇧🇿", "+501", "Belize"),
+        new("🇧🇯", "+229", "Benin"),
+        new("🇧🇲", "+1", "Bermuda"),
+        new("🇧🇹", "+975", "Bhutan"),
+        new("🇧🇴", "+591", "Bolivia"),
+        new("🇧🇦", "+387", "Bosnia & Herzegovina"),
+        new("🇧🇼", "+267", "Botswana"),
+        new("🇧🇷", "+55", "Brazil"),
+        new("🇮🇴", "+246", "British Indian Ocean Territory"),
+        new("🇻🇬", "+1", "British Virgin Islands"),
+        new("🇧🇳", "+673", "Brunei"),
+        new("🇧🇬", "+359", "Bulgaria"),
+        new("🇧🇫", "+226", "Burkina Faso"),
+        new("🇧🇮", "+257", "Burundi"),
+        new("🇰🇭", "+855", "Cambodia"),
+        new("🇨🇦", "+1", "Canada"),
+        new("🇨🇻", "+238", "Cape Verde"),
+        new("🇰🇾", "+1", "Cayman Islands"),
+        new("🇨🇫", "+236", "Central African Republic"),
+        new("🇹🇩", "+235", "Chad"),
+        new("🇨🇱", "+56", "Chile"),
+        new("🇨🇳", "+86", "China"),
+        new("🇨🇴", "+57", "Colombia"),
+        new("🇰🇲", "+269", "Comoros"),
+        new("🇨🇬", "+242", "Congo - Brazzaville"),
+        new("🇨🇩", "+243", "Congo - Kinshasa"),
+        new("🇨🇰", "+682", "Cook Islands"),
+        new("🇨🇷", "+506", "Costa Rica"),
+        new("🇨🇮", "+225", "Côte d’Ivoire"),
+        new("🇭🇷", "+385", "Croatia"),
+        new("🇨🇺", "+53", "Cuba"),
+        new("🇨🇼", "+599", "Curaçao"),
+        new("🇨🇾", "+357", "Cyprus"),
+        new("🇨🇿", "+420", "Czechia"),
+        new("🇩🇰", "+45", "Denmark"),
+        new("🇩🇯", "+253", "Djibouti"),
+        new("🇩🇲", "+1", "Dominica"),
+        new("🇩🇴", "+1", "Dominican Republic"),
+        new("🇪🇨", "+593", "Ecuador"),
+        new("🇪🇬", "+20", "Egypt"),
+        new("🇸🇻", "+503", "El Salvador"),
+        new("🇬🇶", "+240", "Equatorial Guinea"),
+        new("🇪🇷", "+291", "Eritrea"),
+        new("🇪🇪", "+372", "Estonia"),
+        new("🇸🇿", "+268", "Eswatini"),
+        new("🇪🇹", "+251", "Ethiopia"),
+        new("🇫🇰", "+500", "Falkland Islands"),
+        new("🇫🇴", "+298", "Faroe Islands"),
+        new("🇫🇯", "+679", "Fiji"),
+        new("🇫🇮", "+358", "Finland"),
+        new("🇫🇷", "+33", "France"),
+        new("🇬🇫", "+594", "French Guiana"),
+        new("🇵🇫", "+689", "French Polynesia"),
+        new("🇬🇦", "+241", "Gabon"),
+        new("🇬🇲", "+220", "Gambia"),
+        new("🇬🇪", "+995", "Georgia"),
+        new("🇩🇪", "+49", "Germany"),
+        new("🇬🇭", "+233", "Ghana"),
+        new("🇬🇮", "+350", "Gibraltar"),
+        new("🇬🇷", "+30", "Greece"),
+        new("🇬🇱", "+299", "Greenland"),
+        new("🇬🇩", "+1", "Grenada"),
+        new("🇬🇵", "+590", "Guadeloupe"),
+        new("🇬🇺", "+1", "Guam"),
+        new("🇬🇹", "+502", "Guatemala"),
+        new("🇬🇳", "+224", "Guinea"),
+        new("🇬🇼", "+245", "Guinea-Bissau"),
+        new("🇬🇾", "+592", "Guyana"),
+        new("🇭🇹", "+509", "Haiti"),
+        new("🇭🇳", "+504", "Honduras"),
+        new("🇭🇰", "+852", "Hong Kong SAR China"),
+        new("🇭🇺", "+36", "Hungary"),
+        new("🇮🇸", "+354", "Iceland"),
+        new("🇮🇳", "+91", "India"),
+        new("🇮🇩", "+62", "Indonesia"),
+        new("🇮🇷", "+98", "Iran"),
+        new("🇮🇶", "+964", "Iraq"),
+        new("🇮🇪", "+353", "Ireland"),
+        new("🇮🇱", "+972", "Israel"),
+        new("🇮🇹", "+39", "Italy"),
+        new("🇯🇲", "+1", "Jamaica"),
+        new("🇯🇵", "+81", "Japan"),
+        new("🇯🇴", "+962", "Jordan"),
+        new("🇰🇿", "+7", "Kazakhstan"),
+        new("🇰🇪", "+254", "Kenya"),
+        new("🇰🇮", "+686", "Kiribati"),
+        new("🇰🇼", "+965", "Kuwait"),
+        new("🇰🇬", "+996", "Kyrgyzstan"),
+        new("🇱🇦", "+856", "Laos"),
+        new("🇱🇻", "+371", "Latvia"),
+        new("🇱🇧", "+961", "Lebanon"),
+        new("🇱🇸", "+266", "Lesotho"),
+        new("🇱🇷", "+231", "Liberia"),
+        new("🇱🇾", "+218", "Libya"),
+        new("🇱🇮", "+423", "Liechtenstein"),
+        new("🇱🇹", "+370", "Lithuania"),
+        new("🇱🇺", "+352", "Luxembourg"),
+        new("🇲🇴", "+853", "Macao SAR China"),
+        new("🇲🇬", "+261", "Madagascar"),
+        new("🇲🇼", "+265", "Malawi"),
+        new("🇲🇾", "+60", "Malaysia"),
+        new("🇲🇻", "+960", "Maldives"),
+        new("🇲🇱", "+223", "Mali"),
+        new("🇲🇹", "+356", "Malta"),
+        new("🇲🇭", "+692", "Marshall Islands"),
+        new("🇲🇶", "+596", "Martinique"),
+        new("🇲🇷", "+222", "Mauritania"),
+        new("🇲🇺", "+230", "Mauritius"),
+        new("🇾🇹", "+262", "Mayotte"),
+        new("🇲🇽", "+52", "Mexico"),
+        new("🇫🇲", "+691", "Micronesia"),
+        new("🇲🇩", "+373", "Moldova"),
+        new("🇲🇨", "+377", "Monaco"),
+        new("🇲🇳", "+976", "Mongolia"),
+        new("🇲🇪", "+382", "Montenegro"),
+        new("🇲🇸", "+1", "Montserrat"),
+        new("🇲🇦", "+212", "Morocco"),
+        new("🇲🇿", "+258", "Mozambique"),
+        new("🇲🇲", "+95", "Myanmar (Burma)"),
+        new("🇳🇦", "+264", "Namibia"),
+        new("🇳🇷", "+674", "Nauru"),
+        new("🇳🇵", "+977", "Nepal"),
+        new("🇳🇱", "+31", "Netherlands"),
+        new("🇳🇨", "+687", "New Caledonia"),
+        new("🇳🇿", "+64", "New Zealand"),
+        new("🇳🇮", "+505", "Nicaragua"),
+        new("🇳🇪", "+227", "Niger"),
+        new("🇳🇬", "+234", "Nigeria"),
+        new("🇳🇺", "+683", "Niue"),
+        new("🇳🇫", "+672", "Norfolk Island"),
+        new("🇰🇵", "+850", "North Korea"),
+        new("🇲🇰", "+389", "North Macedonia"),
+        new("🇲🇵", "+1", "Northern Mariana Islands"),
+        new("🇳🇴", "+47", "Norway"),
+        new("🇴🇲", "+968", "Oman"),
+        new("🇵🇰", "+92", "Pakistan"),
+        new("🇵🇼", "+680", "Palau"),
+        new("🇵🇸", "+970", "Palestinian Territories"),
+        new("🇵🇦", "+507", "Panama"),
+        new("🇵🇬", "+675", "Papua New Guinea"),
+        new("🇵🇾", "+595", "Paraguay"),
+        new("🇵🇪", "+51", "Peru"),
+        new("🇵🇭", "+63", "Philippines"),
+        new("🇵🇳", "+870", "Pitcairn Islands"),
+        new("🇵🇱", "+48", "Poland"),
+        new("🇵🇹", "+351", "Portugal"),
+        new("🇵🇷", "+1", "Puerto Rico"),
+        new("🇶🇦", "+974", "Qatar"),
+        new("🇷🇪", "+262", "Réunion"),
+        new("🇷🇴", "+40", "Romania"),
+        new("🇷🇺", "+7", "Russia"),
+        new("🇷🇼", "+250", "Rwanda"),
+        new("🇼🇸", "+685", "Samoa"),
+        new("🇸🇲", "+378", "San Marino"),
+        new("🇸🇹", "+239", "São Tomé & Príncipe"),
+        new("🇸🇦", "+966", "Saudi Arabia"),
+        new("🇸🇳", "+221", "Senegal"),
+        new("🇷🇸", "+381", "Serbia"),
+        new("🇸🇨", "+248", "Seychelles"),
+        new("🇸🇱", "+232", "Sierra Leone"),
+        new("🇸🇬", "+65", "Singapore"),
+        new("🇸🇽", "+1", "Sint Maarten"),
+        new("🇸🇰", "+421", "Slovakia"),
+        new("🇸🇮", "+386", "Slovenia"),
+        new("🇸🇧", "+677", "Solomon Islands"),
+        new("🇸🇴", "+252", "Somalia"),
+        new("🇿🇦", "+27", "South Africa"),
+        new("🇰🇷", "+82", "South Korea"),
+        new("🇸🇸", "+211", "South Sudan"),
+        new("🇪🇸", "+34", "Spain"),
+        new("🇱🇰", "+94", "Sri Lanka"),
+        new("🇧🇱", "+590", "St. Barthélemy"),
+        new("🇰🇳", "+1", "St. Kitts & Nevis"),
+        new("🇱🇨", "+1", "St. Lucia"),
+        new("🇲🇫", "+590", "St. Martin"),
+        new("🇵🇲", "+508", "St. Pierre & Miquelon"),
+        new("🇻🇨", "+1", "St. Vincent & Grenadines"),
+        new("🇸🇩", "+249", "Sudan"),
+        new("🇸🇷", "+597", "Suriname"),
+        new("🇸🇯", "+47", "Svalbard & Jan Mayen"),
+        new("🇸🇪", "+46", "Sweden"),
+        new("🇨🇭", "+41", "Switzerland"),
+        new("🇸🇾", "+963", "Syria"),
+        new("🇹🇼", "+886", "Taiwan"),
+        new("🇹🇯", "+992", "Tajikistan"),
+        new("🇹🇿", "+255", "Tanzania"),
+        new("🇹🇭", "+66", "Thailand"),
+        new("🇹🇱", "+670", "Timor-Leste"),
+        new("🇹🇬", "+228", "Togo"),
+        new("🇹🇰", "+690", "Tokelau"),
+        new("🇹🇴", "+676", "Tonga"),
+        new("🇹🇹", "+1", "Trinidad & Tobago"),
+        new("🇹🇳", "+216", "Tunisia"),
+        new("🇹🇷", "+90", "Turkey"),
+        new("🇹🇲", "+993", "Turkmenistan"),
+        new("🇹🇨", "+1", "Turks & Caicos Islands"),
+        new("🇹🇻", "+688", "Tuvalu"),
+        new("🇺🇲", "+1", "U.S. Outlying Islands"),
+        new("🇻🇮", "+1", "U.S. Virgin Islands"),
+        new("🇺🇬", "+256", "Uganda"),
+        new("🇺🇦", "+380", "Ukraine"),
+        new("🇦🇪", "+971", "United Arab Emirates"),
+        new("🇬🇧", "+44", "United Kingdom"),
+        new("🇺🇸", "+1", "United States"),
+        new("🇺🇾", "+598", "Uruguay"),
+        new("🇺🇿", "+998", "Uzbekistan"),
+        new("🇻🇺", "+678", "Vanuatu"),
+        new("🇻🇦", "+39", "Vatican City"),
+        new("🇻🇪", "+58", "Venezuela"),
+        new("🇻🇳", "+84", "Vietnam"),
+        new("🇼🇫", "+681", "Wallis & Futuna"),
+        new("🇪🇭", "+212", "Western Sahara"),
+        new("🇾🇪", "+967", "Yemen"),
+        new("🇿🇲", "+260", "Zambia"),
+        new("🇿🇼", "+263", "Zimbabwe")
+    };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -194,6 +454,13 @@
         InvokeAsync(StateHasChanged);
     }
 
+    private void HandlePhoneInput(ChangeEventArgs e)
+    {
+        var input = e.Value?.ToString() ?? string.Empty;
+        // This filters out any letters/symbols and keeps only numbers
+        phoneNumberInput = new string(input.Where(char.IsDigit).ToArray());
+    }
+
     private async Task PlaceOrder()
     {
         var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to place this order?");
@@ -201,7 +468,7 @@
 
         if (!orderItems.Any() ||
             string.IsNullOrWhiteSpace(customerName) ||
-            string.IsNullOrWhiteSpace(customerPhone) ||
+            string.IsNullOrWhiteSpace(phoneNumberInput) ||
             string.IsNullOrWhiteSpace(customerAddress))
         {
             return;
